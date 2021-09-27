@@ -7,7 +7,7 @@ class TitleScreen extends Phaser.Scene {
         await this.player.loadWeb3();
         this.connectButton.setTexture('startBtn');
     }
-
+ 
     create(){
         this.gameBg = this.add.image(0,0,'background');
         this.gameBg.setOrigin(0,0);
