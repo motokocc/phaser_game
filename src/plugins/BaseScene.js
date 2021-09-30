@@ -18,8 +18,9 @@ class BaseScene extends Phaser.Scene {
         this.messageText = this.add.text(
             dialogPadding, 
             (gameH - dialogBoxH) + dialogPadding,
-            dialogue[dialogueCounter].message
+            ''
         ).setWordWrapWidth(gameW * 0.9, true);
+        this.typewriteTextWrapped(dialogue[dialogueCounter].message)
 
         //Character Name Box
         this.characterName = this.add.text(dialogPadding, (gameH - dialogBoxH) - dialogPadding, dialogue[dialogueCounter].name);
@@ -49,12 +50,38 @@ class BaseScene extends Phaser.Scene {
             this.nextText.setAlpha(1);
             if(dialogueCounter < dialogue.length - 1){
                 dialogueCounter++;
-                this.messageText.setText(dialogue[dialogueCounter].message);
+                this.textTimer.remove();
+                this.messageText.setText('');
+                this.typewriteTextWrapped(dialogue[dialogueCounter].message);
             }
             else{
                 return;
             }
         });
+    }
+
+    typewriteText(text)
+    {
+        const length = text.length
+        let i = 0;
+
+        this.textTimer = this.time.addEvent({
+            callback: () => {
+                this.messageText.text += text[i];
+                ++i;
+            },
+            repeat: length - 1,
+            delay: -500,
+            timeScale: 300
+        })
+    }
+
+    typewriteTextWrapped(text)
+    {
+        const lines = this.messageText.getWrappedText(text)
+        const wrappedText = lines.join('\n')
+
+        this.typewriteText(wrappedText)
     }
 }
 
