@@ -10,9 +10,14 @@ class TutorialScreen extends BaseScene {
         this.gameBg.setScale(1.1);
 
         this.npc = this.add.image(this.game.config.width/2, this.game.config.height * 0.85, 'elf-0').setOrigin(0.5,1);
-        this.npc.setScale(1.5);
+        //this.npc.setScale(1.5);
 
-        const test = this.dialogBox(tutorialDialogue('Panchan'));
+        this.dialogueBoxScene = this.dialogBox(
+            tutorialDialogue(this.player.playerInfo.name || 'Drake'),
+            {
+                sceneNumber: 0,
+                type: 'inputBox'
+            });
     }
 }
 

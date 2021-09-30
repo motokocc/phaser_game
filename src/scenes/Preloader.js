@@ -11,6 +11,7 @@ import hoverSound from '../audio/hover_button2.mp3';
 import clickSound from '../audio/click_button.wav';
 import titleBgMusic from '../audio/title_bg.mp3';
 import elf from '../images/elf-0.png';
+import okButton from '../images/ok-button.png';
 
 class LoadingScreen extends Phaser.Scene {
 
@@ -20,6 +21,7 @@ class LoadingScreen extends Phaser.Scene {
 
     preload(){
         this.load.image('elf-0', elf);
+        this.load.image('okButton', okButton);
         this.load.image('background', bg);
         this.load.image('gameTitle', gameTitle);
         this.load.image('startBtn', startBtn);

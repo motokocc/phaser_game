@@ -5,6 +5,7 @@ import Player from './plugins/PlayerState';
 import LoadingScreen from './scenes/Preloader';
 import TutorialScreen from './scenes/Tutorial';
 import FlipPlugin from 'phaser3-rex-plugins/plugins/flip-plugin.js';
+import InputTextPlugin from 'phaser3-rex-plugins/plugins/inputtext-plugin.js';
 
 const config = {
     widht: 800,
@@ -17,10 +18,15 @@ const config = {
             gravity: {y: 0}
         }
     },
+    parent: "phaser-input",
+    dom: {
+        createContainer: true
+    }, 
     plugins: {
         global: [
             { key: 'Player', plugin: Player, start: false, mapping: 'player'},
-            { key: 'rexFlip', plugin: FlipPlugin, start: true }
+            { key: 'rexFlip', plugin: FlipPlugin, start: true },
+            { key: 'rexInputTextPlugin', plugin: InputTextPlugin, start: true }
         ]
     }
 }
