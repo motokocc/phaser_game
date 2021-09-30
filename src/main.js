@@ -32,4 +32,6 @@ game.scene.add("titlescreen", TitleScreen);
 game.scene.add("tutorial", TutorialScreen);
 game.scene.add("game", Game);
 
-game.scene.start("loading", {nextPage: "titlescreen"});
+// game.scene.start("loading", {nextPage: "titlescreen"});
+game.scene.start("loading", {nextPage: "tutorial"});
+//game.scene.start("tutorial");
