@@ -78,8 +78,8 @@ class BaseScene extends Phaser.Scene {
                 ++i;
             },
             repeat: length - 1,
-            delay: -500,
-            timeScale: 300
+            delay: 0,
+            timeScale: 10000
         })
     }
 
@@ -94,37 +94,36 @@ class BaseScene extends Phaser.Scene {
     inputBox(dialogue){
 
         let inputName = '';
-        this.inputContainer = this.add.rectangle(
+        this.inputContainer = this.add.sprite(
             this.game.config.width/2,
             this.game.config.height/2,
-            this.game.config.width / 3,
-            this.game.config.width / 4,
-            0x914f1d
-        ).setOrigin(0.5)
-        .setDepth(1);
+            'scroll'
+        ).setDepth(1)
+        .setScale(1.4);
 
         this.inputTitle = this.add.text(
             this.game.config.width/2,
-            this.game.config.height/2 - 60,
+            this.game.config.height/2 - 80,
             'Please enter your name',
             {
-                fontSize: "21px"
+                fontSize: "25px",
+                color: "brown"
             }
         ).setOrigin(0.5)
         .setDepth(2);
 
         this.inputText = this.add.rexInputText(
             this.game.config.width/2,
-            this.game.config.height/2,
+            this.game.config.height/2 - 20,
             300,
             40,
             { 
                 type: "text",
                 maxLength: 20,
-                fontSize : "30px",
+                fontSize : "25px",
                 minLength: 3,
                 backgroundColor : "white",
-                color: "black",
+                color: "black"
             }
         ).setOrigin(0.5)
         .setDepth(2)
@@ -132,9 +131,12 @@ class BaseScene extends Phaser.Scene {
             inputName = inputText.text;
         });
 
+        this.inputText.setStyle("border-radius", "10px");
+        this.inputText.setStyle("text-align", "center");
+
         this.inputButton = this.add.sprite(
             this.game.config.width/2,
-            this.game.config.height/2 + 70,
+            this.game.config.height/2 + 50,
             'okButton',
         ).setOrigin(0.5)
         .setScale(0.08)
@@ -142,12 +144,12 @@ class BaseScene extends Phaser.Scene {
         .setInteractive();
 
         this.inputButton.on('pointerover', () => {
-            this.inputButton.setScale(0.09);
+            this.inputButton.setScale(0.08);
             this.sound.play('hoverEffect', {loop: false});
         });
 
         this.inputButton.on('pointerout', () => {
-            this.inputButton.setScale(0.08);
+            this.inputButton.setScale(0.07);
         });
 
         this.inputButton.on('pointerup', () => {
