@@ -13,6 +13,7 @@ import titleBgMusic from '../audio/title_bg.mp3';
 import elf from '../images/elf-0.png';
 import okButton from '../images/ok-button.png';
 import scroll from '../images/scroll.png';
+import summoningCircle from '../images/summoning_circle.png';
 
 class LoadingScreen extends Phaser.Scene {
 
@@ -21,6 +22,7 @@ class LoadingScreen extends Phaser.Scene {
     }
 
     preload(){
+        this.load.image('summoningCircle', summoningCircle);
         this.load.image('elf-0', elf);
         this.load.image('scroll', scroll);
         this.load.image('okButton', okButton);
