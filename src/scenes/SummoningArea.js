@@ -17,10 +17,17 @@ class SummoningArea extends BaseScene {
             repeat: -1
         });
 
-        this.summoningNpc = this.add.sprite(0, this.game.config.height, 'elf-0')
+        //Right side NPC
+        this.rightUi = this.add.container();
+
+        let summoningNpc = this.add.sprite(0, this.game.config.height, 'elf-0')
         .setOrigin(0,1)
         .setScale(0.7)
         .setInteractive();
+
+        this.createSpeechBubble (summoningNpc.width/2, summoningNpc.y/2, 220, 100, "I wonder what kind of Djinn you're going to summon...");
+
+        this.rightUi.add([summoningNpc, this.messageBoxContainer]);
 
         //UI
         const paddingY = 30;
@@ -30,7 +37,7 @@ class SummoningArea extends BaseScene {
             .setOrigin(1,0)
             .setAlpha(0.8);
         
-        this.uiText = this.add.text(this.game.config.width - 150, paddingY, 'Select Draw Type').setOrigin(0.5);
+        this.uiText = this.add.text(this.game.config.width - 150, paddingY, 'Select Draw Type', {fontFamily: 'Arial', fontSize: 20}).setOrigin(0.5);
         
         let freeButton = this.add.sprite(this.game.config.width - 150, paddingY*3.1, 'freeBtn')
         let rareButton = this.add.sprite(this.game.config.width - 150, paddingY*6.2, 'rareBtn')
@@ -65,8 +72,8 @@ class SummoningArea extends BaseScene {
                 });
 
                 this.tweens.add({
-                    targets: this.summoningNpc,
-                    x: { value: -300, duration: 400, ease: 'Power1'},
+                    targets: this.rightUi,
+                    x: { value: -600, duration: 400, ease: 'Power1'},
                     yoyo: false
 
                 });

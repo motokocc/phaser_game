@@ -42,6 +42,6 @@ game.scene.add("tutorial", TutorialScreen);
 game.scene.add("summoningArea", SummoningArea);
 game.scene.add("game", Game);
 
-// game.scene.start("loading", {nextPage: "titlescreen"});
-game.scene.start("loading", {nextPage: "summoningArea"});
-//game.scene.start("tutorial");
+//game.scene.start("loading", {nextPage: "titlescreen"});
+//game.scene.start("loading", {nextPage: "summoningArea"});
+game.scene.start("loading", {nextPage: "tutorial"});

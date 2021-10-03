@@ -15,7 +15,8 @@ class TutorialScreen extends BaseScene {
             tutorialDialogue(this.player.playerInfo.name || 'Drake'),
             {
                 sceneNumber: 0,
-                type: 'inputBox'
+                type: 'inputBox',
+                nextPage : "summoningArea"
             });
     }
 
