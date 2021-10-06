@@ -25,6 +25,8 @@ class SummoningArea extends BaseScene {
         .setScale(0.7)
         .setInteractive();
 
+        summoningNpc.play('elf_talk');
+
         this.createSpeechBubble (summoningNpc.width/2, summoningNpc.y/2, 220, 100, "I wonder what kind of Djinn you're going to summon...");
 
         this.rightUi.add([summoningNpc, this.messageBoxContainer]);

@@ -65,10 +65,8 @@ class BaseScene extends Phaser.Scene {
 
                 //for the animation
                 animParams.map( anim => {
-                    console.log('dialogCounter', this.dialogueCounter);
-                    console.log('animScene', anim.sceneNumber);
                     if(this.dialogueCounter == anim.sceneNumber){
-                        console.log('abay akalain mo');
+                        this.animationSceneHandler(anim.spriteImage, anim.animationType);
                     }
                 })
             }
