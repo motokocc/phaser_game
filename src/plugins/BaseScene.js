@@ -3,18 +3,18 @@ import { tutorialDialogue } from '../js/character_dialogues/tutorial';
 
 class BaseScene extends Phaser.Scene {
     init(data){
-        this.data = data;
+        this.data = data;       
+        this.dialogueCounter = 0;
     }
 
-    dialogBox(dialogue, params){
+
+    dialogBox(dialogue, uiParams, animParams){
         this.dialogue = dialogue;
 
         const gameW = this.game.config.width;
         const gameH = this.game.config.height;
         const dialogPadding = 15;
         const dialogBoxH = this.game.config.height / 5;
-
-        this.dialogueCounter = 0;
 
         this.add.rectangle(0,gameH - dialogBoxH, gameW, dialogBoxH, 0x914f1d).setOrigin(0);
 
@@ -51,8 +51,10 @@ class BaseScene extends Phaser.Scene {
         this.nextText.on('pointerup', () => {
             this.nextText.setScale(1);
             this.nextText.setAlpha(1);
-            if(this.dialogueCounter == params.sceneNumber && params.type == 'inputBox'){
-                this.inputBox(this.dialogue);
+
+
+            if(this.dialogueCounter == uiParams.sceneNumber && uiParams.type == 'inputBox'){
+                this.inputBox(animParams[this.dialogueCounter]);
                 this.nextText.disableInteractive();
             }
             else if(this.dialogueCounter < this.dialogue.length - 1){
@@ -60,9 +62,18 @@ class BaseScene extends Phaser.Scene {
                 this.textTimer.remove();
                 this.messageText.setText('');
                 this.typewriteTextWrapped(this.dialogue[this.dialogueCounter].message);
+
+                //for the animation
+                animParams.map( anim => {
+                    console.log('dialogCounter', this.dialogueCounter);
+                    console.log('animScene', anim.sceneNumber);
+                    if(this.dialogueCounter == anim.sceneNumber){
+                        console.log('abay akalain mo');
+                    }
+                })
             }
             else{
-                this.scene.start(params.nextPage);
+                this.scene.start(uiParams.nextPage);
             }
         });
     }
@@ -91,7 +102,7 @@ class BaseScene extends Phaser.Scene {
         this.typewriteText(wrappedText)
     }
 
-    inputBox(dialogue){
+    inputBox(animParams){
 
         let inputName = '';
         this.inputContainer = this.add.sprite(
@@ -164,6 +175,9 @@ class BaseScene extends Phaser.Scene {
 
             //Typewriter effect and proceed to next dialogue
             this.dialogueCounter++;
+            if(this.dialogueCounter == animParams.sceneNumber){
+                this.animationSceneHandler(animParams.spriteImage, animParams.animationType);
+            }
             this.textTimer.remove();
             this.messageText.setText('');
             this.typewriteTextWrapped(this.dialogue[this.dialogueCounter].message);
@@ -228,6 +242,11 @@ class BaseScene extends Phaser.Scene {
 
             this.messageBoxContainer.add([bubble,content]);
         }
+
+    
+    animationSceneHandler(spriteImage, sceneAnimation){
+        spriteImage.play(sceneAnimation)
+    }
 }
 
 export default BaseScene;

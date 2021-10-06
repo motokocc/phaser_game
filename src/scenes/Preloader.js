@@ -18,6 +18,20 @@ import freeButton from '../images/buttons/free_button.png';
 import rareButton from '../images/buttons/rare_button.png';
 import premiumButton from '../images/buttons/premium_button.png';
 
+//Lilith's animations
+import elf_idle_1 from '../images/Animations/elf-idle-2.png';
+import elf_idle_2 from '../images/Animations/elf-idle-1.png';
+import elf_happy_1 from '../images/Animations/elf-happy-2.png';
+import elf_happy_2 from '../images/Animations/elf-happy-1.png';
+import elf_shocked_1 from '../images/Animations/elf-shocked-1.png';
+import elf_shocked_2 from '../images/Animations/elf-shocked-2.png';
+import elf_shocked_3 from '../images/Animations/elf-shocked-3.png';
+import elf_smile_1 from '../images/Animations/elf-smile-1.png';
+import elf_smile_2 from '../images/Animations/elf-smile-2.png';
+import elf_smile_3 from '../images/Animations/elf-smile-3.png';
+import elf_talk_1 from '../images/Animations/elf-talk-1.png';
+import elf_talk_2 from '../images/Animations/elf-talk-2.png';
+
 class LoadingScreen extends Phaser.Scene {
 
     init(data){
@@ -25,6 +39,19 @@ class LoadingScreen extends Phaser.Scene {
     }
 
     preload(){
+        this.load.image('elf_idle_1', elf_idle_1);
+        this.load.image('elf_idle_2', elf_idle_2);
+        this.load.image('elf_happy_1', elf_happy_1);
+        this.load.image('elf_happy_2', elf_happy_2);
+        this.load.image('elf_shocked_1', elf_shocked_1);
+        this.load.image('elf_shocked_2', elf_shocked_2);
+        this.load.image('elf_shocked_3', elf_shocked_3);
+        this.load.image('elf_smile_1', elf_smile_1);
+        this.load.image('elf_smile_2', elf_smile_2);
+        this.load.image('elf_smile_3', elf_smile_3);
+        this.load.image('elf_talk_1', elf_talk_1);
+        this.load.image('elf_talk_2', elf_talk_2);
+        
         this.load.image('summoningCircle', summoningCircle);
         this.load.image('freeBtn', freeButton);
         this.load.image('rareBtn', rareButton);

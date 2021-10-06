@@ -9,7 +9,31 @@ class TutorialScreen extends BaseScene {
         this.gameBg.setOrigin(0,0);
         this.gameBg.setScale(1.1);
 
-        this.npc = this.add.image(this.game.config.width/2, this.game.config.height * 0.85, 'elf-0').setOrigin(0.5,1);
+        this.anims.create({
+            key: 'elf_idle',
+            frames: [
+                { key: 'elf_idle_1' },
+                { key: 'elf_idle_2' }
+            ],
+            frameRate: 24,
+            repeatDelay: 2500,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'elf_happy',
+            frames: [
+                { key: 'elf_happy_1' },
+                { key: 'elf_happy_2' }
+            ],
+            frameRate: 24,
+            repeatDelay: 2500,
+            repeat: -1
+        });
+
+        this.npc = this.add.sprite(this.game.config.width/2, this.game.config.height * 0.85, 'elf_idle_1').setOrigin(0.5,1);
+
+        this.npc.play('elf_idle');
 
         this.dialogueBoxScene = this.dialogBox(
             tutorialDialogue(this.player.playerInfo.name || 'Drake'),
@@ -17,7 +41,15 @@ class TutorialScreen extends BaseScene {
                 sceneNumber: 0,
                 type: 'inputBox',
                 nextPage : "summoningArea"
-            });
+            },
+            [
+                {
+                    sceneNumber: 1,
+                    spriteImage: this.npc,
+                    animationType: 'elf_happy'
+                }
+            ]
+        );
     }
 
     update(){
