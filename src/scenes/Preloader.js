@@ -31,6 +31,7 @@ import elf_smile_2 from '../images/Animations/elf-smile-2.png';
 import elf_smile_3 from '../images/Animations/elf-smile-3.png';
 import elf_talk_1 from '../images/Animations/elf-talk-1.png';
 import elf_talk_2 from '../images/Animations/elf-talk-2.png';
+import dialogueBox from '../images/UI/dialogue_box.png';
 
 class LoadingScreen extends Phaser.Scene {
 
@@ -52,6 +53,7 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('elf_talk_1', elf_talk_1);
         this.load.image('elf_talk_2', elf_talk_2);
         
+        this.load.image('dialogueBox', dialogueBox);
         this.load.image('summoningCircle', summoningCircle);
         this.load.image('freeBtn', freeButton);
         this.load.image('rareBtn', rareButton);

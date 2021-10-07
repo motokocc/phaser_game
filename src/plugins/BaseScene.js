@@ -13,32 +13,23 @@ class BaseScene extends Phaser.Scene {
 
         const gameW = this.game.config.width;
         const gameH = this.game.config.height;
-        const dialogPadding = 15;
+        const dialogPadding = 18;
         const dialogBoxH = this.game.config.height / 5;
 
-        this.add.rectangle(0,gameH - dialogBoxH, gameW, dialogBoxH, 0x914f1d).setOrigin(0);
+        let box = this.add.sprite(0,gameH - dialogBoxH, 'dialogueBox').setOrigin(0);
+        box.displayWidth = gameW;
+        box.displayHeight = dialogBoxH;
 
         this.messageText = this.add.text(
             dialogPadding, 
             (gameH - dialogBoxH) + dialogPadding,
-            ''
+            '',
+            {color: '#613e1e'}
         ).setWordWrapWidth(gameW * 0.9, true);
         this.typewriteTextWrapped(this.dialogue[this.dialogueCounter].message)
 
-        //Character Name Box
-        this.characterName = this.add.text(dialogPadding, (gameH - dialogBoxH) - dialogPadding, this.dialogue[this.dialogueCounter].name);
-        this.characterName.setOrigin(0,1);
-        this.characterName.setDepth(1);
-        this.add.rectangle(
-            0,
-            (gameH - dialogBoxH),
-            this.characterName.width + (dialogPadding*2),
-            this.characterName.height + (dialogPadding*2),
-            0x914f1d
-        ).setOrigin(0,1);
-
         //Next Button Function
-        this.nextText = this.add.text( gameW-dialogPadding, gameH - dialogPadding, 'Next >>>').setInteractive();
+        this.nextText = this.add.text( gameW-dialogPadding, gameH - dialogPadding, 'Next >>>', {color: '#613e1e'}).setInteractive();
         this.nextText.setOrigin(1,1);
 
         
@@ -103,25 +94,25 @@ class BaseScene extends Phaser.Scene {
     inputBox(animParams){
 
         let inputName = '';
-        this.inputContainer = this.add.sprite(
+        let inputContainer = this.add.sprite(
             this.game.config.width/2,
             this.game.config.height/2,
             'scroll'
         ).setDepth(1)
         .setScale(1.4);
 
-        this.inputTitle = this.add.text(
+        let inputTitle = this.add.text(
             this.game.config.width/2,
             this.game.config.height/2 - 80,
             'Please enter your name',
             {
-                fontSize: "25px",
-                color: "brown"
+                fontSize: "21px",
+                color: '#613e1e'
             }
         ).setOrigin(0.5)
         .setDepth(2);
 
-        this.inputText = this.add.rexInputText(
+        let inputText = this.add.rexInputText(
             this.game.config.width/2,
             this.game.config.height/2 - 20,
             300,
@@ -140,33 +131,33 @@ class BaseScene extends Phaser.Scene {
             inputName = inputText.text;
         });
 
-        this.inputText.setStyle("border-radius", "10px");
-        this.inputText.setStyle("text-align", "center");
+        inputText.setStyle("border-radius", "10px");
+        inputText.setStyle("text-align", "center");
 
-        this.inputButton = this.add.sprite(
+        let inputButton = this.add.sprite(
             this.game.config.width/2,
             this.game.config.height/2 + 50,
             'okButton',
         ).setOrigin(0.5)
-        .setScale(0.08)
+        .setScale(0.07)
         .setDepth(2)
         .setInteractive();
 
-        this.inputButton.on('pointerover', () => {
-            this.inputButton.setScale(0.08);
+        inputButton.on('pointerover', () => {
+            inputButton.setScale(0.08);
             this.sound.play('hoverEffect', {loop: false});
         });
 
-        this.inputButton.on('pointerout', () => {
-            this.inputButton.setScale(0.07);
+        inputButton.on('pointerout', () => {
+            inputButton.setScale(0.07);
         });
 
-        this.inputButton.on('pointerup', () => {
-            this.inputButton.setAlpha(1);
+        inputButton.on('pointerup', () => {
+            inputButton.setAlpha(1);
         });
 
-        this.inputButton.on('pointerdown', () => {
-            this.inputButton.setAlpha(0.7);
+        inputButton.on('pointerdown', () => {
+            inputButton.setAlpha(0.7);
             this.sound.play('clickEffect', {loop: false});
             this.player.playerInfo.name = inputName;
             this.dialogue = tutorialDialogue(this.player.playerInfo.name);
@@ -182,10 +173,10 @@ class BaseScene extends Phaser.Scene {
             this.nextText.setInteractive();
 
             //Remove the inputBox from scene
-            this.inputContainer.destroy();
-            this.inputText.destroy();
-            this.inputTitle.destroy();
-            this.inputButton.destroy();
+            inputContainer.destroy();
+            inputText.destroy();
+            inputTitle.destroy();
+            inputButton.destroy();
         });
 
     }

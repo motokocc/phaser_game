@@ -5,9 +5,9 @@ import BaseScene from '../plugins/BaseScene';
 class TutorialScreen extends BaseScene {
 
     create(){
-        this.gameBg = this.add.image(0,0,'background');
-        this.gameBg.setOrigin(0,0);
-        this.gameBg.setScale(1.1);
+        let gameBg = this.add.image(0,0,'background');
+        gameBg.setOrigin(0,0);
+        gameBg.setScale(1.1);
 
         this.anims.create({
             key: 'elf_idle',
@@ -90,7 +90,7 @@ class TutorialScreen extends BaseScene {
 
         this.npc.play('elf_idle');
 
-        this.dialogueBoxScene = this.dialogBox(
+        this.dialogBox(
             tutorialDialogue(this.player.playerInfo.name || 'Drake'),
             {
                 sceneNumber: 0,
