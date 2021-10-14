@@ -2,16 +2,36 @@ import 'regenerator-runtime/runtime'
 import Phaser from 'phaser';
 import PlayerData from '../abis/GameData.json';
 import Web3 from 'web3';
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, doc, setDoc, getDoc } from "firebase/firestore";
+import { firebaseConfig } from '../js/config/firebase-config';
 
 class Player extends Phaser.Plugins.BasePlugin {
     constructor(pluginManager) {
         super(pluginManager); 
+
+        // Firebase Database
+        let app = initializeApp(firebaseConfig);
+        this.db = getFirestore();
+
+       this.users = collection(this.db, 'users');
+
+        // setDoc(doc(users, 'test'), {
+        //     name: 'Justin',
+        //     address: '0x0',
+        //     isFirstTime: true,
+        //     cards:[],
+        //     gold:1000,
+        //     drawCount:0
+        // });
+
         //Global States
         this.playerInfo = {
-            id: null,
             name: '',
             address: null,
-            drawCount: 0
+            drawCount: 0,
+            gold: 0,
+            cards:[]
         }
     }
 
@@ -37,11 +57,31 @@ class Player extends Phaser.Plugins.BasePlugin {
                 const networkId = await web3.eth.net.getId();
                 const networkData = PlayerData.networks[networkId];
                 if(networkData) {
-                    const playerData = new web3.eth.Contract(PlayerData.abi, networkData.address)
+                    const playerData = new web3.eth.Contract(PlayerData.abi, networkData.address);
               
+                    //Blockchain Data - player name, draw count, cards
                     const player = await playerData.methods.players(accounts[0]).call();
-                    const { playerName, drawCount, id } = player;
-                    this.setPlayerInfo(id, playerName, accounts[0], drawCount);
+                    const { playerName, drawCount, cards} = player;
+
+                    //Firebase Data - gold
+                    //Getting data from /users/${account[0]}
+                    let gold;
+                    const userRef = doc(this.db, "users", accounts[0]);
+                    const user = await getDoc(userRef);
+
+                    if (user.exists()) {
+                        //To add more data later for drops that can be exchanged to nfts
+                        gold = user.data().gold;
+                    } 
+                    
+                    else {
+                        gold = 0;
+                    }
+
+                    //Set Player Data
+                    this.setPlayerInfo(playerName, accounts[0], drawCount, gold, cards);
+
+
                 } 
                 else {
                     window.alert('Player contract not deployed to detected network.')
@@ -53,12 +93,13 @@ class Player extends Phaser.Plugins.BasePlugin {
         }
     }
 
-    setPlayerInfo(id, name, address, drawCount){
+    setPlayerInfo(id, name, address, drawCount, gold){
         this.playerInfo = {
-            id,
             name,
             address,
-            drawCount
+            drawCount,
+            gold,
+            cards
         }
     }
 }

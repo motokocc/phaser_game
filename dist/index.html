@@ -2,24 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>NFT Elven Hunter</title>
-    <link rel="preload" as="font" href="/montserrat.39a68dae.ttf" type="font/ttf">
-    <style>#phaser-input{
-            height: 100vh;
-            background-color: darkgrey;
-            padding: 0;
-        }
-
-        @font-face {
-            font-family: GameTextFont;
-            src: url('/montserrat.39a68dae.ttf');
-        }</style>
+    <title>Document</title>
 </head>
 <body>
-    <div id="phaser-input"></div>
-    <script src="/main.1f19ae8e.js"></script>
-    <script src="/utils.8598244e.js"></script>
+    <form id="uploadForm">
+        <input type="text" placeholder="title.." id="title" value="">
+        <input type="text" placeholder="description.." id="description" value="">
+        <input type="file" id="imageUpload">
+        <button>upload to ipfs</button>
+
+        <img id="nft">
+    </form>   
+    <script src="/image_generator.9964daf3.js"></script>
 </body>
 </html>
