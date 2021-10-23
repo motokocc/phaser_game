@@ -17,6 +17,7 @@ import summoningCircle from '../images/summoning_circle.png';
 import freeButton from '../images/buttons/free_button.png';
 import rareButton from '../images/buttons/rare_button.png';
 import premiumButton from '../images/buttons/premium_button.png';
+import cardBack from '../images/cards/card_yellow.png';
 
 //Lilith's animations
 import elf_idle_1 from '../images/Animations/elf-idle-2.png';
@@ -40,6 +41,7 @@ class LoadingScreen extends Phaser.Scene {
     }
 
     preload(){
+        this.load.image('cardBack', cardBack);
         this.load.image('elf_idle_1', elf_idle_1);
         this.load.image('elf_idle_2', elf_idle_2);
         this.load.image('elf_happy_1', elf_happy_1);

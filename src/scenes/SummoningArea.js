@@ -67,6 +67,9 @@ class SummoningArea extends BaseScene {
                 button.setAlpha(0.7);
                 this.sound.play('clickEffect', {loop: false});
 
+                //Minting card
+                this.player.mintCard();
+
                 this.tweens.add({
                     targets: summoningUiContainer,
                     x: { value: 300, duration: 400, ease: 'Power1'},

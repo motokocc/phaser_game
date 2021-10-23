@@ -1,0 +1,20 @@
+{
+    "name": "",
+    "description": "",
+    "image": "",
+    "image_alt": "",
+    "attributes": [
+        {
+            "name": "attack",
+            "value": 1
+        },
+        {
+            "name": "health",
+            "value": 5
+        },
+        {
+            "name": "speed",
+            "value": 1
+        }                    
+    ]
+}

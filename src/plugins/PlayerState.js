@@ -5,6 +5,7 @@ import Web3 from 'web3';
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, setDoc, getDoc } from "firebase/firestore";
 import { firebaseConfig } from '../js/config/firebase-config';
+import card from "../js/card.json"
 
 class Player extends Phaser.Plugins.BasePlugin {
     constructor(pluginManager) {
@@ -16,21 +17,13 @@ class Player extends Phaser.Plugins.BasePlugin {
 
        this.users = collection(this.db, 'users');
 
-        // setDoc(doc(users, 'test'), {
-        //     name: 'Justin',
-        //     address: '0x0',
-        //     isFirstTime: true,
-        //     cards:[],
-        //     gold:1000,
-        //     drawCount:0
-        // });
-
         //Global States
         this.playerInfo = {
             name: '',
             address: null,
             drawCount: 0,
             gold: 0,
+            isFirstTime: true,
             cards:[]
         }
     }
@@ -66,20 +59,23 @@ class Player extends Phaser.Plugins.BasePlugin {
                     //Firebase Data - gold
                     //Getting data from /users/${account[0]}
                     let gold;
+                    let isFirstTime;
                     const userRef = doc(this.db, "users", accounts[0]);
                     const user = await getDoc(userRef);
 
                     if (user.exists()) {
                         //To add more data later for drops that can be exchanged to nfts
                         gold = user.data().gold;
+                        isFirtstTime = user.data().isFirstTime;
                     } 
                     
                     else {
                         gold = 0;
+                        isFirstTime = true
                     }
 
                     //Set Player Data
-                    this.setPlayerInfo(playerName, accounts[0], drawCount, gold, cards);
+                    this.setPlayerInfo(playerName, accounts[0], drawCount, gold, cards, isFirstTime);
 
 
                 } 
@@ -93,13 +89,34 @@ class Player extends Phaser.Plugins.BasePlugin {
         }
     }
 
-    setPlayerInfo(id, name, address, drawCount, gold){
+    setPlayerInfo(name, address, drawCount, gold, cards,isFirstTime){
         this.playerInfo = {
             name,
             address,
             drawCount,
             gold,
-            cards
+            cards,
+            isFirstTime
+        }
+    }
+
+    async mintCard(){
+        this.playerInfo.drawCount++;
+
+        if(this.playerInfo.isFirstTime){
+            this.playerInfo.isFirstTime = false;
+
+            //First card
+            card.name = "Alpha",
+            card.description = "test",
+            card.image = "test",
+            card.image_alt = "test_again"
+            this.playerInfo.cards = [...this.playerInfo.cards, card ];
+
+            //await setDoc(doc(this.users, 'test'), this.playerInfo);
+        }
+        else {
+            console.log('minting....')
         }
     }
 }
