@@ -1,15 +1,19 @@
 import BaseScene from '../plugins/BaseScene';
 
 class SummoningArea extends BaseScene {
-
     create(){
         let drawType = 'free';
+
+        this.lights.enable().setAmbientColor(0x000ff);
 
         let summoningCircle = this.add.sprite(
             this.game.config.width/2,
             this.game.config.height/2,
             'summoningCircle'
         ).setScale(1.5);
+
+        let lightEffect = this.lights.addPointLight(this.game.config.width/2, this.game.config.height/2, 0xb29700, 400,0.3);
+        lightEffect.setAlpha(0);
 
         this.tweens.add({
             targets: summoningCircle,
@@ -43,7 +47,20 @@ class SummoningArea extends BaseScene {
         
         let freeButton = this.add.sprite(this.game.config.width - 150, paddingY*3.1, 'freeBtn')
         let rareButton = this.add.sprite(this.game.config.width - 150, paddingY*6.2, 'rareBtn')
-        let premiumButton = this.add.sprite(this.game.config.width - 150, paddingY*9.3, 'premiumBtn')        
+        let premiumButton = this.add.sprite(this.game.config.width - 150, paddingY*9.3, 'premiumBtn')   
+        
+        //Card summon
+        let cardBack = this.add.sprite(this.game.config.width/2, this.game.config.height/2, 'cardBack');
+        cardBack.setAlpha(0);
+        cardBack.setScale(0);
+
+        var cardFlip = this.plugins.get('rexFlip').add(cardBack, {
+            face: 'back',
+            front: {key: 'cardBack'},
+            back: {key: 'cardBack'},
+            duration: 500
+        });
+        //End Card summon setup
 
         const buttons = [freeButton, rareButton, premiumButton];
 
@@ -63,12 +80,41 @@ class SummoningArea extends BaseScene {
                 button.setAlpha(1);
             });
 
-            button.on('pointerdown', () => {
+            button.on('pointerdown', async() => {
                 button.setAlpha(0.7);
                 this.sound.play('clickEffect', {loop: false});
+             
+                //Card effect
+                this.tweens.add({
+                    targets: [cardBack, lightEffect],
+                    alpha: { value: 1, duration: 1500, ease: 'Power1'},
+                    scale: { value: 1, duration: 4000, ease: 'Power1'},
+                    yoyo: false,
+                    delay: 4000,
+                    onComplete: () => {
+                        this.player.mintCard().then(card => {
+                            cardFlip.setFrontFace(card.name);
 
-                //Minting card
-                this.player.mintCard();
+                            this.tweens.add({
+                                targets: summoningCircle,
+                                alpha: { value: 0.5, duration: 500, ease: 'Linear'},
+                                yoyo: false,
+                                onComplete: () => {
+                                    cardFlip.flip();
+                                    lightEffect.radius = 300
+                                    lightEffect.intensity = 0.6;  ;
+                                }
+                            });
+
+                            this.tweens.add({
+                                targets: summoningCircle,
+                                angle: { value: 360, duration: 30000, ease: 'Power1'},
+                                repeat: -1
+                            });
+                        });
+                    }
+                }); 
+                //End Card Effect
 
                 this.tweens.add({
                     targets: summoningUiContainer,

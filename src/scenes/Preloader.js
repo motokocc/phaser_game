@@ -41,6 +41,7 @@ class LoadingScreen extends Phaser.Scene {
     }
 
     preload(){
+        this.load.image('Alpha', "https://ipfs.infura.io/ipfs/QmXwhouX6z9DLtBmpGiGwpDu9W8NCyMhtzHW4Bqfct3Rfd");
         this.load.image('cardBack', cardBack);
         this.load.image('elf_idle_1', elf_idle_1);
         this.load.image('elf_idle_2', elf_idle_2);

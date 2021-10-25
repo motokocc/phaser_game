@@ -33,9 +33,11 @@ uploadForm.onsubmit = function(e){
     }
 
     client.add(fileBuffer).then(image => {
-        nftImage = 'https://ipfs.infura.io/ipfs/' + image.path;
+        nftImage = 'https://ipfs.infura.io/ipfs/' + image.path; 
         let nft = document.getElementById("nft");
+        let nft_link = document.getElementById("nft_link");
         nft.src = nftImage;
+        nft_link.innerHTML = nftImage;
     })
     .catch(err => {
         console.log('Error?', err.message)

@@ -108,8 +108,8 @@ class Player extends Phaser.Plugins.BasePlugin {
 
             //First card
             card.name = "Alpha",
-            card.description = "test",
-            card.image = "test",
+            card.description = "Alpha is a beast djinn ready to give a helping hand to any adventurer who summons him. He uses his arm-like tail to deal massive damage to his enemies. It is rummored that his eyes can locate hidden treasures and dungeons.",
+            card.image = "https://ipfs.infura.io/ipfs/QmXwhouX6z9DLtBmpGiGwpDu9W8NCyMhtzHW4Bqfct3Rfd",
             card.image_alt = "test_again"
             this.playerInfo.cards = [...this.playerInfo.cards, card ];
 
@@ -118,6 +118,8 @@ class Player extends Phaser.Plugins.BasePlugin {
         else {
             console.log('minting....')
         }
+     
+        return card
     }
 }
 
