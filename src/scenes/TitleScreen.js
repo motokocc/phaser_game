@@ -80,7 +80,7 @@ class TitleScreen extends Phaser.Scene {
             if(!this.player.playerInfo.address){
                 this.loadData();
             }
-            else if(this.player.playerInfo.address && this.player.playerInfo.drawCount <=0){
+            else if(this.player.playerInfo.address && this.player.playerInfo.isFirstTime){
                 this.scene.start("tutorial");
             }
             else{

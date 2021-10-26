@@ -54,29 +54,27 @@ class Player extends Phaser.Plugins.BasePlugin {
               
                     //Blockchain Data - player name, draw count, cards
                     const player = await playerData.methods.players(accounts[0]).call();
-                    const { playerName, drawCount, cards} = player;
+                    const { cards } = player;
 
                     //Firebase Data - gold
                     //Getting data from /users/${account[0]}
-                    let gold;
-                    let isFirstTime;
                     const userRef = doc(this.db, "users", accounts[0]);
                     const user = await getDoc(userRef);
 
                     if (user.exists()) {
                         //To add more data later for drops that can be exchanged to nfts
-                        gold = user.data().gold;
-                        isFirtstTime = user.data().isFirstTime;
+                        const { gold, drawCount, isFirstTime, name } = user.data();
+
+                        cardData = user.data().cards? user.data().cards: [];
+                            
+                        //Set Player Data
+                        this.setPlayerInfo(name, accounts[0], drawCount, gold, cardData, isFirstTime);
                     } 
                     
                     else {
-                        gold = 0;
-                        isFirstTime = true
+                        this.playerInfo.gold = 0;
+                        this.playerInfo.isFirstTime = true
                     }
-
-                    //Set Player Data
-                    this.setPlayerInfo(playerName, accounts[0], drawCount, gold, cards, isFirstTime);
-
 
                 } 
                 else {
@@ -85,6 +83,7 @@ class Player extends Phaser.Plugins.BasePlugin {
             }
         }
         catch(e){
+            console.log(e.message);
             window.alert('Unable to connect to your Metamask wallet. Please try again later');
         }
     }
@@ -98,28 +97,31 @@ class Player extends Phaser.Plugins.BasePlugin {
             cards,
             isFirstTime
         }
+        console.log('Player Info Set!',this.playerInfo);
     }
 
     async mintCard(){
         this.playerInfo.drawCount++;
 
+        let newCard = {...card};
+
         if(this.playerInfo.isFirstTime){
             this.playerInfo.isFirstTime = false;
 
             //First card
-            card.name = "Alpha",
-            card.description = "Alpha is a beast djinn ready to give a helping hand to any adventurer who summons him. He uses his arm-like tail to deal massive damage to his enemies. It is rummored that his eyes can locate hidden treasures and dungeons.",
-            card.image = "https://ipfs.infura.io/ipfs/QmXwhouX6z9DLtBmpGiGwpDu9W8NCyMhtzHW4Bqfct3Rfd",
-            card.image_alt = "test_again"
-            this.playerInfo.cards = [...this.playerInfo.cards, card ];
+            newCard.name = "Alpha",
+            newCard.description = "Alpha is a beast djinn ready to give a helping hand to any adventurer who summons him. He uses his arm-like tail to deal massive damage to his enemies. It is rummored that his eyes can locate hidden treasures and dungeons.",
+            newCard.image = "https://ipfs.infura.io/ipfs/QmXwhouX6z9DLtBmpGiGwpDu9W8NCyMhtzHW4Bqfct3Rfd",
+            newCard.image_alt = "test_again"
+            this.playerInfo.cards = [...this.playerInfo.cards, newCard];
 
-            //await setDoc(doc(this.users, 'test'), this.playerInfo);
+            //await setDoc(doc(this.users, this.playerInfo.address), this.playerInfo);
         }
         else {
             console.log('minting....')
         }
      
-        return card
+        return newCard
     }
 }
 
