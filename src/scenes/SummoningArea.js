@@ -49,9 +49,10 @@ class SummoningArea extends BaseScene {
         let freeButton = this.add.sprite(this.game.config.width - 150, paddingY*3.1, 'freeBtn')
         let rareButton = this.add.sprite(this.game.config.width - 150, paddingY*6.2, 'rareBtn')
         let premiumButton = this.add.sprite(this.game.config.width - 150, paddingY*9.3, 'premiumBtn')
-        let proceedButton = this.add.sprite(this.game.config.width - paddingY, this.game.config.height-paddingY,'premiumBtn')
+        let proceedButton = this.add.sprite(this.game.config.width - paddingY, this.game.config.height-paddingY,'proceedBtn')
             .setInteractive()
             .setOrigin(1)
+            .setScale(0.6)
             .setAlpha(0);
 
         let backButton = this.add.text(
@@ -71,6 +72,15 @@ class SummoningArea extends BaseScene {
             backButton.disableInteractive();
             backButton.setAlpha(0);
         }
+
+        proceedButton.on('pointerover', () => {
+            proceedButton.setScale(0.65);
+            this.sound.play('hoverEffect', {loop: false});
+        });
+
+        proceedButton.on('pointerout', () => {
+            proceedButton.setScale(0.6);
+        });
 
         proceedButton.on('pointerdown', () => {
             this.sound.play('clickEffect', {loop: false});

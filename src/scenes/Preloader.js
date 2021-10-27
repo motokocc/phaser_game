@@ -17,6 +17,7 @@ import scroll from '../images/scroll.png';
 import summoningCircle from '../images/summoning_circle.png';
 import freeButton from '../images/buttons/free_button.png';
 import rareButton from '../images/buttons/rare_button.png';
+import proceedButton from '../images/buttons/exit_button.png';
 import premiumButton from '../images/buttons/premium_button.png';
 import cardBack from '../images/cards/card_yellow.png';
 
@@ -62,6 +63,7 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('freeBtn', freeButton);
         this.load.image('rareBtn', rareButton);
         this.load.image('premiumBtn', premiumButton);
+        this.load.image('proceedBtn', proceedButton);
         this.load.image('elf-0', elf);
         this.load.image('scroll', scroll);
         this.load.image('okButton', okButton);
