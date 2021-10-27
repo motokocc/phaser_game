@@ -2,6 +2,7 @@ import BaseScene from '../plugins/BaseScene';
 
 class SummoningArea extends BaseScene {
     create(){
+        console.log(this.player.playerInfo);
         let drawType = 'free';
 
         this.lights.enable().setAmbientColor(0x000ff);
@@ -35,7 +36,7 @@ class SummoningArea extends BaseScene {
 
         rightUi.add([summoningNpc, this.messageBoxContainer]);
 
-        //UI
+        //UI Buttons
         const paddingY = 30;
         let summoningUiContainer = this.add.container(0,0);
 
@@ -47,7 +48,36 @@ class SummoningArea extends BaseScene {
         
         let freeButton = this.add.sprite(this.game.config.width - 150, paddingY*3.1, 'freeBtn')
         let rareButton = this.add.sprite(this.game.config.width - 150, paddingY*6.2, 'rareBtn')
-        let premiumButton = this.add.sprite(this.game.config.width - 150, paddingY*9.3, 'premiumBtn')   
+        let premiumButton = this.add.sprite(this.game.config.width - 150, paddingY*9.3, 'premiumBtn')
+        let proceedButton = this.add.sprite(this.game.config.width - paddingY, this.game.config.height-paddingY,'premiumBtn')
+            .setInteractive()
+            .setOrigin(1)
+            .setAlpha(0);
+
+        let backButton = this.add.text(
+            this.game.config.width - paddingY,
+             this.game.config.height-paddingY,
+              'Back >>',
+        {fontFamily: 'Arial', fontSize: 20}).setOrigin(1).setInteractive();
+
+        if(!this.player.playerInfo.isFirstTime){
+            backButton.on('pointerdown', () => {
+                this.sound.play('clickEffect', {loop: false});
+                this.sound.stopByKey('titleBgMusic');
+                this.scene.start("game");
+            });
+        }
+        else{
+            backButton.disableInteractive();
+            backButton.setAlpha(0);
+        }
+
+        proceedButton.on('pointerdown', () => {
+            this.sound.play('clickEffect', {loop: false});
+            this.sound.stopByKey('titleBgMusic');
+            this.scene.start("game");
+        });
+
         
         //Card summon
         let cardBack = this.add.sprite(this.game.config.width/2, this.game.config.height/2, 'cardBack');
@@ -111,6 +141,12 @@ class SummoningArea extends BaseScene {
                                 angle: { value: 360, duration: 30000, ease: 'Power1'},
                                 repeat: -1
                             });
+
+                            this.tweens.add({
+                                targets: proceedButton,
+                                alpha: { value: 1, duration: 1000, ease: 'Power1'},
+                                delay:1000
+                            });
                         });
                     }
                 }); 
@@ -145,7 +181,7 @@ class SummoningArea extends BaseScene {
             this.cameras.main.fadeIn(500);
         });
 
-        summoningUiContainer.add([uibox, uiText, freeButton, premiumButton,rareButton]);
+        summoningUiContainer.add([uibox, uiText, freeButton, premiumButton,rareButton, backButton]);
     }
 
     update(){

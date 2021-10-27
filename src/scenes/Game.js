@@ -6,6 +6,7 @@ class Game extends Phaser.Scene {
     }
 
     create(){
+        this.sound.play('sceneBgMusic', {loop: true, volume:0.2});
         //create basic gameobject
         this.ball = this.add.circle(400,250,10,0xffffff,1);
         this.paddleLeft = this.add.rectangle(50, 250, 20, 100, 0xffffff, 1);

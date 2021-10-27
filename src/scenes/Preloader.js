@@ -10,6 +10,7 @@ import light from '../images/light.png';
 import hoverSound from '../audio/hover_button2.mp3';
 import clickSound from '../audio/click_button.wav';
 import titleBgMusic from '../audio/title_bg.mp3';
+import sceneBgMusic from '../audio/scene_bg.mp3';
 import elf from '../images/elf-0.png';
 import okButton from '../images/ok-button.png';
 import scroll from '../images/scroll.png';
@@ -72,9 +73,12 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('soundOff', soundOff);
         this.load.image('soundOn', soundOn);
         this.load.image('light', light);
+
+        //Audio Files
         this.load.audio('clickEffect', [clickSound]);
         this.load.audio('hoverEffect', [hoverSound]);
         this.load.audio('titleBgMusic', [titleBgMusic]);
+        this.load.audio('sceneBgMusic', [sceneBgMusic]);
 
         this.progressBar = this.add.graphics();
         this.progressBox = this.add.graphics();
