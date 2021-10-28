@@ -4,8 +4,10 @@ class TitleScreen extends Phaser.Scene {
 
     loadData = async() => {
         // Load Data from blockchain
+        this.connectButton.disableInteractive();
         await this.player.loadWeb3();
         this.connectButton.setTexture('startBtn');
+        this.connectButton.setInteractive();
     }
  
     create(){

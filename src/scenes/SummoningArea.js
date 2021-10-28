@@ -193,9 +193,6 @@ class SummoningArea extends BaseScene {
 
         summoningUiContainer.add([uibox, uiText, freeButton, premiumButton,rareButton, backButton]);
     }
-
-    update(){
-    }
 }
 
 export default SummoningArea;

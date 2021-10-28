@@ -32,7 +32,7 @@ class Player extends Phaser.Plugins.BasePlugin {
         if (window.ethereum) {
           window.web3 = new Web3(window.ethereum)
           await window.ethereum.enable()
-          this.loadBlockchainData();
+          await this.loadBlockchainData();
         }
         else {
           window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
@@ -51,7 +51,7 @@ class Player extends Phaser.Plugins.BasePlugin {
                 const networkData = PlayerData.networks[networkId];
                 if(networkData) {
                     const playerData = new web3.eth.Contract(PlayerData.abi, networkData.address);
-              
+                    let cardData = [];
                     //Blockchain Data - player name, draw count, cards
                     const player = await playerData.methods.players(accounts[0]).call();
                     const { cards } = player;
@@ -73,6 +73,7 @@ class Player extends Phaser.Plugins.BasePlugin {
                     
                     else {
                         this.playerInfo.gold = 0;
+                        this.playerInfo.address = accounts[0]
                         this.playerInfo.isFirstTime = true
                     }
 
@@ -115,7 +116,7 @@ class Player extends Phaser.Plugins.BasePlugin {
             newCard.image_alt = "test_again"
             this.playerInfo.cards = [...this.playerInfo.cards, newCard];
 
-            //await setDoc(doc(this.users, this.playerInfo.address), this.playerInfo);
+            // await setDoc(doc(this.users, this.playerInfo.address), this.playerInfo);
         }
         else {
             console.log('minting....')
