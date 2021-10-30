@@ -119,7 +119,7 @@ class BaseScene extends Phaser.Scene {
             40,
             { 
                 type: "text",
-                maxLength: 20,
+                maxLength: 15,
                 fontSize : "25px",
                 minLength: 3,
                 backgroundColor : "white",

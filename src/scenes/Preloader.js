@@ -36,6 +36,22 @@ import elf_talk_1 from '../images/Animations/elf-talk-1.png';
 import elf_talk_2 from '../images/Animations/elf-talk-2.png';
 import dialogueBox from '../images/UI/dialogue_box.png';
 
+//Main screen ui
+import explore_button from '../images/buttons/explore_button.png';
+import mining_button from '../images/buttons/mining_button.png';
+import pvp_button from '../images/buttons/pvp_button.png';
+import shop_button from '../images/buttons/shop_button.png';
+import roullete_button from '../images/buttons/roullete_button.png';
+import black_market_button from '../images/buttons/black_market_button.png';
+import missions_button from '../images/buttons/missions_button.png';
+import summon_button from '../images/buttons/summon_button.png';
+import settings_button from '../images/buttons/settings_button.png';
+import mail_button from '../images/buttons/mail_button.png';
+import gift_button from '../images/buttons/gift_button.png';
+import gold from '../images/buttons/gold.png';
+import gems from '../images/buttons/gems.png';
+import player_gui_box from '../images/buttons/player_gui_box.png';
+
 class LoadingScreen extends Phaser.Scene {
 
     init(data){
@@ -44,6 +60,24 @@ class LoadingScreen extends Phaser.Scene {
 
     preload(){
         this.load.image('Alpha', "https://ipfs.infura.io/ipfs/QmXwhouX6z9DLtBmpGiGwpDu9W8NCyMhtzHW4Bqfct3Rfd");
+
+        //Main Screen
+        this.load.image('explore_button', explore_button);
+        this.load.image('mining_button', mining_button);
+        this.load.image('pvp_button', pvp_button);
+        this.load.image('shop_button', shop_button);
+        this.load.image('roullete_button', roullete_button)
+        this.load.image('black_market_button', black_market_button);
+        this.load.image('missions_button', missions_button);
+        this.load.image('summon_button', summon_button);
+        this.load.image('settings_button', settings_button);
+        this.load.image('mail_button', mail_button);
+        this.load.image('gift_button', gift_button);;
+        this.load.image('gold', gold);
+        this.load.image('gems', gems);
+        this.load.image('player_gui_box', player_gui_box);
+
+        //Tutorial
         this.load.image('cardBack', cardBack);
         this.load.image('elf_idle_1', elf_idle_1);
         this.load.image('elf_idle_2', elf_idle_2);
