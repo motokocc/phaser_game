@@ -1,16 +1,27 @@
 import Phaser from 'phaser';
+import BaseScene from '../plugins/BaseScene';
 
-class Game extends Phaser.Scene {
+class Game extends BaseScene {
    create(){
         this.anims.create({
-            key: 'elf_happy_main',
+            key: 'elf_idle_main',
             frames: [
-                { key: 'elf_happy_1' },
-                { key: 'elf_happy_2' }
+                { key: 'elf_idle_2' },
+                { key: 'elf_idle_1' }
             ],
             frameRate: 8,
             repeatDelay: 2500,
             repeat: -1
+        });
+
+        this.anims.create({
+            key: 'elf_talk_main',
+            frames: [
+                { key: 'elf_idle_2' },
+                { key: 'elf_happy_2' },
+            ],
+            repeat: 7,
+            frameRate: 8,
         });
 
         this.gameBg = this.add.image(0,0,'background');
@@ -24,12 +35,35 @@ class Game extends Phaser.Scene {
         const buttonScale = gameW * 0.00078;
 
         //NPC - Lilith
-        let npc_lilith = this.add.sprite(gameW/2, gameH + 5, 'elf-0')
+        let npc_lilith = this.add.sprite(gameW/2, gameH + 3, 'elf-0')
         .setOrigin(0.5,1)
         .setScale(0.000928 * gameW)
         .setInteractive();
 
-        npc_lilith.play('elf_happy_main');
+        npc_lilith.playReverse('elf_idle_main');
+
+        npc_lilith.on('pointerdown', () => {
+            let messageOptions = [
+                'Good day adventurer! I hope you have wonderful hunt today!',
+                'You need to collect the 5 artifacts to open the Hidden Dungeon',
+                'Higher tier djinns take human form.',
+                'You should check the black market. They offer rare items not available in the shop.'
+            ];
+
+            let randomMessage = Math.floor(Math.random()* messageOptions.length);
+
+            if(this.messageBoxContainer){
+                this.messageBoxContainer.destroy();
+            }
+            npc_lilith.stop();
+            npc_lilith.play('elf_talk_main')
+            this.createSpeechBubble (npc_lilith.x + npc_lilith.width/4, gameH/2 - (npc_lilith.width/2), 220, 100, messageOptions[randomMessage]);
+            npc_lilith.on('animationcomplete', () => {
+                npc_lilith.playReverse('elf_idle_main');
+                this.messageBoxContainer.destroy();
+            });
+            
+        });
 
         //Right side buttons
         let rightButtons = this.add.container();
@@ -40,10 +74,10 @@ class Game extends Phaser.Scene {
 
         //Left side buttons
         let leftButtons = this.add.container();
-        const roullete_button = this.add.sprite(paddingX, gameH*0.21, 'roullete_button').setOrigin(0,0.5);
-        const black_market_button = this.add.sprite(paddingX, gameH*0.35, 'black_market_button').setOrigin(0,0.5);  
-        const missions_button = this.add.sprite(paddingX, gameH*0.49, 'missions_button').setOrigin(0,0.5);
-        const summon_button = this.add.sprite(paddingX, gameH*0.63, 'summon_button').setOrigin(0,0.5);
+        const roullete_button = this.add.sprite(paddingX, gameH*0.23, 'roullete_button').setOrigin(0,0.5);
+        const black_market_button = this.add.sprite(paddingX, gameH*0.37, 'black_market_button').setOrigin(0,0.5);  
+        const missions_button = this.add.sprite(paddingX, gameH*0.51, 'missions_button').setOrigin(0,0.5);
+        const summon_button = this.add.sprite(paddingX, gameH*0.65, 'summon_button').setOrigin(0,0.5);
         
         //Upper Right Icons
         const settings_button = this.add.sprite(gameW - (paddingX*2), gameH*0.07,'settings_button').setOrigin(0.5);
@@ -52,8 +86,32 @@ class Game extends Phaser.Scene {
 
         //Player Stat GUI
         const player_gui_box = this.add.sprite(paddingX, gameH*0.07,'player_gui_box').setOrigin(0, 0.5).setScale(buttonScale).setInteractive();
-        const player_name = this.add.text(player_gui_box.x* 3.6, player_gui_box.y, this.player.playerInfo.name || 'Adventurer').setOrigin(0, 0.5);
+        const player_name = this.add.text(
+            player_gui_box.x* 3.6,
+            player_gui_box.y,
+            this.player.playerInfo.name || 'Adventurer',
+            {fontFamily: 'Arial'}
+        ).setOrigin(0, 0.5);
 
+        //Gems
+        let gems = this.add.container();
+        const gem_icon = this.add.sprite(gameW/2 - paddingX*3, gameH*0.07,'gems').setOrigin(0.5).setDepth(2);
+        const gem_box = this.add.rectangle(gem_icon.x, gem_icon.y, paddingX*4, paddingX, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
+        const gem_value = this.add.text(gem_box.x + gem_box.width/2, gem_box.y, this.player.playerInfo.gems || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
+
+        //Gold
+        let gold = this.add.container();
+        const gold_icon = this.add.sprite(gameW/2 + paddingX*3, gameH*0.07,'gold').setOrigin(0.5).setDepth(2);
+        const gold_box = this.add.rectangle(gold_icon.x, gem_icon.y, paddingX*4, paddingX, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
+        const gold_value = this.add.text(gold_box.x + gold_box.width/2, gold_box.y, this.player.playerInfo.gold || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
+
+        let currencyUI = this.add.container();
+        currencyUI.setX(-paddingX * 2);
+
+        //UI Containers/Groups
+        gems.add([gem_box, gem_icon, gem_value]);
+        gold.add([gold_box, gold_icon, gold_value]);
+        currencyUI.add([gold, gems]);
         rightButtons.add([shop_button, pvp_button, mining_button, explore_button]);
         leftButtons.add([roullete_button, black_market_button, missions_button, summon_button]);
 
@@ -79,7 +137,7 @@ class Game extends Phaser.Scene {
         //Chat Box
         let message = ''; //message of the player
         let chatbox = this.add.container();
-        const chatBody = this.add.rectangle(0,gameH, gameW*0.37, gameW*0.17, 0x000000).setOrigin(0,1).setAlpha(0.5);
+        const chatBody = this.add.rectangle(0,gameH, gameW*0.37, gameW*0.15, 0x000000).setOrigin(0,1).setAlpha(0.5);
         let chatInput = this.add.rexInputText(
             paddingX/2,
             gameH - paddingX/2,
@@ -99,7 +157,7 @@ class Game extends Phaser.Scene {
             message = inputText.text;
         });
 
-        const sendChatButton = this.add.rectangle(paddingX + chatInput.width, gameH - paddingX/2, gameW*0.05, gameW*0.026, 0x0000ff)
+        const sendChatButton = this.add.rectangle(paddingX + chatInput.width, gameH - paddingX/2, gameW*0.05, gameW*0.026, 0x009900)
             .setOrigin(0,1).setInteractive();
 
         sendChatButton.on("pointerdown", () => {
