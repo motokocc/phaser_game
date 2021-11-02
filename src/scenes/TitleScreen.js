@@ -78,7 +78,7 @@ class TitleScreen extends Phaser.Scene {
         //Start Button
         this.connectButton.on('pointerdown', () => {
             this.sound.play('clickEffect', {loop: false});
-            this.connectButton.setAlpha(0.7);
+            // this.connectButton.setAlpha(0.7);
             if(!this.player.playerInfo.address){
                 this.loadData();
             }

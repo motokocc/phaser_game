@@ -16,6 +16,7 @@ class Player extends Phaser.Plugins.BasePlugin {
         this.db = getFirestore();
 
        this.users = collection(this.db, 'users');
+       this.firebaseChatMessages = collection(this.db, 'chat');
 
         //Global States
         this.playerInfo = {

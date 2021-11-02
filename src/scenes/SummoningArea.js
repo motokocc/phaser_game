@@ -84,7 +84,6 @@ class SummoningArea extends BaseScene {
 
         proceedButton.on('pointerdown', () => {
             this.sound.play('clickEffect', {loop: false});
-            this.sound.stopByKey('titleBgMusic');
             this.scene.start("game");
         });
 

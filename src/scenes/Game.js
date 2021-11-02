@@ -1,7 +1,12 @@
-import Phaser from 'phaser';
+import 'regenerator-runtime/runtime'
+import { getFirestore, collection, doc, setDoc, onSnapshot } from "firebase/firestore";
 import BaseScene from '../plugins/BaseScene';
 
 class Game extends BaseScene {
+    preload(){
+        this.firebaseMessages = {messages: []};
+    }
+
    create(){
         this.anims.create({
             key: 'elf_idle_main',
@@ -137,7 +142,8 @@ class Game extends BaseScene {
         //Chat Box
         let message = ''; //message of the player
         let chatbox = this.add.container();
-        const chatBody = this.add.rectangle(0,gameH, gameW*0.37, gameW*0.15, 0x000000).setOrigin(0,1).setAlpha(0.5);
+        let chatCount = 0;
+        const chatBody = this.add.rectangle(0,gameH, gameW*0.37, gameW*0.17, 0x000000).setOrigin(0,1).setAlpha(0.5);
         let chatInput = this.add.rexInputText(
             paddingX/2,
             gameH - paddingX/2,
@@ -145,7 +151,7 @@ class Game extends BaseScene {
             gameW*0.025,
             { 
                 type: "text",
-                maxLength: 100,
+                maxLength: 30,
                 fontSize : "12px",
                 fontFamily: "Arial",
                 backgroundColor : "white",
@@ -159,12 +165,48 @@ class Game extends BaseScene {
 
         const sendChatButton = this.add.rectangle(paddingX + chatInput.width, gameH - paddingX/2, gameW*0.05, gameW*0.026, 0x009900)
             .setOrigin(0,1).setInteractive();
+        
+        let chatMessages = this.add.text(
+                chatBody.x + paddingX/2,
+                 chatBody.y - chatBody.height + paddingX/2,
+                '',
+                 {fontFamily: 'Arial', fontSize: 12}
+        ).setWordWrapWidth(chatBody.width * 0.95, true);  
 
+        const unsub = onSnapshot(doc(this.player.db, "chat", "general"), (doc) => {
+
+                let uiMessages =[];
+                this.firebaseMessages = doc.data().messages? doc.data() : this.firebaseMessages;
+                chatCount++;               
+
+                if(doc.data().messages /*&& chatCount - 1 >= 1*/){
+                    doc.data().messages.map((chat, index) => {
+                        //if(index >= doc.data().messages.length - chatCount - 1){console.log(chat)}
+                        uiMessages.push(`${chat.username} : ${chat.message}`);
+                    })
+
+                    chatMessages.setText(uiMessages);
+                }
+        });
+            
         sendChatButton.on("pointerdown", () => {
             sendChatButton.setAlpha(0.7);
             this.sound.play('hoverEffect', {loop: false});
             if(message){
-                console.log('MESSAGE?', message);
+                const data = {
+                    username: this.player.playerInfo.name || 'adventurer',
+                    date: new Date(),
+                    message 
+                }
+
+                if(this.firebaseMessages.messages && this.firebaseMessages.messages.length > 7){                  
+                    let firebaseMessageCopy = [...this.firebaseMessages.messages];
+                    const updatedData =  firebaseMessageCopy.filter((data, index) => index >=  this.firebaseMessages.messages.length - 7);
+                    this.firebaseMessages.messages = updatedData;
+                }
+
+                setDoc(doc(this.player.firebaseChatMessages, 'general'),{ messages: [...this.firebaseMessages.messages, data] });
+                chatInput.text = '';
             }
         });
 
