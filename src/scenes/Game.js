@@ -71,14 +71,14 @@ class Game extends BaseScene {
         });
 
         //Right side buttons
-        let rightButtons = this.add.container();
+        let rightButtons = this.add.container(200,0);
         const shop_button = this.add.sprite(gameW - (paddingX*2.8), gameH*0.21 + paddingY, 'shop_button').setOrigin(0.5);
         const pvp_button = this.add.sprite(gameW -(paddingX*2.8), gameH*0.42 + paddingY, 'pvp_button').setOrigin(0.5);
         const mining_button = this.add.sprite(gameW - (paddingX*2.8), gameH*0.63 + paddingY, 'mining_button').setOrigin(0.5);
         const explore_button = this.add.sprite(gameW - (paddingX*2.8), gameH*0.84 + paddingY, 'explore_button').setOrigin(0.5);
 
         //Left side buttons
-        let leftButtons = this.add.container();
+        let leftButtons = this.add.container(-250,0);
         const roullete_button = this.add.sprite(paddingX, gameH*0.23, 'roullete_button').setOrigin(0,0.5);
         const black_market_button = this.add.sprite(paddingX, gameH*0.37, 'black_market_button').setOrigin(0,0.5);  
         const missions_button = this.add.sprite(paddingX, gameH*0.51, 'missions_button').setOrigin(0,0.5);
@@ -89,7 +89,12 @@ class Game extends BaseScene {
         const gift_button = this.add.sprite(settings_button.x - (paddingX*2.5), gameH*0.07,'gift_button').setOrigin(0.5);
         const mail_button = this.add.sprite(gift_button.x - (paddingX*2.5), gameH*0.07,'mail_button').setOrigin(0.5);
 
+        settings_button.setScale(0.1).setAlpha(0);
+        gift_button.setScale(0.1).setAlpha(0);
+        mail_button.setScale(0.1).setAlpha(0);
+
         //Player Stat GUI
+        let playerUI = this.add.container(0,-200);
         const player_gui_box = this.add.sprite(paddingX, gameH*0.07,'player_gui_box').setOrigin(0, 0.5).setScale(buttonScale).setInteractive();
         const player_name = this.add.text(
             player_gui_box.x* 3.6,
@@ -110,15 +115,48 @@ class Game extends BaseScene {
         const gold_box = this.add.rectangle(gold_icon.x, gem_icon.y, paddingX*4, paddingX, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
         const gold_value = this.add.text(gold_box.x + gold_box.width/2, gold_box.y, this.player.playerInfo.gold || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
 
-        let currencyUI = this.add.container();
+        let currencyUI = this.add.container(0,-200);
         currencyUI.setX(-paddingX * 2);
 
         //UI Containers/Groups
         gems.add([gem_box, gem_icon, gem_value]);
         gold.add([gold_box, gold_icon, gold_value]);
         currencyUI.add([gold, gems]);
+        playerUI.add([player_gui_box, player_name]);
         rightButtons.add([shop_button, pvp_button, mining_button, explore_button]);
         leftButtons.add([roullete_button, black_market_button, missions_button, summon_button]);
+
+        //UI Animations
+        this.tweens.add({
+            targets: [leftButtons, rightButtons, playerUI, currencyUI],
+            x: { value: 0, duration: 600, ease: 'Power1'},
+            y: { value: 0, duration: 600, ease: 'Power1'},
+            yoyo: false,
+        });
+
+        this.tweens.add({
+            targets: settings_button,
+            scale: { value: buttonScale, duration: 600, ease: 'Power1'},
+            alpha: { value: 1, duration: 600, ease: 'Power1'},
+            yoyo: false,
+            delay: 800
+        });
+
+        this.tweens.add({
+            targets: gift_button,
+            scale: { value: buttonScale, duration: 600, ease: 'Power1'},
+            alpha: { value: 1, duration: 600, ease: 'Power1'},
+            yoyo: false,
+            delay:1000
+        });
+
+        this.tweens.add({
+            targets: mail_button,
+            scale: { value: buttonScale, duration: 600, ease: 'Power1'},
+            alpha: { value: 1, duration: 600, ease: 'Power1'},
+            yoyo: false,
+            delay:1200
+        });
 
         const buttons = [
             shop_button, pvp_button, mining_button, explore_button,
@@ -140,11 +178,11 @@ class Game extends BaseScene {
         });
 
         //Chat Box
-        let message = ''; //message of the player
+        this.message = ''; //message of the player
         let chatbox = this.add.container();
         let chatCount = 0;
         const chatBody = this.add.rectangle(0,gameH, gameW*0.37, gameW*0.17, 0x000000).setOrigin(0,1).setAlpha(0.5);
-        let chatInput = this.add.rexInputText(
+        this.chatInput = this.add.rexInputText(
             paddingX/2,
             gameH - paddingX/2,
             gameW*0.28,
@@ -156,22 +194,30 @@ class Game extends BaseScene {
                 fontFamily: "Arial",
                 backgroundColor : "white",
                 color: "black",
-                placeholder: " Type your message here..."
+                placeholder: " Type your message here...",
             }
         ).setOrigin(0,1)
         .on('textchange', inputText => {
-            message = inputText.text;
+            this.message = inputText.text;
         });
 
-        const sendChatButton = this.add.rectangle(paddingX + chatInput.width, gameH - paddingX/2, gameW*0.05, gameW*0.026, 0x009900)
+        const sendChatButton = this.add.rectangle(paddingX + this.chatInput.width, gameH - paddingX/2, gameW*0.05, gameW*0.026, 0x009900)
             .setOrigin(0,1).setInteractive();
         
-        let chatMessages = this.add.text(
+        let chatMessages = this.add.rexTagText(
                 chatBody.x + paddingX/2,
                  chatBody.y - chatBody.height + paddingX/2,
                 '',
-                 {fontFamily: 'Arial', fontSize: 12}
-        ).setWordWrapWidth(chatBody.width * 0.95, true);  
+                 {
+                    fontFamily: 'Arial',
+                    fontSize: 12,
+                    tags: {
+                        playerName: {
+                            color: '#00ff00',
+                        },
+                    }
+                }
+        ).setWrapMode('word').setWrapWidth(chatBody.width * 0.95);  
 
         const unsub = onSnapshot(doc(this.player.db, "chat", "general"), (doc) => {
 
@@ -182,32 +228,18 @@ class Game extends BaseScene {
                 if(doc.data().messages /*&& chatCount - 1 >= 1*/){
                     doc.data().messages.map((chat, index) => {
                         //if(index >= doc.data().messages.length - chatCount - 1){console.log(chat)}
-                        uiMessages.push(`${chat.username} : ${chat.message}`);
+                        uiMessages.push(`<class='playerName'>${chat.username}</class> : ${chat.message}`);
                     })
-
                     chatMessages.setText(uiMessages);
                 }
         });
-            
+  
+        let enterKeyboardButton = this.input.keyboard.addKey('Enter');
+        enterKeyboardButton.on('down', () => this.sendChat());
+
         sendChatButton.on("pointerdown", () => {
             sendChatButton.setAlpha(0.7);
-            this.sound.play('hoverEffect', {loop: false});
-            if(message){
-                const data = {
-                    username: this.player.playerInfo.name || 'adventurer',
-                    date: new Date(),
-                    message 
-                }
-
-                if(this.firebaseMessages.messages && this.firebaseMessages.messages.length > 7){                  
-                    let firebaseMessageCopy = [...this.firebaseMessages.messages];
-                    const updatedData =  firebaseMessageCopy.filter((data, index) => index >=  this.firebaseMessages.messages.length - 7);
-                    this.firebaseMessages.messages = updatedData;
-                }
-
-                setDoc(doc(this.player.firebaseChatMessages, 'general'),{ messages: [...this.firebaseMessages.messages, data] });
-                chatInput.text = '';
-            }
+            this.sendChat();
         });
 
         sendChatButton.on("pointerup", () => {
@@ -215,7 +247,28 @@ class Game extends BaseScene {
         });
 
         
-        chatbox.add([chatBody, chatInput, sendChatButton]);
+        chatbox.add([chatBody, this.chatInput, sendChatButton]);
+    }
+
+    sendChat(){
+        this.sound.play('hoverEffect', {loop: false});
+        if(this.message){
+            const data = {
+                username: this.player.playerInfo.name || 'adventurer',
+                date: new Date(),
+                message : this.message
+            }
+
+            if(this.firebaseMessages.messages && this.firebaseMessages.messages.length > 7){                  
+                let firebaseMessageCopy = [...this.firebaseMessages.messages];
+                const updatedData =  firebaseMessageCopy.filter((data, index) => index >=  this.firebaseMessages.messages.length - 7);
+                this.firebaseMessages.messages = updatedData;
+            }
+
+            setDoc(doc(this.player.firebaseChatMessages, 'general'),{ messages: [...this.firebaseMessages.messages, data] });
+            this.chatInput.text = '';
+            this.message = '';
+        }
     }
 }
 
