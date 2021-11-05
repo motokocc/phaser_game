@@ -1,6 +1,7 @@
 import 'regenerator-runtime/runtime'
-import { getFirestore, collection, doc, setDoc, onSnapshot } from "firebase/firestore";
+import { doc, setDoc, onSnapshot } from "firebase/firestore";
 import BaseScene from '../plugins/BaseScene';
+import { TextArea } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 
 class Game extends BaseScene {
     preload(){
@@ -180,16 +181,14 @@ class Game extends BaseScene {
         //Chat Box
         this.message = ''; //message of the player
         let chatbox = this.add.container();
-        let chatCount = 0;
-        const chatBody = this.add.rectangle(0,gameH, gameW*0.37, gameW*0.17, 0x000000).setOrigin(0,1).setAlpha(0.5);
         this.chatInput = this.add.rexInputText(
             paddingX/2,
             gameH - paddingX/2,
-            gameW*0.28,
+            gameW*0.37 - paddingX,
             gameW*0.025,
             { 
                 type: "text",
-                maxLength: 30,
+                maxLength: 60,
                 fontSize : "12px",
                 fontFamily: "Arial",
                 backgroundColor : "white",
@@ -200,10 +199,7 @@ class Game extends BaseScene {
         .on('textchange', inputText => {
             this.message = inputText.text;
         });
-
-        const sendChatButton = this.add.rectangle(paddingX + this.chatInput.width, gameH - paddingX/2, gameW*0.05, gameW*0.026, 0x009900)
-            .setOrigin(0,1).setInteractive();
-        
+        const chatBody = this.add.rectangle(0,gameH, gameW*0.37, gameW*0.17, 0x000000).setOrigin(0,1).setAlpha(0.5);
         let chatMessages = this.add.rexTagText(
                 chatBody.x + paddingX/2,
                  chatBody.y - chatBody.height + paddingX/2,
@@ -220,45 +216,52 @@ class Game extends BaseScene {
                         }
                     }
                 }
-        ).setWrapMode('word').setWrapWidth(chatBody.width * 0.95);  
+        ).setWrapMode('char').setWrapWidth(chatBody.width * 0.95);  
+
+        //Text Area
+        let textArea = new TextArea(this,{
+            x: 0,
+            y: gameH,
+            width: gameW*0.37,
+            height: gameW*0.17,
+            background: chatBody,
+            text: chatMessages,
+            space: {
+                left: paddingX/2,
+                top: paddingX/2,
+                right: paddingX/2,
+                bottom: this.chatInput.height + paddingX/3
+            },
+            content: '',
+        }).setOrigin(0,1).setDepth(2).layout();
+        this.add.existing(textArea);
+        //End of Text Area
 
         const unsub = onSnapshot(doc(this.player.db, "chat", "general"), (doc) => {
 
-                let uiMessages =[];
+                let chatCompilation = '';
                 this.firebaseMessages = doc.data().messages? doc.data() : this.firebaseMessages;
                 let chatCopy = doc.data().messages?{...this.firebaseMessages}: {};
                 
                 if(doc.data().messages){
                     let screenMessages = chatCopy.messages.filter(data => this.player.playerInfo.lastLogin.getTime() <= data.date.seconds*1000);
+                    if(textArea.linesCount < 9){
+                        chatCompilation = `<class='admin'>[admin]</class> : Welcome to Elven Forest <class='playerName'>${this.player.playerInfo.name || 'Adventurer'}</class>!` + '\n';
+                    }
                     if(screenMessages.length >= 1){
                         screenMessages.map((chat, index) => {
-                            uiMessages.push(`<class='playerName'>${chat.username}</class> : ${chat.message}`);
+                            chatCompilation = chatCompilation  + `<class='playerName'>${chat.username}</class> : ${chat.message}` + '\n';
                         })
-                        if(uiMessages.length > 8){
-                            uiMessages.shift();
-                        }
                     }
-                    else{
-                        uiMessages.push(`<class='admin'>[admin]</class> : Welcome to Elven Forest <class='playerName'>${this.player.playerInfo.name || 'Adventurer'}</class>!`)
-                    }
-                    chatMessages.setText(uiMessages);
+                    textArea.setText(chatCompilation);
+                    textArea.scrollToBottom();
                 }
         });
-  
+
         let enterKeyboardButton = this.input.keyboard.addKey('Enter');
         enterKeyboardButton.on('down', () => this.sendChat());
 
-        sendChatButton.on("pointerdown", () => {
-            sendChatButton.setAlpha(0.7);
-            this.sendChat();
-        });
-
-        sendChatButton.on("pointerup", () => {
-            sendChatButton.setAlpha(1);
-        });
-
-        
-        chatbox.add([chatBody, this.chatInput, sendChatButton]);
+        chatbox.add([chatBody, this.chatInput]);
     }
 
     sendChat(){
