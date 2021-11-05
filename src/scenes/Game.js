@@ -215,6 +215,9 @@ class Game extends BaseScene {
                         playerName: {
                             color: '#00ff00',
                         },
+                        admin:{
+                            color: "yellow"
+                        }
                     }
                 }
         ).setWrapMode('word').setWrapWidth(chatBody.width * 0.95);  
@@ -223,13 +226,21 @@ class Game extends BaseScene {
 
                 let uiMessages =[];
                 this.firebaseMessages = doc.data().messages? doc.data() : this.firebaseMessages;
-                chatCount++;               
-
-                if(doc.data().messages /*&& chatCount - 1 >= 1*/){
-                    doc.data().messages.map((chat, index) => {
-                        //if(index >= doc.data().messages.length - chatCount - 1){console.log(chat)}
-                        uiMessages.push(`<class='playerName'>${chat.username}</class> : ${chat.message}`);
-                    })
+                let chatCopy = doc.data().messages?{...this.firebaseMessages}: {};
+                
+                if(doc.data().messages){
+                    let screenMessages = chatCopy.messages.filter(data => this.player.playerInfo.lastLogin.getTime() <= data.date.seconds*1000);
+                    if(screenMessages.length >= 1){
+                        screenMessages.map((chat, index) => {
+                            uiMessages.push(`<class='playerName'>${chat.username}</class> : ${chat.message}`);
+                        })
+                        if(uiMessages.length > 8){
+                            uiMessages.shift();
+                        }
+                    }
+                    else{
+                        uiMessages.push(`<class='admin'>[admin]</class> : Welcome to Elven Forest <class='playerName'>${this.player.playerInfo.name || 'Adventurer'}</class>!`)
+                    }
                     chatMessages.setText(uiMessages);
                 }
         });
