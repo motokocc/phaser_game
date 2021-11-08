@@ -120,7 +120,7 @@ class Player extends Phaser.Plugins.BasePlugin {
             newCard.image_alt = "test_again"
             this.playerInfo.cards = [...this.playerInfo.cards, newCard];
 
-            // await setDoc(doc(this.users, this.playerInfo.address), this.playerInfo);
+            await setDoc(doc(this.users, this.playerInfo.address), this.playerInfo);
         }
         else {
             console.log('minting....')

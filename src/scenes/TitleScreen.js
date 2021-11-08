@@ -86,6 +86,7 @@ class TitleScreen extends Phaser.Scene {
                 this.scene.start("tutorial");
             }
             else{
+                this.player.playerInfo.lastLogin = new Date();
                 this.scene.start("game");
             }
         });
