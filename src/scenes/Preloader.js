@@ -52,6 +52,15 @@ import gold from '../images/buttons/gold.png';
 import gems from '../images/buttons/gems.png';
 import player_gui_box from '../images/buttons/player_gui_box.png';
 
+//Daily Roullete
+import elfPirate from '../images/daily_roullete/elf-pirate.png';
+import roulleteBg from '../images/daily_roullete/roullete_bg.png';
+import roulleteBoard from '../images/daily_roullete/roullete_board.png';
+import roulleteSlices from '../images/daily_roullete/roullete_slices.png';
+import roulleteStand from '../images/daily_roullete/roullete_stand.png';
+import startSpinButton from '../images/daily_roullete/start_spin_button.png';
+import tick from '../images/daily_roullete/tick.png';
+
 class LoadingScreen extends Phaser.Scene {
 
     init(data){
@@ -91,6 +100,15 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('elf_smile_3', elf_smile_3);
         this.load.image('elf_talk_1', elf_talk_1);
         this.load.image('elf_talk_2', elf_talk_2);
+
+        //Daily Roullete
+        this.load.image('elfPirate', elfPirate);
+        this.load.image('roulleteBg', roulleteBg);
+        this.load.image('roulleteBoard', roulleteBoard);
+        this.load.image('roulleteSlices', roulleteSlices);
+        this.load.image('roulleteStand', roulleteStand);
+        this.load.image('startSpinButton', startSpinButton);
+        this.load.image('tick', tick);
         
         this.load.image('dialogueBox', dialogueBox);
         this.load.image('summoningCircle', summoningCircle);
