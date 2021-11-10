@@ -80,10 +80,10 @@ class Game extends BaseScene {
 
         //Left side buttons
         let leftButtons = this.add.container(-250,0);
-        const roullete_button = this.add.sprite(paddingX, gameH*0.23, 'roullete_button').setOrigin(0,0.5);
+        const roullete_button = this.add.sprite(paddingX, gameH*0.23, 'roullete_button').setOrigin(0,0.5).setName('roullete');
         const black_market_button = this.add.sprite(paddingX, gameH*0.37, 'black_market_button').setOrigin(0,0.5);  
         const missions_button = this.add.sprite(paddingX, gameH*0.51, 'missions_button').setOrigin(0,0.5);
-        const summon_button = this.add.sprite(paddingX, gameH*0.65, 'summon_button').setOrigin(0,0.5);
+        const summon_button = this.add.sprite(paddingX, gameH*0.65, 'summon_button').setOrigin(0,0.5).setName('summoningArea');
         
         //Upper Right Icons
         const settings_button = this.add.sprite(gameW - (paddingX*2), gameH*0.07,'settings_button').setOrigin(0.5);
@@ -176,6 +176,12 @@ class Game extends BaseScene {
             button.on('pointerout', () => {
                 button.setScale(buttonScale);
             });
+
+            button.on('pointerdown', () => {
+                if(button.name){
+                    this.scene.start(button.name);
+                }
+            })
         });
 
         //Chat Box

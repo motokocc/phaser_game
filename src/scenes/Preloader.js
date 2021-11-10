@@ -9,6 +9,7 @@ import connectBtn from '../images/connect.png';
 import light from '../images/light.png';
 import hoverSound from '../audio/hover_button2.mp3';
 import clickSound from '../audio/click_button.wav';
+import spinWheelSound from '../audio/spin_wheel.wav';
 import titleBgMusic from '../audio/title_bg.mp3';
 import sceneBgMusic from '../audio/scene_bg.mp3';
 import elf from '../images/elf-0.png';
@@ -17,6 +18,7 @@ import scroll from '../images/scroll.png';
 import summoningCircle from '../images/summoning_circle.png';
 import freeButton from '../images/buttons/free_button.png';
 import rareButton from '../images/buttons/rare_button.png';
+import backButton from '../images/buttons/back_button.png';
 import proceedButton from '../images/buttons/exit_button.png';
 import premiumButton from '../images/buttons/premium_button.png';
 import cardBack from '../images/cards/card_yellow.png';
@@ -123,6 +125,7 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('gameTitle', gameTitle);
         this.load.image('startBtn', startBtn);
         this.load.image('exitBtn', exitBtn);
+        this.load.image('backBtn', backButton);
         this.load.image('connectBtn', connectBtn);
         this.load.image('soundOff', soundOff);
         this.load.image('soundOn', soundOn);
@@ -133,6 +136,7 @@ class LoadingScreen extends Phaser.Scene {
         this.load.audio('hoverEffect', [hoverSound]);
         this.load.audio('titleBgMusic', [titleBgMusic]);
         this.load.audio('sceneBgMusic', [sceneBgMusic]);
+        this.load.audio('spinWheelSound', [spinWheelSound]);
 
         this.progressBar = this.add.graphics();
         this.progressBox = this.add.graphics();

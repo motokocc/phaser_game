@@ -26,6 +26,7 @@ class Player extends Phaser.Plugins.BasePlugin {
             gold: 0,
             gems: 0,
             lastLogin: new Date(),
+            lastSpin: null,
             isFirstTime: true,
             cards:[]
         }
