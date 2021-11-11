@@ -236,6 +236,17 @@ class BaseScene extends Phaser.Scene {
     animationSceneHandler(spriteImage, sceneAnimation){
         spriteImage.play(sceneAnimation)
     }
+
+    
+    getDifferenceInDays(date1, date2) {
+        const diffInMs = Math.abs(date2 - date1);
+        return diffInMs / (1000 * 60 * 60 * 24);
+    }
+
+   getDifferenceInMinutes(date1, date2) {
+        const diffInMs = Math.abs(date2 - date1);
+        return diffInMs / (1000 * 60);
+    }
 }
 
 export default BaseScene;

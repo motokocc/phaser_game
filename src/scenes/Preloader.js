@@ -38,6 +38,10 @@ import elf_talk_1 from '../images/Animations/elf-talk-1.png';
 import elf_talk_2 from '../images/Animations/elf-talk-2.png';
 import dialogueBox from '../images/UI/dialogue_box.png';
 
+//Elf Pirate animations
+import elf_pirate_talk_1 from '../images/Animations/elf-pirate-talk-1.png';
+import elf_pirate_talk_2 from '../images/Animations/elf-pirate-talk-2.png';
+
 //Main screen ui
 import explore_button from '../images/buttons/explore_button.png';
 import mining_button from '../images/buttons/mining_button.png';
@@ -111,6 +115,8 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('roulleteStand', roulleteStand);
         this.load.image('startSpinButton', startSpinButton);
         this.load.image('tick', tick);
+        this.load.image('elf_pirate_talk_1', elf_pirate_talk_1);
+        this.load.image('elf_pirate_talk_2', elf_pirate_talk_2);
         
         this.load.image('dialogueBox', dialogueBox);
         this.load.image('summoningCircle', summoningCircle);

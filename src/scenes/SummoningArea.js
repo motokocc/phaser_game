@@ -5,6 +5,25 @@ class SummoningArea extends BaseScene {
         console.log(this.player.playerInfo);
         let drawType = 'free';
 
+        this.anims.create({
+            key: 'elf_talk',
+            frames: [
+                { key: 'elf_talk_2' },
+                { key: 'elf_talk_1' },
+                { key: 'elf_talk_2' },
+                { key: 'elf_talk_1' },
+                { key: 'elf_talk_2' },
+                { key: 'elf_talk_1' },
+                { key: 'elf_talk_2' },
+                { key: 'elf_talk_1' },
+                { key: 'elf_talk_2' },
+                { key: 'elf_talk_1' }
+            ],
+            frameRate: 8,
+            repeatDelay: 1500,
+            repeat: -1
+        });
+
         this.lights.enable().setAmbientColor(0x000ff);
 
         let summoningCircle = this.add.sprite(

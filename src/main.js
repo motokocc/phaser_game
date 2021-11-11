@@ -49,5 +49,5 @@ game.scene.add("game", Game);
 //game.scene.start("loading", {nextPage: "titlescreen"});
 //game.scene.start("loading", {nextPage: "summoningArea"});
 //game.scene.start("loading", {nextPage: "tutorial"});
-//game.scene.start("loading", {nextPage: "game"});
-game.scene.start("loading", {nextPage: "roullete"});
+game.scene.start("loading", {nextPage: "game"});
+//game.scene.start("loading", {nextPage: "roullete"});

@@ -84,7 +84,11 @@ class Game extends BaseScene {
         const black_market_button = this.add.sprite(paddingX, gameH*0.37, 'black_market_button').setOrigin(0,0.5);  
         const missions_button = this.add.sprite(paddingX, gameH*0.51, 'missions_button').setOrigin(0,0.5);
         const summon_button = this.add.sprite(paddingX, gameH*0.65, 'summon_button').setOrigin(0,0.5).setName('summoningArea');
-        
+
+        // Left Notifications
+        this.roullete_notif = this.add.circle(roullete_button.displayWidth - paddingX/2, roullete_button.y - roullete_button.displayHeight/3, 10, 0xff0000, 1);
+        this.roullete_notif.setAlpha(0);
+
         //Upper Right Icons
         const settings_button = this.add.sprite(gameW - (paddingX*2), gameH*0.07,'settings_button').setOrigin(0.5);
         const gift_button = this.add.sprite(settings_button.x - (paddingX*2.5), gameH*0.07,'gift_button').setOrigin(0.5);
@@ -125,7 +129,7 @@ class Game extends BaseScene {
         currencyUI.add([gold, gems]);
         playerUI.add([player_gui_box, player_name]);
         rightButtons.add([shop_button, pvp_button, mining_button, explore_button]);
-        leftButtons.add([roullete_button, black_market_button, missions_button, summon_button]);
+        leftButtons.add([roullete_button, black_market_button, missions_button, summon_button, this.roullete_notif]);
 
         //UI Animations
         this.tweens.add({
@@ -171,10 +175,17 @@ class Game extends BaseScene {
             button.on('pointerover', () => {
                 button.setScale(0.00088*gameW);
                 this.sound.play('hoverEffect', {loop: false});
+
+                if(button.name == 'roullete'){
+                    this.roullete_notif.setPosition(roullete_button.displayWidth + paddingX*0.8, roullete_button.y - roullete_button.displayHeight*0.45);
+                }
             });
 
             button.on('pointerout', () => {
                 button.setScale(buttonScale);
+                if(button.name == 'roullete'){
+                    this.roullete_notif.setPosition(roullete_button.displayWidth + paddingX*0.8, roullete_button.y - roullete_button.displayHeight*0.4);
+                }
             });
 
             button.on('pointerdown', () => {
@@ -288,6 +299,15 @@ class Game extends BaseScene {
             setDoc(doc(this.player.firebaseChatMessages, 'general'),{ messages: [...this.firebaseMessages.messages, data] });
             this.chatInput.text = '';
             this.message = '';
+        }
+    }
+
+    update(){
+        if(this.getDifferenceInMinutes(new Date(), this.player.playerInfo.lastSpin) > 5 && this.roullete_notif.alpha == 0){
+            this.roullete_notif.setAlpha(1);
+        }
+        else if(this.getDifferenceInMinutes(new Date(), this.player.playerInfo.lastSpin) <= 5 && this.roullete_notif.alpha == 1){
+           this.roullete_notif.setAlpha(0); 
         }
     }
 }

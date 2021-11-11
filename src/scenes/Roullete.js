@@ -1,4 +1,6 @@
+import 'regenerator-runtime/runtime';
 import BaseScene from '../plugins/BaseScene';
+import { doc, setDoc } from "firebase/firestore";
 
 class DailyRoullete extends BaseScene {
 
@@ -6,7 +8,20 @@ class DailyRoullete extends BaseScene {
         let gameBg = this.add.image(0,0,'roulleteBg');
         gameBg.setOrigin(0,0);
         gameBg.setScale(1.1);
-        this.returnHome = this.player.playerInfo.lastSpin? true : false; //Check if button should spin the roullete or return to main screen
+
+        this.anims.create({
+            key: 'elf_pirate_talk',
+            frames: [
+                { key: 'elf_pirate_talk_1' },
+                { key: 'elf_pirate_talk_2' },
+            ],
+            repeat: 5,
+            frameRate: 8,
+        });
+
+        console.log('ilang minuto?', this.getDifferenceInMinutes(new Date(), this.player.playerInfo.lastSpin));
+        console.log('ilang araw?', this.getDifferenceInDays(new Date(), this.player.playerInfo.lastSpin));
+        this.returnHome = this.getDifferenceInMinutes(new Date(), this.player.playerInfo.lastSpin) < 5? true : false; //Check if button should spin the roullete or return to main screen
 
         const gameW = this.game.config.width;
         const gameH = this.game.config.height;
@@ -20,11 +35,13 @@ class DailyRoullete extends BaseScene {
 
         //NPC
         this.elfPirate = this.add.sprite(paddingX/2, gameH, 'elfPirate').setOrigin(0,1).setScale(0.7);
+        this.elfPirate.play('elf_pirate_talk');
+
         let messages = [
                 "Spin the wheel adventurer and I'll give you some of my treasures!",
                 "You can only spin one time per day. Come back again later",
             ];
-        let messageIndex = !this.player.playerInfo.lastSpin? 0 : 1;
+        let messageIndex = !this.player.playerInfo.lastSpin || this.getDifferenceInMinutes(new Date(), this.player.playerInfo.lastSpin) > 5 ? 0 : 1;
         this.createSpeechBubble (this.elfPirate.displayWidth*0.85, gameH- this.elfPirate.displayHeight - paddingX, 180, 120, messages[messageIndex]);
 
         //Gems
@@ -97,7 +114,7 @@ class DailyRoullete extends BaseScene {
                 duration: this.gameOptions.rotationTime,
                 ease: "Cubic.easeOut",
                 callbackScope: this,
-                onComplete: function(tween){
+                onComplete: async function(tween){
                     let finalPrize = this.gameOptions.slicePrizes[prize];
 
                     this.canSpin = true;
@@ -122,6 +139,7 @@ class DailyRoullete extends BaseScene {
                         this.messageBoxContainer.destroy();
                     }
 
+                    this.elfPirate.play('elf_pirate_talk');
                     this.createSpeechBubble (
                         this.elfPirate.displayWidth*0.85,
                         this.game.config.height- this.elfPirate.displayHeight - this.game.config.width * 0.025,
@@ -129,6 +147,9 @@ class DailyRoullete extends BaseScene {
                         `You won ${prizeValue} ${prizeValue <= 1 && prizeUnit == 'gems'? 'gem' : prizeUnit }! Come back tomorrow and I'll give you more.`
                     );
                     spinningWheelSound.stop();
+
+                    //Save to firebase
+                    await setDoc(doc(this.player.users, this.player.playerInfo.address), this.player.playerInfo);
                 }
             });
         }

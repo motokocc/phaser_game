@@ -83,10 +83,12 @@ class TitleScreen extends Phaser.Scene {
                 this.loadData();
             }
             else if(this.player.playerInfo.address && this.player.playerInfo.isFirstTime){
+                this.player.playerInfo.dateJoined = new Date();
                 this.scene.start("tutorial");
             }
             else{
                 this.player.playerInfo.lastLogin = new Date();
+                //to save to firebase
                 this.scene.start("game");
             }
         });
