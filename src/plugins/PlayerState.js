@@ -28,6 +28,7 @@ class Player extends Phaser.Plugins.BasePlugin {
             dateJoined: null,
             lastLogin: new Date(),
             lastSpin: null,
+            lastReward: null,
             isFirstTime: true,
             cards:[]
         }
@@ -73,7 +74,7 @@ class Player extends Phaser.Plugins.BasePlugin {
                         cardData = user.data().cards? user.data().cards: [];
                             
                         //Set Player Data
-                        this.setPlayerInfo(name, accounts[0], drawCount, gold, cardData, isFirstTime, gems, lastLogin.toDate(), lastSpin.toDate(), dateJoined.toDate());
+                        this.setPlayerInfo(name, accounts[0], drawCount, gold, cardData, isFirstTime, gems, lastLogin.toDate(), lastSpin.toDate(), dateJoined.toDate(), lastReward.toDate());
                     } 
                     
                     else {
@@ -94,7 +95,7 @@ class Player extends Phaser.Plugins.BasePlugin {
         }
     }
 
-    setPlayerInfo(name, address, drawCount, gold, cards,isFirstTime, gems, lastLogin, lastSpin, dateJoined){
+    setPlayerInfo(name, address, drawCount, gold, cards,isFirstTime, gems, lastLogin, lastSpin, dateJoined, lastReward){
         this.playerInfo = {
             name,
             address,
@@ -105,7 +106,8 @@ class Player extends Phaser.Plugins.BasePlugin {
             gems,
             lastLogin,
             lastSpin,
-            dateJoined
+            dateJoined,
+            lastReward
         }
         console.log('Player Info Set!',this.playerInfo);
     }

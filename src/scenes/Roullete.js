@@ -18,9 +18,7 @@ class DailyRoullete extends BaseScene {
             repeat: 5,
             frameRate: 8,
         });
-
-        console.log('ilang minuto?', this.getDifferenceInMinutes(new Date(), this.player.playerInfo.lastSpin));
-        console.log('ilang araw?', this.getDifferenceInDays(new Date(), this.player.playerInfo.lastSpin));
+        
         this.returnHome = this.getDifferenceInMinutes(new Date(), this.player.playerInfo.lastSpin) < 5? true : false; //Check if button should spin the roullete or return to main screen
 
         const gameW = this.game.config.width;

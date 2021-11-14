@@ -7,6 +7,43 @@ class BaseScene extends Phaser.Scene {
         this.dialogueCounter = 0;
     }
 
+    popUp(title, content){
+        content.setDepth(25);
+
+        this.lights.enable().setAmbientColor(0x000ff);
+        this.popupContainer = this.add.group().setDepth(15);
+
+        let popupBg = this.add.rectangle(0,0, this.game.config.width, this.game.config.height, 0x000000, 0.7)
+            .setOrigin(0)
+            .setInteractive();
+
+        let popupBody = this.add.sprite(
+            this.game.config.width/2,
+            this.game.config.height/2,
+            'scroll'
+        ).setScale(0,1.3);
+
+        let popupTitle = this.add.text(
+            popupBody.x,
+            popupBody.y - popupBody.height*0.4,
+            title, {fontFamily:'Arial', color: '#613e1e', fontSize: '20px', fontStyle: 'Bold'})
+        .setOrigin(0.5).setScale(0,1.3);
+
+        this.popupContainer.addMultiple([popupBg, popupBody, popupTitle].concat(content.getChildren()));
+
+        this.tweens.add({
+            targets: this.popupContainer.getChildren(),
+            scaleX: { value: 1.3, duration: 250, ease: 'easeIn'},
+            scaleY: { value: 1.3, duration: 250, ease: 'easeIn'},
+            yoyo: false, 
+        });
+
+        popupBg.on('pointerdown', () => {
+            content.destroy(true);
+            this.popupContainer.destroy(true);
+        });
+    }
+
 
     dialogBox(dialogue, uiParams, animParams){
         this.dialogue = dialogue;

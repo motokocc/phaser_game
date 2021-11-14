@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime'
-import { doc, setDoc, onSnapshot } from "firebase/firestore";
+import { doc, setDoc, onSnapshot, getDoc } from "firebase/firestore";
 import BaseScene from '../plugins/BaseScene';
 import { TextArea } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 
@@ -91,9 +91,11 @@ class Game extends BaseScene {
 
         //Upper Right Icons
         const settings_button = this.add.sprite(gameW - (paddingX*2), gameH*0.07,'settings_button').setOrigin(0.5);
-        const gift_button = this.add.sprite(settings_button.x - (paddingX*2.5), gameH*0.07,'gift_button').setOrigin(0.5);
+        const gift_button = this.add.sprite(settings_button.x - (paddingX*2.5), gameH*0.07,'gift_button').setOrigin(0.5).setName('gift');
         const mail_button = this.add.sprite(gift_button.x - (paddingX*2.5), gameH*0.07,'mail_button').setOrigin(0.5);
 
+        this.gift_notif = this.add.circle(gift_button.x + paddingX*0.9, gift_button.y - paddingX*0.8, 8, 0xff0000, 1);
+        this.gift_notif.setAlpha(0);
         settings_button.setScale(0.1).setAlpha(0);
         gift_button.setScale(0.1).setAlpha(0);
         mail_button.setScale(0.1).setAlpha(0);
@@ -148,11 +150,11 @@ class Game extends BaseScene {
         });
 
         this.tweens.add({
-            targets: gift_button,
+            targets: [gift_button],
             scale: { value: buttonScale, duration: 600, ease: 'Power1'},
             alpha: { value: 1, duration: 600, ease: 'Power1'},
             yoyo: false,
-            delay:1000
+            delay:1000,
         });
 
         this.tweens.add({
@@ -188,8 +190,74 @@ class Game extends BaseScene {
                 }
             });
 
-            button.on('pointerdown', () => {
-                if(button.name){
+            button.on('pointerdown', async() => {
+
+                if(button.name == 'gift'){
+                    if(this.getDifferenceInMinutes(new Date(), this.player.playerInfo.lastReward)> 5){                       
+                        try{
+                            button.disableInteractive();
+                            const rewardRef = doc(this.player.db, "rewards", 'daily');
+                            const rewards = await getDoc(rewardRef);
+                            let goldValue = rewards.data().gold || 0;
+                            let gemValue = rewards.data().gems || 0;
+
+                            let content = this.add.group();                   
+                            const goldBox = this.add.rectangle(gameW/2 - 17.5, gameH/2-paddingX/2, gold_icon.width + paddingX/2, gold_icon.width + paddingX/2, 0x9b6330).setScale(0,1.3).setOrigin(1,0.5);
+                            goldBox.setStrokeStyle(5, 0x613e1e, 1);
+                            const gemsBox = this.add.rectangle(gameW/2 + 17.5, gameH/2-paddingX/2, gold_icon.width + paddingX/2, gold_icon.width + paddingX/2, 0x9b6330).setScale(0,1.3).setOrigin(0,0.5);
+                            gemsBox.setStrokeStyle(5, 0x613e1e, 1);
+                            const goldReward = this.add.sprite(gameW/2 - 25, gameH/2-paddingX/2,'gold').setScale(0,1.3).setOrigin(1,0.5); 
+                            const gemsReward = this.add.sprite(gameW/2 + 25, gameH/2-paddingX/2,'gems').setScale(0,1.3).setOrigin(0,0.5); 
+                            const goldCoins = this.add.text(goldBox.x - goldBox.width*0.7 , goldBox.y + goldBox.width, goldValue, {fontFamily: 'Arial', color:'#613e1e', fontStyle: 'Bold'}).setOrigin(0.5);
+                            const gemCoins = this.add.text(gemsBox.x + gemsBox.width*0.7 , gemsBox.y + gemsBox.width, gemValue, {fontFamily: 'Arial', color:'#613e1e', fontStyle: 'Bold'}).setOrigin(0.5);
+
+                            content.addMultiple([goldBox, gemsBox, goldReward, gemsReward, goldCoins, gemCoins]);
+
+                            try{
+                                this.player.playerInfo.gold = this.player.playerInfo.gold + goldValue;
+                                this.player.playerInfo.gems = this.player.playerInfo.gems+ gemValue;
+                                gold_value.setText(this.player.playerInfo.gold);
+                                gem_value.setText(this.player.playerInfo.gems);
+
+                                this.popUp('Reward Claimed', content);
+                                this.player.playerInfo.lastReward = new Date();
+                                await setDoc(doc(this.player.users, this.player.playerInfo.address), this.player.playerInfo);
+                                button.setInteractive();
+                            }
+                            catch(e){
+                                button.setInteractive();
+                            }
+                        }
+                        catch(e){
+                            button.setInteractive();                            
+                            if(this.messageBoxContainer){
+                                this.messageBoxContainer.destroy();
+                            }
+                            npc_lilith.stop();
+                            npc_lilith.play('elf_talk_main')
+                            this.createSpeechBubble (npc_lilith.x + npc_lilith.width/4, gameH/2 - (npc_lilith.width/2), 220, 100, 'Connection failed. Please try again later.');
+                            npc_lilith.on('animationcomplete', () => {
+                                npc_lilith.playReverse('elf_idle_main');
+                                this.messageBoxContainer.destroy();
+                            });
+                        }
+                    }
+
+                    else {
+
+                        if(this.messageBoxContainer){
+                            this.messageBoxContainer.destroy();
+                        }
+                        npc_lilith.stop();
+                        npc_lilith.play('elf_talk_main')
+                        this.createSpeechBubble (npc_lilith.x + npc_lilith.width/4, gameH/2 - (npc_lilith.width/2), 220, 100, 'You can only claim your gift once every 24 hours. Try again later!');
+                        npc_lilith.on('animationcomplete', () => {
+                            npc_lilith.playReverse('elf_idle_main');
+                            this.messageBoxContainer.destroy();
+                        });
+                    }
+                }
+                else if(button.name){
                     this.scene.start(button.name);
                 }
             })
@@ -308,6 +376,23 @@ class Game extends BaseScene {
         }
         else if(this.getDifferenceInMinutes(new Date(), this.player.playerInfo.lastSpin) <= 5 && this.roullete_notif.alpha == 1){
            this.roullete_notif.setAlpha(0); 
+        }
+
+        if(this.getDifferenceInMinutes(new Date(), this.player.playerInfo.lastReward) > 5 && this.gift_notif.alpha == 0){
+            this.tweens.add({
+                targets: [this.gift_notif],
+                alpha: { value: 1, duration: 600, ease: 'Power1'},
+                yoyo: false,
+                delay:1000
+            });
+        }
+        else if(this.getDifferenceInMinutes(new Date(), this.player.playerInfo.lastReward) <= 5 && this.gift_notif.alpha == 1){
+            this.tweens.add({
+                targets: [this.gift_notif],
+                alpha: { value: 0, duration: 600, ease: 'Power1'},
+                yoyo: false,
+                delay:1000
+            });
         }
     }
 }
