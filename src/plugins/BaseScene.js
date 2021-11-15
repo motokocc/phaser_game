@@ -5,12 +5,13 @@ class BaseScene extends Phaser.Scene {
     init(data){
         this.data = data;       
         this.dialogueCounter = 0;
+        this.toggleSettings = false;
     }
 
-    popUp(title, content){
-        content.setDepth(25);
 
-        this.lights.enable().setAmbientColor(0x000ff);
+
+    popUp(title, content, titleSize){
+        content.setDepth(25);
         this.popupContainer = this.add.group().setDepth(15);
 
         let popupBg = this.add.rectangle(0,0, this.game.config.width, this.game.config.height, 0x000000, 0.7)
@@ -26,7 +27,7 @@ class BaseScene extends Phaser.Scene {
         let popupTitle = this.add.text(
             popupBody.x,
             popupBody.y - popupBody.height*0.4,
-            title, {fontFamily:'Arial', color: '#613e1e', fontSize: '20px', fontStyle: 'Bold'})
+            title, {fontFamily:'Arial', color: '#613e1e', fontSize: titleSize || '20px', fontStyle: 'Bold'})
         .setOrigin(0.5).setScale(0,1.3);
 
         this.popupContainer.addMultiple([popupBg, popupBody, popupTitle].concat(content.getChildren()));
@@ -35,13 +36,42 @@ class BaseScene extends Phaser.Scene {
             targets: this.popupContainer.getChildren(),
             scaleX: { value: 1.3, duration: 250, ease: 'easeIn'},
             scaleY: { value: 1.3, duration: 250, ease: 'easeIn'},
-            yoyo: false, 
+            yoyo: false
         });
 
         popupBg.on('pointerdown', () => {
             content.destroy(true);
             this.popupContainer.destroy(true);
         });
+    }
+
+    settingsBox(x,y,width,height, bodyPaddingX, bodyPaddingY){
+
+        this.settingsContainer = this.add.container(this.game.config.width, 0);
+
+        let settingsBody = this.add.rectangle(x-bodyPaddingX ,y + bodyPaddingY,width,height,0x000000, 1).setOrigin(1,0).setInteractive();
+
+        this.settingsContainer.add([settingsBody]);
+           
+    }
+
+    toggleSettingsBox(){
+        this.toggleSettings = !this.toggleSettings;
+    
+        if(this.toggleSettings){
+           this.tweens.add({
+                targets: this.settingsContainer,
+                x: { value: 0, duration: 600, ease: 'Power1'},
+                yoyo: false, 
+            }); 
+        }
+        else {
+             this.tweens.add({
+                targets: this.settingsContainer,
+                x: { value: this.game.config.width, duration: 600, ease: 'Power1'},
+                yoyo: false, 
+            });          
+        }
     }
 
 

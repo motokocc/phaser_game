@@ -30,6 +30,7 @@ class Player extends Phaser.Plugins.BasePlugin {
             lastSpin: null,
             lastReward: null,
             isFirstTime: true,
+            lastRead: 0,
             cards:[]
         }
     }
@@ -69,12 +70,12 @@ class Player extends Phaser.Plugins.BasePlugin {
 
                     if (user.exists()) {
                         //To add more data later for drops that can be exchanged to nfts
-                        const { gold, drawCount, isFirstTime, name, gems, lastLogin, lastSpin, dateJoined } = user.data();
+                        const { gold, drawCount, isFirstTime, name, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead } = user.data();
 
                         cardData = user.data().cards? user.data().cards: [];
                             
                         //Set Player Data
-                        this.setPlayerInfo(name, accounts[0], drawCount, gold, cardData, isFirstTime, gems, lastLogin.toDate(), lastSpin.toDate(), dateJoined.toDate(), lastReward.toDate());
+                        this.setPlayerInfo(name, accounts[0], drawCount, gold, cardData, isFirstTime, gems, lastLogin.toDate(), lastSpin.toDate(), dateJoined.toDate(), lastReward.toDate(), lastRead);
                     } 
                     
                     else {
@@ -95,7 +96,7 @@ class Player extends Phaser.Plugins.BasePlugin {
         }
     }
 
-    setPlayerInfo(name, address, drawCount, gold, cards,isFirstTime, gems, lastLogin, lastSpin, dateJoined, lastReward){
+    setPlayerInfo(name, address, drawCount, gold, cards,isFirstTime, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead){
         this.playerInfo = {
             name,
             address,
@@ -107,7 +108,8 @@ class Player extends Phaser.Plugins.BasePlugin {
             lastLogin,
             lastSpin,
             dateJoined,
-            lastReward
+            lastReward,
+            lastRead
         }
         console.log('Player Info Set!',this.playerInfo);
     }

@@ -9,6 +9,14 @@ class Game extends BaseScene {
     }
 
    create(){
+        const announcementRef = doc(this.player.db, "announcements", 'mail');
+        let announcement;
+        this.announcementId = 0;
+        getDoc(announcementRef).then(mail => {
+            announcement = mail.data();
+            this.announcementId = announcement.id;
+        }).catch(e => console.log(e.message));
+
         this.anims.create({
             key: 'elf_idle_main',
             frames: [
@@ -90,12 +98,15 @@ class Game extends BaseScene {
         this.roullete_notif.setAlpha(0);
 
         //Upper Right Icons
-        const settings_button = this.add.sprite(gameW - (paddingX*2), gameH*0.07,'settings_button').setOrigin(0.5);
+        const settings_button = this.add.sprite(gameW - (paddingX*2), gameH*0.07,'settings_button').setOrigin(0.5).setName('settings');
         const gift_button = this.add.sprite(settings_button.x - (paddingX*2.5), gameH*0.07,'gift_button').setOrigin(0.5).setName('gift');
-        const mail_button = this.add.sprite(gift_button.x - (paddingX*2.5), gameH*0.07,'mail_button').setOrigin(0.5);
+        const mail_button = this.add.sprite(gift_button.x - (paddingX*2.5), gameH*0.07,'mail_button').setOrigin(0.5).setName('mail');
 
         this.gift_notif = this.add.circle(gift_button.x + paddingX*0.9, gift_button.y - paddingX*0.8, 8, 0xff0000, 1);
         this.gift_notif.setAlpha(0);
+        this.mail_notif = this.add.circle(mail_button.x + paddingX*0.9, mail_button.y - paddingX*0.8, 8, 0xff0000, 1);
+        this.mail_notif.setAlpha(0);
+
         settings_button.setScale(0.1).setAlpha(0);
         gift_button.setScale(0.1).setAlpha(0);
         mail_button.setScale(0.1).setAlpha(0);
@@ -124,6 +135,9 @@ class Game extends BaseScene {
 
         let currencyUI = this.add.container(0,-200);
         currencyUI.setX(-paddingX * 2);
+
+        //Settings Box
+        this.settingsBox(gameW, 0, 300, gameH/2 , paddingX*0.95, paddingX*3);
 
         //UI Containers/Groups
         gems.add([gem_box, gem_icon, gem_value]);
@@ -158,7 +172,7 @@ class Game extends BaseScene {
         });
 
         this.tweens.add({
-            targets: mail_button,
+            targets: [mail_button],
             scale: { value: buttonScale, duration: 600, ease: 'Power1'},
             alpha: { value: 1, duration: 600, ease: 'Power1'},
             yoyo: false,
@@ -191,7 +205,7 @@ class Game extends BaseScene {
             });
 
             button.on('pointerdown', async() => {
-
+                //Daily Reward
                 if(button.name == 'gift'){
                     if(this.getDifferenceInMinutes(new Date(), this.player.playerInfo.lastReward)> 5){                       
                         try{
@@ -255,6 +269,36 @@ class Game extends BaseScene {
                             npc_lilith.playReverse('elf_idle_main');
                             this.messageBoxContainer.destroy();
                         });
+                    }
+                }
+                //Settings
+                else if(button.name == 'settings'){
+                    this.toggleSettingsBox();
+                }
+                //Announcements
+                else if(button.name == 'mail'){
+                    try{
+                        button.disableInteractive();
+
+                        let { title, content, id} = announcement;
+
+                        let contentContainer = this.add.group();
+                        let contentBody = this.add.text(gameW/2, gameH/2, content, {fontFamily: 'Arial', color:'#613e1e', fontSize:12, align: 'justify' })
+                        .setOrigin(0.5).setWordWrapWidth(250).setScale(0,1.3);
+                        contentContainer.add(contentBody)
+
+                        this.popUp(title, contentContainer, '15px');
+
+                        if(this.player.playerInfo.lastRead != id){
+                            this.player.playerInfo.lastRead = id;
+                            await setDoc(doc(this.player.users, this.player.playerInfo.address), this.player.playerInfo);
+                        }
+                        button.setInteractive();
+
+                    }
+                    catch(e){
+                        console.log(e.message);
+                        button.setInteractive();
                     }
                 }
                 else if(button.name){
@@ -393,6 +437,18 @@ class Game extends BaseScene {
                 yoyo: false,
                 delay:1000
             });
+        }
+
+        if(this.player.playerInfo.lastRead != this.announcementId && this.mail_notif.alpha == 0){
+            this.tweens.add({
+                targets: this.mail_notif,
+                alpha: { value: 1, duration: 600, ease: 'Power1'},
+                yoyo: false,
+                delay:1200
+            });
+        }
+        else if(this.player.playerInfo.lastRead == this.announcementId && this.mail_notif.alpha == 1){
+            this.mail_notif.setAlpha(0);
         }
     }
 }
