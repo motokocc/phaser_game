@@ -9,14 +9,6 @@ class Game extends BaseScene {
     }
 
    create(){
-        const announcementRef = doc(this.player.db, "announcements", 'mail');
-        let announcement;
-        this.announcementId = 0;
-        getDoc(announcementRef).then(mail => {
-            announcement = mail.data();
-            this.announcementId = announcement.id;
-        }).catch(e => console.log(e.message));
-
         this.anims.create({
             key: 'elf_idle_main',
             frames: [
@@ -65,18 +57,7 @@ class Game extends BaseScene {
             ];
 
             let randomMessage = Math.floor(Math.random()* messageOptions.length);
-
-            if(this.messageBoxContainer){
-                this.messageBoxContainer.destroy();
-            }
-            npc_lilith.stop();
-            npc_lilith.play('elf_talk_main')
-            this.createSpeechBubble (npc_lilith.x + npc_lilith.width/4, gameH/2 - (npc_lilith.width/2), 220, 100, messageOptions[randomMessage]);
-            npc_lilith.on('animationcomplete', () => {
-                npc_lilith.playReverse('elf_idle_main');
-                this.messageBoxContainer.destroy();
-            });
-            
+            this.npcTalk(npc_lilith, messageOptions[randomMessage],'elf_talk_main','elf_idle_main',npc_lilith.x + npc_lilith.width/4, gameH/2 - (npc_lilith.width/2));
         });
 
         //Right side buttons
@@ -244,31 +225,12 @@ class Game extends BaseScene {
                         }
                         catch(e){
                             button.setInteractive();                            
-                            if(this.messageBoxContainer){
-                                this.messageBoxContainer.destroy();
-                            }
-                            npc_lilith.stop();
-                            npc_lilith.play('elf_talk_main')
-                            this.createSpeechBubble (npc_lilith.x + npc_lilith.width/4, gameH/2 - (npc_lilith.width/2), 220, 100, 'Connection failed. Please try again later.');
-                            npc_lilith.on('animationcomplete', () => {
-                                npc_lilith.playReverse('elf_idle_main');
-                                this.messageBoxContainer.destroy();
-                            });
+                            this.npcTalk(npc_lilith, 'Connection failed. Please try again later.','elf_talk_main','elf_idle_main',npc_lilith.x + npc_lilith.width/4, gameH/2 - (npc_lilith.width/2));
                         }
                     }
 
                     else {
-
-                        if(this.messageBoxContainer){
-                            this.messageBoxContainer.destroy();
-                        }
-                        npc_lilith.stop();
-                        npc_lilith.play('elf_talk_main')
-                        this.createSpeechBubble (npc_lilith.x + npc_lilith.width/4, gameH/2 - (npc_lilith.width/2), 220, 100, 'You can only claim your gift once every 24 hours. Try again later!');
-                        npc_lilith.on('animationcomplete', () => {
-                            npc_lilith.playReverse('elf_idle_main');
-                            this.messageBoxContainer.destroy();
-                        });
+                         this.npcTalk(npc_lilith, 'You can only claim your gift once every 24 hours. Try again later!','elf_talk_main','elf_idle_main',npc_lilith.x + npc_lilith.width/4, gameH/2 - (npc_lilith.width/2));
                     }
                 }
                 //Settings
@@ -277,27 +239,32 @@ class Game extends BaseScene {
                 }
                 //Announcements
                 else if(button.name == 'mail'){
-                    try{
-                        button.disableInteractive();
+                    if(this.player.announcements.id){
+                        try{
+                            button.disableInteractive();
 
-                        let { title, content, id} = announcement;
+                            let { title, content, id} = this.player.announcements;
 
-                        let contentContainer = this.add.group();
-                        let contentBody = this.add.text(gameW/2, gameH/2, content, {fontFamily: 'Arial', color:'#613e1e', fontSize:12, align: 'justify' })
-                        .setOrigin(0.5).setWordWrapWidth(250).setScale(0,1.3);
-                        contentContainer.add(contentBody)
+                            let contentContainer = this.add.group();
+                            let contentBody = this.add.text(gameW/2, gameH/2, content, {fontFamily: 'Arial', color:'#613e1e', fontSize:12, align: 'justify' })
+                            .setOrigin(0.5).setWordWrapWidth(250).setScale(0,1.3);
+                            contentContainer.add(contentBody)
 
-                        this.popUp(title, contentContainer, '15px');
+                            this.popUp(title, contentContainer, '15px');
 
-                        if(this.player.playerInfo.lastRead != id){
-                            this.player.playerInfo.lastRead = id;
-                            await setDoc(doc(this.player.users, this.player.playerInfo.address), this.player.playerInfo);
+                            if(this.player.playerInfo.lastRead != id){
+                                this.player.playerInfo.lastRead = id;
+                                await setDoc(doc(this.player.users, this.player.playerInfo.address), this.player.playerInfo);
+                            }
+                            button.setInteractive();
                         }
-                        button.setInteractive();
-
+                        catch(e){
+                            this.npcTalk(npc_lilith, 'Connection failed. Please try again later.','elf_talk_main','elf_idle_main',npc_lilith.x + npc_lilith.width/4, gameH/2 - (npc_lilith.width/2));
+                            button.setInteractive();                          
+                        }
                     }
-                    catch(e){
-                        console.log(e.message);
+                    else{
+                        this.npcTalk(npc_lilith, 'Connection failed. Please try again later.','elf_talk_main','elf_idle_main',npc_lilith.x + npc_lilith.width/4, gameH/2 - (npc_lilith.width/2));
                         button.setInteractive();
                     }
                 }
@@ -367,7 +334,6 @@ class Game extends BaseScene {
         //End of Text Area
 
         const unsub = onSnapshot(doc(this.player.db, "chat", "general"), (doc) => {
-
                 let chatCompilation = '';
                 this.firebaseMessages = doc.data().messages? doc.data() : this.firebaseMessages;
                 let chatCopy = doc.data().messages?{...this.firebaseMessages}: {};
@@ -414,6 +380,19 @@ class Game extends BaseScene {
         }
     }
 
+    npcTalk(npc, message, beginAnim, endAnim, x, y){
+        if(this.messageBoxContainer){
+            this.messageBoxContainer.destroy();
+        }
+        npc.stop();
+        npc.play(beginAnim);
+        this.createSpeechBubble (x, y, 220, 100, message);
+        npc.on('animationcomplete', () => {
+            npc.playReverse(endAnim);
+            this.messageBoxContainer.destroy();
+        });       
+    }
+
     update(){
         if(this.getDifferenceInMinutes(new Date(), this.player.playerInfo.lastSpin) > 5 && this.roullete_notif.alpha == 0){
             this.roullete_notif.setAlpha(1);
@@ -431,15 +410,10 @@ class Game extends BaseScene {
             });
         }
         else if(this.getDifferenceInMinutes(new Date(), this.player.playerInfo.lastReward) <= 5 && this.gift_notif.alpha == 1){
-            this.tweens.add({
-                targets: [this.gift_notif],
-                alpha: { value: 0, duration: 600, ease: 'Power1'},
-                yoyo: false,
-                delay:1000
-            });
+            this.gift_notif.setAlpha(0);
         }
 
-        if(this.player.playerInfo.lastRead != this.announcementId && this.mail_notif.alpha == 0){
+        if(this.player.playerInfo.lastRead !== this.player.announcements.id && this.mail_notif.alpha == 0){
             this.tweens.add({
                 targets: this.mail_notif,
                 alpha: { value: 1, duration: 600, ease: 'Power1'},
@@ -447,7 +421,7 @@ class Game extends BaseScene {
                 delay:1200
             });
         }
-        else if(this.player.playerInfo.lastRead == this.announcementId && this.mail_notif.alpha == 1){
+        else if(this.player.playerInfo.lastRead == this.player.announcements.id && this.mail_notif.alpha == 1){
             this.mail_notif.setAlpha(0);
         }
     }

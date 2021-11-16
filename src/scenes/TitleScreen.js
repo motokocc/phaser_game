@@ -6,7 +6,9 @@ class TitleScreen extends Phaser.Scene {
         // Load Data from blockchain
         this.connectButton.disableInteractive();
         await this.player.loadWeb3();
-        this.connectButton.setTexture('startBtn');
+        if(this.player.playerInfo.address){
+            this.connectButton.setTexture('startBtn');
+        }
         this.connectButton.setInteractive();
     }
  

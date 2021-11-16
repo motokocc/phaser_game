@@ -33,6 +33,12 @@ class Player extends Phaser.Plugins.BasePlugin {
             lastRead: 0,
             cards:[]
         }
+
+        this.announcements = {
+            id: null,
+            title: '',
+            content: '',
+        }
     }
 
     async loadWeb3() {
@@ -68,6 +74,10 @@ class Player extends Phaser.Plugins.BasePlugin {
                     const userRef = doc(this.db, "users", accounts[0]);
                     const user = await getDoc(userRef);
 
+                    //For announcements
+                    const announcementRef = doc(this.db, "announcements", 'mail');
+                    const mail = await getDoc(announcementRef);
+
                     if (user.exists()) {
                         //To add more data later for drops that can be exchanged to nfts
                         const { gold, drawCount, isFirstTime, name, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead } = user.data();
@@ -76,6 +86,9 @@ class Player extends Phaser.Plugins.BasePlugin {
                             
                         //Set Player Data
                         this.setPlayerInfo(name, accounts[0], drawCount, gold, cardData, isFirstTime, gems, lastLogin.toDate(), lastSpin.toDate(), dateJoined.toDate(), lastReward.toDate(), lastRead);
+                        
+                        //Set mail
+                        this.announcements = mail.data();
                     } 
                     
                     else {
