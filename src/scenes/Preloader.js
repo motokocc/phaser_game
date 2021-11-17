@@ -10,6 +10,7 @@ import light from '../images/light.png';
 import hoverSound from '../audio/hover_button2.mp3';
 import clickSound from '../audio/click_button.wav';
 import spinWheelSound from '../audio/spin_wheel.wav';
+import optionSound from '../audio/options_sound.wav';
 import titleBgMusic from '../audio/title_bg.mp3';
 import sceneBgMusic from '../audio/scene_bg.mp3';
 import elf from '../images/elf-0.png';
@@ -67,6 +68,16 @@ import roulleteStand from '../images/daily_roullete/roullete_stand.png';
 import startSpinButton from '../images/daily_roullete/start_spin_button.png';
 import tick from '../images/daily_roullete/tick.png';
 
+//Settings Icons
+import couponIcon from '../images/settings/coupon.png';
+import creditsIcon from '../images/settings/credits.png';
+import exitIcon from '../images/settings/exit.png';
+import logoutIcon from '../images/settings/logout.png';
+import mailIcon from '../images/settings/mail.png';
+import twitterIcon from '../images/settings/twitter.png';
+import volumeIcon from '../images/settings/volume.png';
+import youtubeIcon from '../images/settings/youtube.png';
+
 class LoadingScreen extends Phaser.Scene {
 
     init(data){
@@ -117,6 +128,16 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('tick', tick);
         this.load.image('elf_pirate_talk_1', elf_pirate_talk_1);
         this.load.image('elf_pirate_talk_2', elf_pirate_talk_2);
+
+        //Settings
+        this.load.image('couponIcon', couponIcon);
+        this.load.image('creditsIcon', creditsIcon);
+        this.load.image('exitIcon', exitIcon);
+        this.load.image('logoutIcon', logoutIcon);
+        this.load.image('mailIcon', mailIcon);
+        this.load.image('twitterIcon', twitterIcon);
+        this.load.image('volumeIcon', volumeIcon);
+        this.load.image('youtubeIcon', youtubeIcon);
         
         this.load.image('dialogueBox', dialogueBox);
         this.load.image('summoningCircle', summoningCircle);
@@ -143,6 +164,7 @@ class LoadingScreen extends Phaser.Scene {
         this.load.audio('titleBgMusic', [titleBgMusic]);
         this.load.audio('sceneBgMusic', [sceneBgMusic]);
         this.load.audio('spinWheelSound', [spinWheelSound]);
+        this.load.audio('optionSound', [optionSound]);
 
         this.progressBar = this.add.graphics();
         this.progressBox = this.add.graphics();

@@ -67,7 +67,7 @@ class DailyRoullete extends BaseScene {
         let pin = this.add.sprite(gameW*0.6 -1, gameH/2, 'tick').setScale(0.85);
 
         this.canSpin = true;
-        this.spinButton.on("pointerover", () => {this.spinButton.setScale(1.3); this.sound.play('hoverEffect', {loop: false});});
+        this.spinButton.on("pointerover", () => {this.spinButton.setScale(1.3); this.hoverSound.play();});
         this.spinButton.on("pointerout", () => this.spinButton.setScale(1.2));
         this.spinButton.on("pointerdown", () => {
             if(this.returnHome){

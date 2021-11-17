@@ -118,7 +118,7 @@ class Game extends BaseScene {
         currencyUI.setX(-paddingX * 2);
 
         //Settings Box
-        this.settingsBox(gameW, 0, 300, gameH/2 , paddingX*0.95, paddingX*3);
+        this.settingsBox(gameW, 0, 300, gameH/2 + paddingX , paddingX*0.95, paddingX*3);
 
         //UI Containers/Groups
         gems.add([gem_box, gem_icon, gem_value]);
@@ -171,7 +171,8 @@ class Game extends BaseScene {
 
             button.on('pointerover', () => {
                 button.setScale(0.00088*gameW);
-                this.sound.play('hoverEffect', {loop: false});
+                this.hoverSound.stop();
+                this.hoverSound.play();
 
                 if(button.name == 'roullete'){
                     this.roullete_notif.setPosition(roullete_button.displayWidth + paddingX*0.8, roullete_button.y - roullete_button.displayHeight*0.45);
@@ -188,7 +189,7 @@ class Game extends BaseScene {
             button.on('pointerdown', async() => {
                 //Daily Reward
                 if(button.name == 'gift'){
-                    if(this.getDifferenceInMinutes(new Date(), this.player.playerInfo.lastReward)> 5){                       
+                    if(this.getDifferenceInMinutes(new Date(), this.player.playerInfo.lastReward)> 5 && this.player.playerInfo.address){                       
                         try{
                             button.disableInteractive();
                             const rewardRef = doc(this.player.db, "rewards", 'daily');
@@ -360,7 +361,7 @@ class Game extends BaseScene {
     }
 
     sendChat(){
-        this.sound.play('hoverEffect', {loop: false});
+        this.hoverSound.play();
         if(this.message){
             const data = {
                 username: this.player.playerInfo.name || 'adventurer',

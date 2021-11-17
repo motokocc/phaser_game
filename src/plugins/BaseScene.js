@@ -1,14 +1,14 @@
 import Phaser from 'phaser';
 import { tutorialDialogue } from '../js/character_dialogues/tutorial';
+import { Slider } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 
 class BaseScene extends Phaser.Scene {
     init(data){
         this.data = data;       
         this.dialogueCounter = 0;
         this.toggleSettings = false;
+        this.hoverSound = this.sound.add('hoverEffect', {loop: false});
     }
-
-
 
     popUp(title, content, titleSize){
         content.setDepth(25);
@@ -49,10 +49,102 @@ class BaseScene extends Phaser.Scene {
 
         this.settingsContainer = this.add.container(this.game.config.width, 0);
 
-        let settingsBody = this.add.rectangle(x-bodyPaddingX ,y + bodyPaddingY,width,height,0x000000, 1).setOrigin(1,0).setInteractive();
+        let settingsBody = this.add.rectangle(x-bodyPaddingX ,y + bodyPaddingY,width,height,0x000000, 1).setOrigin(1,0).setInteractive();       
+        let exitIcon = this.add.sprite(settingsBody.x - 25, settingsBody.y + 25, 'exitIcon').setOrigin(1,0).setScale(0.5).setInteractive();
+        let settingsTitle = this.add.text(settingsBody.x - settingsBody.width + 25, exitIcon.y+ exitIcon.displayWidth/2 , 'Settings').setOrigin(0, 0.5);
+        settingsTitle.setFont({fontFamily : 'Arial', fontsize: '20px', fontStyle: 'Bold'});
 
-        this.settingsContainer.add([settingsBody]);
-           
+        let line = this.add.rectangle(settingsTitle.x, exitIcon.y + exitIcon.displayWidth + 5, settingsBody.displayWidth - 50, 1, 0xffffff,1).setOrigin(0);
+
+        let icons = [ 'couponIcon', 'mailIcon', 'twitterIcon', 'youtubeIcon','creditsIcon', 'logoutIcon'];
+        let iconText = ['Coupon', 'Inquiry','Twitter', 'Youtube', 'Credits', 'Logout'];
+        let iconGroup = this.add.group();
+
+        let iconData = [];
+        let iconTextData = [];
+
+        this.optionSound = this.sound.add('optionSound', {volume:0.2})
+
+        exitIcon.on('pointerover', () => {exitIcon.setAlpha(0.7); this.optionSound.play();});
+        exitIcon.on('pointerout', () => exitIcon.setAlpha(1));
+
+        exitIcon.on('pointerdown', () => this.toggleSettingsBox());
+
+        icons.forEach((icon, index) => {
+            iconData[index] = this.add.sprite(settingsBody.x, settingsBody.y, icon).setScale(0.5).setOrigin(0.5,1).setInteractive().setName(icon);
+
+            iconData[index].on('pointerover', () => {iconData[index].setAlpha(0.7); this.optionSound.play();});
+            iconData[index].on('pointerout', () => iconData[index].setAlpha(1));
+
+            iconData[index].on('pointerdown', () => {
+                if(iconData[index].name == 'twitterIcon'){
+                    this.openExternalLink('https://twitter.com/cryptmonogatari');
+                }
+                else if(iconData[index].name == 'youtubeIcon'){
+                    this.openExternalLink('https://www.youtube.com/channel/UCfokLXSHMW4pHf7yueprKYg');
+                }
+                else if(iconData[index].name == 'mailIcon'){
+                    this.openExternalLink('mailto:flipflashdev@gmail.com');
+                }
+                else if(iconData[index].name == 'logoutIcon'){
+                    this.sound.stopByKey('titleBgMusic');
+                    this.sound.play('titleBgMusic', {loop: true, volume:0.2});
+                    this.scene.start("titlescreen");
+                }
+            });
+        })
+
+        iconGroup.addMultiple(iconData);
+        
+        let gridTable = Phaser.Actions.GridAlign(iconGroup.getChildren(), {
+            width: 4,
+            height: 2,
+            cellWidth: iconData[0].width/2 + 25,
+            cellHeight: iconData[0].height/2 + 40,
+            x: settingsBody.x - settingsBody.displayWidth + 37,
+            y: settingsBody.y + settingsBody.displayHeight/2
+        });
+
+        gridTable.forEach((sprite,index) => {
+            iconTextData[index] = this.add.text(sprite.x, sprite.y + 6, iconText[index], {fontFamily: 'Arial', fontSize: '12px'}).setOrigin(0.5);
+        })
+
+
+        let audioIcon = this.add.sprite(settingsTitle.x, (exitIcon.y + gridTable[0].y)/2, 'volumeIcon').setOrigin(0,0.5).setScale(0.8);
+
+        let bgSound = this.sound.get('titleBgMusic');
+
+        let slider = new Slider(this, {
+            x: settingsTitle.x + audioIcon.displayWidth + 115,
+            y: audioIcon.y,
+            width: 210,
+            height: 5,
+            orientation: 'x',
+
+            track: this.add.rectangle(0,0,200,5,0xffffff,1).setOrigin(0,0.5),
+            indicator: this.add.rectangle(0,0,200,5,0x005500,1).setOrigin(0,0.5),
+            thumb: this.add.circle(0, 0, 10, 0xffffff, 1),
+
+            valuechangeCallback: value => {
+                bgSound.setVolume(value);
+                this.optionSound.volume = value;
+
+                let hoverValue = value * 5;
+                this.hoverSound.volume = hoverValue < 1? hoverValue : 1;
+            },
+            input: 'drag',
+        }).layout();
+        this.add.existing(slider);
+
+        slider.setValue(bgSound.volume);
+
+        let track = slider.getElement('track');
+        let indicator = slider.getElement('indicator');
+        let action = slider.getElement('thumb');
+
+        this.settingsContainer.add([settingsBody, settingsTitle, exitIcon, line, audioIcon, track, indicator, action]);
+        this.settingsContainer.add(iconGroup.getChildren());
+        this.settingsContainer.add(iconTextData);
     }
 
     toggleSettingsBox(){
@@ -71,6 +163,19 @@ class BaseScene extends Phaser.Scene {
                 x: { value: this.game.config.width, duration: 600, ease: 'Power1'},
                 yoyo: false, 
             });          
+        }
+    }
+
+    openExternalLink (url) {
+        var s = window.open(url, '_blank');
+
+        if (s && s.focus)
+        {
+            s.focus();
+        }
+        else if (!s)
+        {
+            window.location.href = url;
         }
     }
 
@@ -212,7 +317,7 @@ class BaseScene extends Phaser.Scene {
 
         inputButton.on('pointerover', () => {
             inputButton.setScale(0.08);
-            this.sound.play('hoverEffect', {loop: false});
+            this.hoverSound.play();
         });
 
         inputButton.on('pointerout', () => {
