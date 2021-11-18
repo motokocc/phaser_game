@@ -1,3 +1,5 @@
+import 'regenerator-runtime/runtime'
+import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import Phaser from 'phaser';
 import { tutorialDialogue } from '../js/character_dialogues/tutorial';
 import { Slider } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
@@ -40,12 +42,11 @@ class BaseScene extends Phaser.Scene {
         });
 
         popupBg.on('pointerdown', () => {
-            content.destroy(true);
             this.popupContainer.destroy(true);
         });
     }
 
-    settingsBox(x,y,width,height, bodyPaddingX, bodyPaddingY){
+    settingsBox(x,y,width,height, bodyPaddingX, bodyPaddingY, goldDisplay, gemDisplay){
 
         this.settingsContainer = this.add.container(this.game.config.width, 0);
 
@@ -86,10 +87,150 @@ class BaseScene extends Phaser.Scene {
                 else if(iconData[index].name == 'mailIcon'){
                     this.openExternalLink('mailto:flipflashdev@gmail.com');
                 }
+                else if(iconData[index].name == 'creditsIcon'){
+                    this.scene.start('credits');
+                }
                 else if(iconData[index].name == 'logoutIcon'){
                     this.sound.stopByKey('titleBgMusic');
                     this.sound.play('titleBgMusic', {loop: true, volume:0.2});
+                    this.player.playerInfo = {
+                        name: '',
+                        address: null,
+                        drawCount: 0,
+                        gold: 0,
+                        gems: 0,
+                        dateJoined: null,
+                        lastLogin: new Date(),
+                        lastSpin: null,
+                        lastReward: null,
+                        isFirstTime: true,
+                        lastRead: 0,
+                        cards:[]
+                    }
                     this.scene.start("titlescreen");
+                }
+                else{
+                    this.toggleSettingsBox();
+
+                    let couponCode ='';
+
+                    const couponGroup = this.add.group();
+                    const couponInput = this.add.rexInputText(
+                        this.game.config.width/2,
+                        this.game.config.height/2 - 30,
+                        200,
+                        30,
+                        { 
+                            type: "text",
+                            maxLength: 15,
+                            fontSize : "18px",
+                            fontFamily: 'Arial',
+                            minLength: 3,
+                            backgroundColor : "white",
+                            color: "black"
+                        }
+                    ).setOrigin(0.5).setScale(0,1.3)
+                    .on('textchange', inputText => {
+                        couponCode = inputText.text;
+                    });
+
+                    const confirmButton = this.add.sprite(this.game.config.width/2,this.game.config.height/2 + 35,'confirmButton')
+                        .setOrigin(0.5).setInteractive().setScale(0,1.3);
+
+
+                    couponInput.setStyle("border-radius", "10px");
+                    couponInput.setStyle("text-align", "center");
+
+                    couponGroup.addMultiple([couponInput,confirmButton]);
+
+                    confirmButton.on("pointerdown", async() => {
+                        this.popupContainer.destroy(true);
+
+                        try{
+                            //GET DATA FROM FIREBASE
+                            const couponRef = doc(this.player.db, "rewards", 'coupon');
+                            const coupons = await getDoc(couponRef);
+
+                            let codeFromFirebase = coupons.data().claim;
+
+                            let rewardToClaim = codeFromFirebase.filter(data => data.code === couponCode);                        
+                   
+                            let content = this.add.text( this.game.config.width/2, this.game.config.height/2, '',{fontFamily: 'Arial', color:'#613e1e', fontSize:12, align: 'justify' })
+                                .setOrigin(0.5,0.75).setWordWrapWidth(250).setScale(0,1.3);
+
+                            if(this.player.playerInfo.couponCodes.includes(couponCode)){
+                                let recievedAlreadyCouponGroup = this.add.group();
+                                content.setText('You already received the reward from this coupon code. You can only received 1 gift per coupon')
+                                recievedAlreadyCouponGroup.add(content);
+
+                                this.popUp('Coupon already claimed', recievedAlreadyCouponGroup);
+                            }
+                            else if(rewardToClaim[0]){
+                                let rewardCouponGroup = this.add.group();
+
+                                let rewardBox = this.add.rectangle(
+                                    this.game.config.width/2,
+                                    this.game.config.height/2 - 10,
+                                    60,
+                                    60,
+                                    0x9b6330
+                                ).setOrigin(0.5).setScale(0,1.3);
+
+                                let rewardIcon = this.add.sprite(
+                                    this.game.config.width/2,
+                                    this.game.config.height/2 - 10,
+                                    rewardToClaim[0].reward.item
+                                ).setOrigin(0.5).setScale(0,1.3);
+
+                                let rewardText = this.add.text(
+                                    rewardBox.x,
+                                    rewardBox.y + rewardBox.width/2 + 25, 
+                                    rewardToClaim[0].reward.value,
+                                    {fontFamily: 'Arial', color:'#613e1e', fontStyle: 'Bold'} 
+                                ).setOrigin(0.5).setScale(0,1.3);
+
+
+                                //Save to firebase before setting to player locally  
+                                try{
+                                    rewardCouponGroup.addMultiple([rewardBox, rewardIcon, rewardText]);
+
+                                    let updatedValue = this.player.playerInfo[rewardToClaim[0].reward.item] + rewardToClaim[0].reward.value;
+
+                                    if(rewardToClaim[0].reward.item === "gold"){
+                                        await updateDoc(doc(this.player.users, this.player.playerInfo.address), {gold: updatedValue});
+                                        goldDisplay.setText(updatedValue);
+                                    }
+                                    else{
+                                         await updateDoc(doc(this.player.users, this.player.playerInfo.address), {gems: updatedValue});
+                                        gemDisplay.setText(updatedValue);
+                                    }
+
+                                    this.player.playerInfo[rewardToClaim[0].reward.item] = updatedValue;
+
+                                    this.player.playerInfo.couponCodes.push(rewardToClaim[0].code);
+                                    await updateDoc(doc(this.player.users, this.player.playerInfo.address), {couponCodes: this.player.playerInfo.couponCodes});
+
+
+                                    this.popUp('Reward Claimed', rewardCouponGroup);
+                                    }
+                                catch(e){
+                                    console.log('Error: ', e.message);
+                                }                          
+                            }
+                            else{
+                                let wrongCouponGroup = this.add.group();
+                                content.setText('The coupon code that you entered does not exist. Please check your spelling then try again.');
+                                wrongCouponGroup.add(content);
+
+                                this.popUp('Wrong Coupon', wrongCouponGroup);
+                            }
+                        }
+                        catch(e){
+                            console.log(e.message);
+                        }
+                    })
+
+                    this.popUp('Enter Coupon Code', couponGroup);
                 }
             });
         })
@@ -124,7 +265,7 @@ class BaseScene extends Phaser.Scene {
             track: this.add.rectangle(0,0,200,5,0xffffff,1).setOrigin(0,0.5),
             indicator: this.add.rectangle(0,0,200,5,0x005500,1).setOrigin(0,0.5),
             thumb: this.add.circle(0, 0, 10, 0xffffff, 1),
-
+            value: bgSound.volume,
             valuechangeCallback: value => {
                 bgSound.setVolume(value);
                 this.optionSound.volume = value;
@@ -135,8 +276,6 @@ class BaseScene extends Phaser.Scene {
             input: 'drag',
         }).layout();
         this.add.existing(slider);
-
-        slider.setValue(bgSound.volume);
 
         let track = slider.getElement('track');
         let indicator = slider.getElement('indicator');

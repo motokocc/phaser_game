@@ -23,6 +23,7 @@ import backButton from '../images/buttons/back_button.png';
 import proceedButton from '../images/buttons/exit_button.png';
 import premiumButton from '../images/buttons/premium_button.png';
 import cardBack from '../images/cards/card_yellow.png';
+import confirmButton from '../images/buttons/confirm_button.png';
 
 //Lilith's animations
 import elf_idle_1 from '../images/Animations/elf-idle-2.png';
@@ -153,6 +154,7 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('startBtn', startBtn);
         this.load.image('exitBtn', exitBtn);
         this.load.image('backBtn', backButton);
+        this.load.image('confirmButton', confirmButton);
         this.load.image('connectBtn', connectBtn);
         this.load.image('soundOff', soundOff);
         this.load.image('soundOn', soundOn);

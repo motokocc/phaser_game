@@ -10,6 +10,7 @@ import TextTypingPlugin from 'phaser3-rex-plugins/plugins/texttyping-plugin.js';
 import TagTextPlugin from 'phaser3-rex-plugins/plugins/tagtext-plugin.js';
 import SummoningArea from './scenes/SummoningArea';
 import DailyRoullete from './scenes/Roullete';
+import Credits from './scenes/Credits';
 
 const config = {
     widht: 800,
@@ -44,6 +45,7 @@ game.scene.add("titlescreen", TitleScreen);
 game.scene.add("tutorial", TutorialScreen);
 game.scene.add("summoningArea", SummoningArea);
 game.scene.add("roullete", DailyRoullete);
+game.scene.add("credits", Credits);
 game.scene.add("game", Game);
 
 //game.scene.start("loading", {nextPage: "titlescreen"});
@@ -51,3 +53,4 @@ game.scene.add("game", Game);
 //game.scene.start("loading", {nextPage: "tutorial"});
 game.scene.start("loading", {nextPage: "game"});
 //game.scene.start("loading", {nextPage: "roullete"});
+//game.scene.start("credits");

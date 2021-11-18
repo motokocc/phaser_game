@@ -31,7 +31,8 @@ class Player extends Phaser.Plugins.BasePlugin {
             lastReward: null,
             isFirstTime: true,
             lastRead: 0,
-            cards:[]
+            cards:[],
+            couponCodes:[]
         }
 
         this.announcements = {
@@ -80,12 +81,12 @@ class Player extends Phaser.Plugins.BasePlugin {
 
                     if (user.exists()) {
                         //To add more data later for drops that can be exchanged to nfts
-                        const { gold, drawCount, isFirstTime, name, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead } = user.data();
+                        const { gold, drawCount, isFirstTime, name, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes } = user.data();
 
                         cardData = user.data().cards? user.data().cards: [];
                             
                         //Set Player Data
-                        this.setPlayerInfo(name, accounts[0], drawCount, gold, cardData, isFirstTime, gems, lastLogin.toDate(), lastSpin.toDate(), dateJoined.toDate(), lastReward.toDate(), lastRead);
+                        this.setPlayerInfo(name, accounts[0], drawCount, gold, cardData, isFirstTime, gems, lastLogin.toDate(), lastSpin.toDate(), dateJoined.toDate(), lastReward.toDate(), lastRead, couponCodes );
                         
                         //Set mail
                         this.announcements = mail.data();
@@ -109,7 +110,7 @@ class Player extends Phaser.Plugins.BasePlugin {
         }
     }
 
-    setPlayerInfo(name, address, drawCount, gold, cards,isFirstTime, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead){
+    setPlayerInfo(name, address, drawCount, gold, cards,isFirstTime, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes ){
         this.playerInfo = {
             name,
             address,
@@ -122,7 +123,8 @@ class Player extends Phaser.Plugins.BasePlugin {
             lastSpin,
             dateJoined,
             lastReward,
-            lastRead
+            lastRead,
+            couponCodes
         }
         console.log('Player Info Set!',this.playerInfo);
     }

@@ -118,7 +118,7 @@ class Game extends BaseScene {
         currencyUI.setX(-paddingX * 2);
 
         //Settings Box
-        this.settingsBox(gameW, 0, 300, gameH/2 + paddingX , paddingX*0.95, paddingX*3);
+        this.settingsBox(gameW, 0, 300, gameH/2 + paddingX , paddingX*0.95, paddingX*3, gold_value, gem_value);
 
         //UI Containers/Groups
         gems.add([gem_box, gem_icon, gem_value]);
