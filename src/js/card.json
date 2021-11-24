@@ -3,18 +3,7 @@
     "description": "",
     "image": "",
     "image_alt": "",
-    "attributes": [
-        {
-            "name": "attack",
-            "value": 1
-        },
-        {
-            "name": "health",
-            "value": 5
-        },
-        {
-            "name": "speed",
-            "value": 1
-        }                    
-    ]
+    "quantity": 1,
+    "cardRarity": 1,
+    "id": 888
 }

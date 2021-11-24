@@ -1,6 +1,7 @@
 import 'regenerator-runtime/runtime'
 import Phaser from 'phaser';
 import PlayerData from '../abis/GameData.json';
+import ElvenHunt from '../abis/ElvenHunt.json';
 import Web3 from 'web3';
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, setDoc, getDoc } from "firebase/firestore";
@@ -62,13 +63,25 @@ class Player extends Phaser.Plugins.BasePlugin {
                 //Get Players Data
                 const web3 = window.web3
                 const networkId = await web3.eth.net.getId();
-                const networkData = PlayerData.networks[networkId];
+                const networkData = ElvenHunt.networks[networkId];
                 if(networkData) {
-                    const playerData = new web3.eth.Contract(PlayerData.abi, networkData.address);
+                    this.gameData = new web3.eth.Contract(ElvenHunt.abi, networkData.address);
                     let cardData = [];
                     //Blockchain Data - player name, draw count, cards
-                    const player = await playerData.methods.players(accounts[0]).call();
-                    const { cards } = player;
+                    let cardsFromBlockchain = [];
+                    const playerCardsCounter = await this.gameData.methods.playerCardsCounter(accounts[0]).call();
+                    if(playerCardsCounter){
+                        for(let i = 1; i <= playerCardsCounter; i++){
+                            let card = await this.gameData.methods.playerCards(accounts[0],i).call();
+                            const response = await fetch(card.tokenURI);
+                            let data = await response.json();
+                            data = {...data, quantity: card.amount, id: card.id, cardRarity: card.cardRarity};
+
+                            cardsFromBlockchain.push(data);
+                        }
+                    }
+                                                    
+                    console.log(cardsFromBlockchain);
 
                     //Firebase Data - gold
                     //Getting data from /users/${account[0]}
@@ -146,11 +159,24 @@ class Player extends Phaser.Plugins.BasePlugin {
 
             await setDoc(doc(this.users, this.playerInfo.address), this.playerInfo);
         }
+
         else {
-            console.log('minting....')
+            try{
+                let cardMinted = await this.gameData.methods.mintCard("normal").send({from: this.playerInfo.address, value: Web3.utils.toWei('0.05', 'Ether')});
+                let cardData = cardMinted.events.ItemMinted.returnValues.card;
+
+                const response = await fetch(cardData.tokenURI);
+                let data = await response.json();
+                data = {...data, quantity: cardData.amount, id: cardData.id, cardRarity: cardData.cardRarity };
+
+                newCard = {...data};
+                this.playerInfo.cards = [...this.playerInfo.cards, newCard];
+            }
+            catch(e){
+                console.log(e.message);
+            }
         }
-     
-        return newCard
+        return newCard;
     }
 }
 

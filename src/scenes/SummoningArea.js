@@ -2,9 +2,6 @@ import BaseScene from '../plugins/BaseScene';
 
 class SummoningArea extends BaseScene {
     create(){
-        console.log(this.player.playerInfo);
-        let drawType = 'free';
-
         this.anims.create({
             key: 'elf_talk',
             frames: [
@@ -66,8 +63,8 @@ class SummoningArea extends BaseScene {
         let uiText = this.add.text(this.game.config.width - 150, paddingY, 'Select Draw Type', {fontFamily: 'Arial', fontSize: 20}).setOrigin(0.5);
         
         let freeButton = this.add.sprite(this.game.config.width - 150, paddingY*3.1, 'freeBtn')
-        let rareButton = this.add.sprite(this.game.config.width - 150, paddingY*6.2, 'rareBtn')
-        let premiumButton = this.add.sprite(this.game.config.width - 150, paddingY*9.3, 'premiumBtn')
+        let rareButton = this.add.sprite(this.game.config.width - 150, paddingY*6.2, 'rareBtn').setName('rare')
+        let premiumButton = this.add.sprite(this.game.config.width - 150, paddingY*9.3, 'premiumBtn').setName('premium')
         let proceedButton = this.add.sprite(this.game.config.width - paddingY, this.game.config.height-paddingY,'proceedBtn')
             .setInteractive()
             .setOrigin(1)
