@@ -18,6 +18,7 @@ import okButton from '../images/ok-button.png';
 import scroll from '../images/scroll.png';
 import summoningCircle from '../images/summoning_circle.png';
 import freeButton from '../images/buttons/free_button.png';
+import normalButton from '../images/buttons/normal_button.png';
 import rareButton from '../images/buttons/rare_button.png';
 import backButton from '../images/buttons/back_button.png';
 import proceedButton from '../images/buttons/exit_button.png';
@@ -87,7 +88,8 @@ class LoadingScreen extends Phaser.Scene {
 
     preload(){
         this.load.image('Alpha', "https://ipfs.infura.io/ipfs/QmXwhouX6z9DLtBmpGiGwpDu9W8NCyMhtzHW4Bqfct3Rfd");
-
+        this.load.image('Saya', "https://ipfs.infura.io/ipfs/QmUDQdkK6DVm6r281TMgskRDdU7WK6x2dkw2TMCiJ9mzYF");
+        
         //Main Screen
         this.load.image('explore_button', explore_button);
         this.load.image('mining_button', mining_button);
@@ -143,6 +145,7 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('dialogueBox', dialogueBox);
         this.load.image('summoningCircle', summoningCircle);
         this.load.image('freeBtn', freeButton);
+        this.load.image('normalBtn', normalButton);
         this.load.image('rareBtn', rareButton);
         this.load.image('premiumBtn', premiumButton);
         this.load.image('proceedBtn', proceedButton);

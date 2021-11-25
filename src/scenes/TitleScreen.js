@@ -1,4 +1,6 @@
+import 'regenerator-runtime/runtime';
 import Phaser from 'phaser';
+import { doc, updateDoc } from "firebase/firestore";
 
 class TitleScreen extends Phaser.Scene {
 
@@ -78,9 +80,8 @@ class TitleScreen extends Phaser.Scene {
         });
 
         //Start Button
-        this.connectButton.on('pointerdown', () => {
+        this.connectButton.on('pointerdown', async() => {
             this.sound.play('clickEffect', {loop: false});
-            // this.connectButton.setAlpha(0.7);
             if(!this.player.playerInfo.address){
                 this.loadData();
             }
@@ -90,7 +91,7 @@ class TitleScreen extends Phaser.Scene {
             }
             else{
                 this.player.playerInfo.lastLogin = new Date();
-                //to save to firebase
+                await updateDoc(doc(this.player.users, this.player.playerInfo.address),{ lastLogin : this.player.playerInfo.lastLogin });
                 this.scene.start("game");
             }
         });

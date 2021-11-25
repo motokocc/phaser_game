@@ -54,7 +54,7 @@ class SummoningArea extends BaseScene {
 
         //UI Buttons
         const paddingY = 30;
-        let summoningUiContainer = this.add.container(0,0);
+        let summoningUiContainer = this.add.container(300,0);
 
         let uibox = this.add.rectangle(this.game.config.width,0, 300, this.game.config.height, 0x000000)
             .setOrigin(1,0)
@@ -62,7 +62,8 @@ class SummoningArea extends BaseScene {
         
         let uiText = this.add.text(this.game.config.width - 150, paddingY, 'Select Draw Type', {fontFamily: 'Arial', fontSize: 20}).setOrigin(0.5);
         
-        let freeButton = this.add.sprite(this.game.config.width - 150, paddingY*3.1, 'freeBtn')
+        let freeButton = this.add.sprite(this.game.config.width - 150, paddingY*3.1, 'freeBtn').setName('free').setAlpha(this.player.playerInfo.isFirstTime? 1:0);
+        let normalButton = this.add.sprite(this.game.config.width - 150, paddingY*3.1, 'normalBtn').setName('normal').setAlpha(this.player.playerInfo.isFirstTime? 0:1);
         let rareButton = this.add.sprite(this.game.config.width - 150, paddingY*6.2, 'rareBtn').setName('rare')
         let premiumButton = this.add.sprite(this.game.config.width - 150, paddingY*9.3, 'premiumBtn').setName('premium')
         let proceedButton = this.add.sprite(this.game.config.width - paddingY, this.game.config.height-paddingY,'proceedBtn')
@@ -80,7 +81,6 @@ class SummoningArea extends BaseScene {
         if(!this.player.playerInfo.isFirstTime){
             backButton.on('pointerdown', () => {
                 this.sound.play('clickEffect', {loop: false});
-                this.sound.stopByKey('titleBgMusic');
                 this.scene.start("game");
             });
         }
@@ -117,7 +117,7 @@ class SummoningArea extends BaseScene {
         });
         //End Card summon setup
 
-        const buttons = [freeButton, rareButton, premiumButton];
+        const buttons = [freeButton, rareButton, premiumButton, normalButton];
 
         buttons.forEach(button => {
             button.setOrigin(0.5).setInteractive();
@@ -147,8 +147,10 @@ class SummoningArea extends BaseScene {
                     yoyo: false,
                     delay: 4000,
                     onComplete: () => {
-                        this.player.mintCard().then(card => {
-                            cardFlip.setFrontFace(card.name);
+                        this.player.mintCard(button.name).then(card => {
+                            if(card.name){
+                                cardFlip.setFrontFace(card.name);
+                            }
 
                             this.tweens.add({
                                 targets: summoningCircle,
@@ -206,7 +208,13 @@ class SummoningArea extends BaseScene {
             this.cameras.main.fadeIn(500);
         });
 
-        summoningUiContainer.add([uibox, uiText, freeButton, premiumButton,rareButton, backButton]);
+        summoningUiContainer.add([uibox, uiText, freeButton, premiumButton,rareButton, backButton, normalButton]);
+
+        this.tweens.add({
+            targets: summoningUiContainer,
+            x: { value: 0, duration: 400, ease: 'Power1'},
+            yoyo: false
+        });
     }
 }
 

@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime'
-import { doc, setDoc, onSnapshot, getDoc } from "firebase/firestore";
+import { doc, setDoc, onSnapshot, getDoc, updateDoc } from "firebase/firestore";
 import BaseScene from '../plugins/BaseScene';
 import { TextArea } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 
@@ -217,7 +217,11 @@ class Game extends BaseScene {
 
                                 this.popUp('Reward Claimed', content);
                                 this.player.playerInfo.lastReward = new Date();
-                                await setDoc(doc(this.player.users, this.player.playerInfo.address), this.player.playerInfo);
+                                await updateDoc(doc(this.player.users, this.player.playerInfo.address), {
+                                    gold: this.player.playerInfo.gold,
+                                    gems: this.player.playerInfo.gems,
+                                    lastReward: this.player.playerInfo.lastReward
+                                });
                                 button.setInteractive();
                             }
                             catch(e){
@@ -255,7 +259,7 @@ class Game extends BaseScene {
 
                             if(this.player.playerInfo.lastRead != id){
                                 this.player.playerInfo.lastRead = id;
-                                await setDoc(doc(this.player.users, this.player.playerInfo.address), this.player.playerInfo);
+                                await updateDoc(doc(this.player.users, this.player.playerInfo.address),{ lastRead : id });
                             }
                             button.setInteractive();
                         }

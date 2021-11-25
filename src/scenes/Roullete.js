@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime';
 import BaseScene from '../plugins/BaseScene';
-import { doc, setDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 
 class DailyRoullete extends BaseScene {
 
@@ -147,7 +147,11 @@ class DailyRoullete extends BaseScene {
                     spinningWheelSound.stop();
 
                     //Save to firebase
-                    await setDoc(doc(this.player.users, this.player.playerInfo.address), this.player.playerInfo);
+                    await updateDoc(doc(this.player.users, this.player.playerInfo.address), {
+                        gold: this.player.playerInfo.gold,
+                        gems: this.player.playerInfo.gems,
+                        lastSpin: this.player.playerInfo.lastSpin
+                    });
                 }
             });
         }

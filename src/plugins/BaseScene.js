@@ -105,7 +105,8 @@ class BaseScene extends Phaser.Scene {
                         lastReward: null,
                         isFirstTime: true,
                         lastRead: 0,
-                        cards:[]
+                        cards:[],
+                        couponCodes:[]
                     }
                     this.scene.start("titlescreen");
                 }

@@ -1,10 +1,9 @@
 import 'regenerator-runtime/runtime'
 import Phaser from 'phaser';
-import PlayerData from '../abis/GameData.json';
 import ElvenHunt from '../abis/ElvenHunt.json';
 import Web3 from 'web3';
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, doc, setDoc, getDoc } from "firebase/firestore";
+import { getFirestore, collection, doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import { firebaseConfig } from '../js/config/firebase-config';
 import card from "../js/card.json"
 
@@ -80,8 +79,6 @@ class Player extends Phaser.Plugins.BasePlugin {
                             cardsFromBlockchain.push(data);
                         }
                     }
-                                                    
-                    console.log(cardsFromBlockchain);
 
                     //Firebase Data - gold
                     //Getting data from /users/${account[0]}
@@ -96,10 +93,19 @@ class Player extends Phaser.Plugins.BasePlugin {
                         //To add more data later for drops that can be exchanged to nfts
                         const { gold, drawCount, isFirstTime, name, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes } = user.data();
 
-                        cardData = user.data().cards? user.data().cards: [];
+                        cardData = user.data().cards? user.data().cards.filter(card => card.name === "Alpha") : [];
+
+                        let cards = [...cardData];
+
+                        if(cardsFromBlockchain){
+                            cards = [...cardData].concat(cardsFromBlockchain);
+
+                            console.log('Cards', cards);
+                            await updateDoc(doc(this.users, accounts[0]), { cards });
+                        }
                             
                         //Set Player Data
-                        this.setPlayerInfo(name, accounts[0], drawCount, gold, cardData, isFirstTime, gems, lastLogin.toDate(), lastSpin.toDate(), dateJoined.toDate(), lastReward.toDate(), lastRead, couponCodes );
+                        this.setPlayerInfo(name, accounts[0], drawCount, gold, cards, isFirstTime, gems, lastLogin.toDate(), lastSpin? lastSpin.toDate() : null, dateJoined.toDate(), lastReward? lastReward.toDate():null, lastRead, couponCodes );
                         
                         //Set mail
                         this.announcements = mail.data();
@@ -142,7 +148,7 @@ class Player extends Phaser.Plugins.BasePlugin {
         console.log('Player Info Set!',this.playerInfo);
     }
 
-    async mintCard(){
+    async mintCard(mintType){
         this.playerInfo.drawCount++;
 
         let newCard = {...card};
@@ -162,7 +168,19 @@ class Player extends Phaser.Plugins.BasePlugin {
 
         else {
             try{
-                let cardMinted = await this.gameData.methods.mintCard("normal").send({from: this.playerInfo.address, value: Web3.utils.toWei('0.05', 'Ether')});
+                let mintRate;
+
+                if(mintType == "normal"){
+                    mintRate = await this.gameData.methods.mintRate_Normal().call();
+                }
+                else if(mintType == "rare"){
+                    mintRate = await this.gameData.methods.mintRate_Rare().call();
+                }
+                else{
+                    mintRate = await this.gameData.methods.mintRate_Premium().call();
+                }
+
+                let cardMinted = await this.gameData.methods.mintCard(mintType).send({from: this.playerInfo.address, value: String(mintRate)});
                 let cardData = cardMinted.events.ItemMinted.returnValues.card;
 
                 const response = await fetch(cardData.tokenURI);
@@ -170,7 +188,16 @@ class Player extends Phaser.Plugins.BasePlugin {
                 data = {...data, quantity: cardData.amount, id: cardData.id, cardRarity: cardData.cardRarity };
 
                 newCard = {...data};
-                this.playerInfo.cards = [...this.playerInfo.cards, newCard];
+
+                let cardCombined = [data].concat(this.playerInfo.cards);
+                let cards = cardCombined.reduce((arr, item)=> { 
+                    let exists = !!arr.find(x => x.name === item.name && x.quantity >= item.quantity); 
+                    if(!exists){arr.push(item)}; 
+                    return arr 
+                },[])
+
+                this.playerInfo.cards = cards;
+                await updateDoc(doc(this.users, this.playerInfo.address), { cards });
             }
             catch(e){
                 console.log(e.message);
