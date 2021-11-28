@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import bg from '../images/bg.PNG';
+import inventory_bg from '../images/bg/inventory_bg.png';
 import gameTitle from '../images/title.png';
 import startBtn from '../images/start.png';
 import exitBtn from '../images/quit.png';
@@ -87,6 +88,7 @@ class LoadingScreen extends Phaser.Scene {
     }
 
     preload(){
+        //From IPFS
         this.load.image('Alpha', "https://ipfs.infura.io/ipfs/QmXwhouX6z9DLtBmpGiGwpDu9W8NCyMhtzHW4Bqfct3Rfd");
         this.load.image('Saya', "https://ipfs.infura.io/ipfs/QmUDQdkK6DVm6r281TMgskRDdU7WK6x2dkw2TMCiJ9mzYF");
         
@@ -162,6 +164,7 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('soundOff', soundOff);
         this.load.image('soundOn', soundOn);
         this.load.image('light', light);
+        this.load.image('inventory_bg', inventory_bg);
 
         //Audio Files
         this.load.audio('clickEffect', [clickSound]);

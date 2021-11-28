@@ -160,6 +160,8 @@ class Game extends BaseScene {
             delay:1200
         });
 
+        player_gui_box.on('pointerdown', () => this.scene.start("inventory"));
+
         const buttons = [
             shop_button, pvp_button, mining_button, explore_button,
             roullete_button, black_market_button, missions_button, summon_button,
