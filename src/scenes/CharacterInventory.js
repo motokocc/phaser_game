@@ -1,6 +1,8 @@
 import 'regenerator-runtime/runtime';
 import BaseScene from '../plugins/BaseScene';
 import { Tabs } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
+import { ScrollablePanel } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
+import { FixWidthSizer } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { doc, updateDoc } from "firebase/firestore";
 
 class CharacterInventory extends BaseScene {
@@ -36,36 +38,130 @@ class CharacterInventory extends BaseScene {
             {fontFamily: 'Arial'}
         ).setOrigin(0, 0.5);
 
+        let sampleData = [
+            {
+                "name": "Alpha",
+                "description": "Alpha is a beast djinn ready to give a helping hand to any adventurer who summons him. He uses his arm-like tail to deal massive damage to his enemies. It is rummored that his eyes can locate hidden treasures and dungeons.",
+                "image": "https://ipfs.infura.io/ipfs/QmXwhouX6z9DLtBmpGiGwpDu9W8NCyMhtzHW4Bqfct3Rfd",
+                "image_alt": ""
+            },
+            {
+                name: "Saya",
+                description: "Saya is a dragon djinn ascended to its human form that's always been mistaken as a demon because of her wing's appearance. She once saved a child from werewolves but instead of thanking her, villagers threw mud at her calling her a demon. Saya uses ice type spells to pierce into enemies' defence.",
+                image: "https://ipfs.infura.io/ipfs/QmUDQdkK6DVm6r281TMgskRDdU7WK6x2dkw2TMCiJ9mzYF",
+                image_alt: ""
+            }
+        ]
 
-        //Content Box;
-        let content = this.add.container();
-        const contentBox = this.add.rectangle(gameW/2 - paddingX*2, gameH * 0.22, gameW/2 + paddingX, gameH*0.745, 0x000000, 0.9).setOrigin(0);
+        let sizer = new FixWidthSizer(this, {
+            space: {
+                left: 10,
+                right: 10,
+                top: 10,
+                bottom: 10,
+                item: 10,
+                line: 10
+            }
+        }).layout();
+        this.add.existing(sizer);
 
-        //Inventory Tabs
-        let tabContainer = this.add.container();
-        //const tabBox = this.add.rectangle(contentBox.x - paddingX, contentBox.y, gameW* 0.4, gameH*0.745, 0x000000, 0.9).setOrigin(1,0);
+        sampleData.forEach((item, index) => {
+            sizer.add(
+                this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive().setData(item)
+                    .on('pointerdown', () => {
+                        this.detailsText.setText(item.description); 
+                    })
+            );
+        })
 
-        let tabs = new Tabs(this, {
-            x: paddingX,
-            y: gameH * 0.22 - paddingX*2,
+        let panelBox = new ScrollablePanel(this, {
+            x: 0,
+            y: 0,
             width: gameW* 0.4,
             height: gameH*0.745,
-            panel: this.add.rectangle(0,0, gameW* 0.4, gameH*0.745, 0x000000, 0.9),
+            scrollMode:0,
+            background: this.add.rectangle(0,0, gameW* 0.4, gameH*0.745, 0x000000, 0.9),
+            panel: {
+                child: sizer
+            },
+            space:{
+                left: 10,
+                right: 20,
+                top: 10,
+                bottom: 10,
+            },
+            slider: {
+                track: this.add.rectangle(0,0, 10, gameH*0.745, 0x000000, 0.9).setStrokeStyle(1, 0xffffff, 0.8),
+                thumb: this.add.rectangle(0,0,10,paddingX*2, 0xffffff,0.8),
+                input: 'drag',
+                position: 'right',
+            },
+        }).setOrigin(0).layout();
+        this.add.existing(panelBox);
+
+        //Inventory Tabs
+        let tabs = new Tabs(this, {
+            x: paddingX,
+            y: gameH * 0.22 - paddingX*2 + 10,
+            width: gameW* 0.4,
+            height: gameH*0.745,
+            panel: panelBox,
             topButtons: [
-                this.add.rectangle(0, 0, paddingX*3, paddingX*2, 0x550000 ),
-                this.add.rectangle(0, 0, paddingX*3, paddingX*2, 0x005500 ),
-                this.add.rectangle(0, 0, paddingX*3, paddingX*2, 0x000055 ),
+                this.add.rectangle(0, 0, paddingX*3, paddingX*2, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, paddingX*3, paddingX*2, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, paddingX*3, paddingX*2, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
             ]
         }).setOrigin(0).layout();
-
         
         tabs.on('button.click', (button, groupName, index) => {
-            console.log(button, groupName + '-' + index);
-            tabs.getElement('panel').setFillStyle(button.fillColor);
+            // let tabButtons = tabs.getElement('topButtons');
+
+            // tabButtons.forEach((button,indexButton) => {
+            //     if(indexButton == index){
+            //         button.setScale(1);
+            //     }
+            //     else{
+            //         button.setScale(1,0.8);
+            //     }
+            // })
+
+            sizer.clear(true);
+
+            if(index == 0){
+                sampleData.forEach((item, index) => {
+                    sizer.add(
+                        this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive().setData(item)
+                        .on('pointerdown', () => {
+                            this.detailsText.setText(item.description); 
+                        })
+                    );
+                })
+            }
+            else if(index == 1){
+                sizer.add(this.add.text(0,0, 'No items available', {fontFamily: 'Arial'}));
+            }
+            else{
+                sizer.add(this.add.text(0,0, 'No skills available', {fontFamily: 'Arial'}));
+            }    
+            
+            panelBox.layout();
         });
 
         this.add.existing(tabs);
- 
+
+        let itemsOnTab = sizer.getElement('items');
+
+        //Details Box
+        const detailsBox = this.add.rectangle(gameW/2 - paddingX*2, tabs.y + paddingX*2 - 10, gameW/2 + paddingX, gameH*0.745, 0x000000, 0.9).setOrigin(0);
+        const messageDetailsBox = this.add.rectangle(
+            detailsBox.x  + paddingX,
+            detailsBox.y + detailsBox.displayHeight - paddingX - 110 ,
+            detailsBox.displayWidth - paddingX*2,
+            110, 0x000000,1).setStrokeStyle(0.5, 0xffffff,1).setOrigin(0);
+
+        this.detailsText = this.add.text(messageDetailsBox.x + 10, messageDetailsBox.y + 10, itemsOnTab[0].data.list.description, {fontFamily: 'Arial', align: 'justify'})
+            .setOrigin(0)
+            .setWordWrapWidth(messageDetailsBox.displayWidth-20, true);
 
         //UI Containers/Groups
         gems.add([gem_box, gem_icon, gem_value]);
