@@ -70,6 +70,8 @@ class CharacterInventory extends BaseScene {
                 this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive().setData(item)
                     .on('pointerdown', () => {
                         this.detailsText.setText(item.description); 
+                        detailsImage.setTexture(`${item.name}_alt`);
+                        displayName.setText(item.name);
                     })
             );
         })
@@ -132,7 +134,9 @@ class CharacterInventory extends BaseScene {
                     sizer.add(
                         this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive().setData(item)
                         .on('pointerdown', () => {
-                            this.detailsText.setText(item.description); 
+                            this.detailsText.setText(item.description);
+                            detailsImage.setTexture(`${item.name}_alt`);
+                            displayName.setText(item.name);
                         })
                     );
                 })
@@ -153,15 +157,47 @@ class CharacterInventory extends BaseScene {
 
         //Details Box
         const detailsBox = this.add.rectangle(gameW/2 - paddingX*2, tabs.y + paddingX*2 - 10, gameW/2 + paddingX, gameH*0.745, 0x000000, 0.9).setOrigin(0);
+
+        const summonCircle = this.add.sprite(
+            detailsBox.x + detailsBox.displayWidth/2,
+            detailsBox.y+ detailsBox.displayHeight/2 - paddingX,  
+            'summoningCircle2'
+        ).setOrigin(0.5).setScale(0.9).setAlpha(0.7);
+
+        const detailsImage = this.add.sprite(
+            detailsBox.x + detailsBox.displayWidth/2,
+            detailsBox.y+ detailsBox.displayHeight - 1,
+            `${itemsOnTab[0].data.list.name}_alt`
+        ).setOrigin(0.5,1); 
+        
         const messageDetailsBox = this.add.rectangle(
-            detailsBox.x  + paddingX,
-            detailsBox.y + detailsBox.displayHeight - paddingX - 110 ,
-            detailsBox.displayWidth - paddingX*2,
+            detailsBox.x  + paddingX/2,
+            detailsBox.y + detailsBox.displayHeight - paddingX/2 - 110 ,
+            detailsBox.displayWidth - paddingX,
             110, 0x000000,1).setStrokeStyle(0.5, 0xffffff,1).setOrigin(0);
 
         this.detailsText = this.add.text(messageDetailsBox.x + 10, messageDetailsBox.y + 10, itemsOnTab[0].data.list.description, {fontFamily: 'Arial', align: 'justify'})
             .setOrigin(0)
             .setWordWrapWidth(messageDetailsBox.displayWidth-20, true);
+
+        const displayName = this.add.text(
+            detailsBox.x + paddingX, detailsBox.y + paddingX, 
+            itemsOnTab[0].data.list.name, 
+            { fontFamily:'Arial', fontSize: 20, fontStyle: 'Bold Italic'} 
+        ).setOrigin(0);
+
+        this.tweens.add({
+            targets: detailsImage,
+            scale: { value: 1.01, duration: 800, ease: 'easeIn'},
+            yoyo: true,
+            repeat: -1
+        });
+
+        this.tweens.add({
+            targets: summonCircle,
+            angle: { value: 360, duration: 60000, ease: 'Linear'},
+            repeat: -1
+        });
 
         //UI Containers/Groups
         gems.add([gem_box, gem_icon, gem_value]);

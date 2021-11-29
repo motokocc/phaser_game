@@ -81,6 +81,11 @@ import twitterIcon from '../images/settings/twitter.png';
 import volumeIcon from '../images/settings/volume.png';
 import youtubeIcon from '../images/settings/youtube.png';
 
+//inventory
+import alphaAlt from '../images/image_alt/alpha_alt.png';
+import sayaAlt from '../images/image_alt/saya_alt.png';
+import summoningCircle2 from '../images/summoning_circle_2.png';
+
 class LoadingScreen extends Phaser.Scene {
 
     init(data){
@@ -91,6 +96,11 @@ class LoadingScreen extends Phaser.Scene {
         //From IPFS
         this.load.image('Alpha', "https://ipfs.infura.io/ipfs/QmXwhouX6z9DLtBmpGiGwpDu9W8NCyMhtzHW4Bqfct3Rfd");
         this.load.image('Saya', "https://ipfs.infura.io/ipfs/QmUDQdkK6DVm6r281TMgskRDdU7WK6x2dkw2TMCiJ9mzYF");
+
+        //Image Alt
+        this.load.image('Alpha_alt', alphaAlt);
+        this.load.image('Saya_alt', sayaAlt);
+        this.load.image('summoningCircle2', summoningCircle2);
         
         //Main Screen
         this.load.image('explore_button', explore_button);
