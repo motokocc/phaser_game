@@ -41,26 +41,7 @@ class CharacterInventory extends BaseScene {
         let backButton = this.add.sprite(gameW-paddingX, paddingX, 'exitIcon').setOrigin(1,0).setScale(0.6).setInteractive();
         backButton.on('pointerdown', () => this.scene.start("game"));
 
-        let cardInventoryData = [
-            {
-                name: "Alpha",
-                description: "Alpha is a beast djinn ready to give a helping hand to any adventurer who summons him. He uses his arm-like tail to deal massive damage to his enemies. It is rummored that his eyes can locate hidden treasures and dungeons.",
-                image: "https://ipfs.infura.io/ipfs/QmXwhouX6z9DLtBmpGiGwpDu9W8NCyMhtzHW4Bqfct3Rfd",
-                properties: {
-                    attribute: "fire",
-                    rarity: 1
-                }
-            },
-            {
-                name: "Saya",
-                description: "Saya is a dragon djinn ascended to its human form that's always been mistaken as a demon because of her wing's appearance. She once saved a child from werewolves but instead of thanking her, villagers threw mud at her calling her a demon. Saya uses ice type spells to pierce into enemies' defence.",
-                image: "https://ipfs.infura.io/ipfs/QmUDQdkK6DVm6r281TMgskRDdU7WK6x2dkw2TMCiJ9mzYF",
-                properties: {
-                    attribute: "water",
-                    rarity: 5
-                }
-            },
-        ]
+        let cardInventoryData = this.player.playerInfo.cards.sort((a, b) => (b.properties.rarity - a.properties.rarity));
 
         let sizer = new FixWidthSizer(this, {
             space: {

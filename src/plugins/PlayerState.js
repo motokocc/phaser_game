@@ -66,19 +66,9 @@ class Player extends Phaser.Plugins.BasePlugin {
                 if(networkData) {
                     this.gameData = new web3.eth.Contract(ElvenHunt.abi, networkData.address);
                     let cardData = [];
-                    //Blockchain Data - player name, draw count, cards
-                    let cardsFromBlockchain = [];
-                    const playerCardsCounter = await this.gameData.methods.playerCardsCounter(accounts[0]).call();
-                    if(playerCardsCounter){
-                        for(let i = 1; i <= playerCardsCounter; i++){
-                            let card = await this.gameData.methods.playerCards(accounts[0],i).call();
-                            const response = await fetch(card.tokenURI);
-                            let data = await response.json();
-                            data = {...data, quantity: card.amount, id: card.id, cardRarity: card.cardRarity};
 
-                            cardsFromBlockchain.push(data);
-                        }
-                    }
+                    //Blockchain Data - player name, draw count, cards
+                    let cardsFromBlockchain = await this.getCards(accounts[0]);
 
                     //Firebase Data - gold
                     //Getting data from /users/${account[0]}
@@ -160,7 +150,6 @@ class Player extends Phaser.Plugins.BasePlugin {
             newCard.name = "Alpha",
             newCard.description = "Alpha is a beast djinn ready to give a helping hand to any adventurer who summons him. He uses his arm-like tail to deal massive damage to his enemies. It is rummored that his eyes can locate hidden treasures and dungeons.",
             newCard.image = "https://ipfs.infura.io/ipfs/QmXwhouX6z9DLtBmpGiGwpDu9W8NCyMhtzHW4Bqfct3Rfd",
-            newCard.image_alt = "test_again"
             this.playerInfo.cards = [...this.playerInfo.cards, newCard];
 
             await setDoc(doc(this.users, this.playerInfo.address), this.playerInfo);
@@ -183,9 +172,11 @@ class Player extends Phaser.Plugins.BasePlugin {
                 let cardMinted = await this.gameData.methods.mintCard(mintType).send({from: this.playerInfo.address, value: String(mintRate)});
                 let cardData = cardMinted.events.ItemMinted.returnValues.card;
 
+                let quantity = Number(await this.gameData.methods.balanceOf(this.playerInfo.address, cardData.id).call());
+
                 const response = await fetch(cardData.tokenURI);
                 let data = await response.json();
-                data = {...data, quantity: cardData.amount, id: cardData.id, cardRarity: cardData.cardRarity };
+                data = {...data, quantity, id: cardData.id };
 
                 newCard = {...data};
 
@@ -204,6 +195,32 @@ class Player extends Phaser.Plugins.BasePlugin {
             }
         }
         return newCard;
+    }
+
+    getCards  = async(address) =>{
+        const ids = [100, 101, 102, 200, 201, 202, 300, 301, 302, 400, 401, 402, 500, 501, 502];
+
+        let blockchainCards = [];
+
+        try{
+            for(const id of ids){
+
+                let quantity = Number(await this.gameData.methods.balanceOf(address, id).call());
+                if(quantity){
+                    let tokenURI = await this.gameData.methods.uri(id).call();
+                    const response = await fetch(tokenURI);
+                    let data = await response.json();
+                    data = {...data, quantity, id};
+
+                    blockchainCards.push(data);
+                }
+            } 
+        }
+        catch(e){
+            console.log(e.message);
+        }
+     
+        return blockchainCards;
     }
 }
 

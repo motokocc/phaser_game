@@ -25,21 +25,14 @@ contract ElvenHunt is ERC1155, Ownable {
     
      struct Card{
       uint256 id;
-      uint256 amount;
-      uint256 cardRarity;
       string tokenURI;
     }
     
     event ItemMinted(
       uint256 id,
-      uint256 cardRarity,
-      uint256 amount,
       uint256 circulatingSupply,
       Card card
     );
-
-    mapping(address => mapping(uint256 => Card)) public playerCards;
-    mapping(address => uint256) public playerCardsCounter;
 
     uint256 randNonce = 0;
 
@@ -80,22 +73,9 @@ contract ElvenHunt is ERC1155, Ownable {
         _mint(msg.sender, cardId, amount, "");
         circulatingSupplyPerItem[cardRarity][id] += amount;
       
-        Card memory _card = Card(cardId, amount, cardRarity, uriToken);
-
-        for(uint256 i = 0; i <= playerCardsCounter[msg.sender]; i++){
-            if(cardId == playerCards[msg.sender][i].id){
-                _card.amount = amount + playerCards[msg.sender][i].amount;
-                playerCards[msg.sender][i] = _card;
-                break;
-            }
-            else if(cardId != playerCards[msg.sender][i].id && playerCardsCounter[msg.sender] == i){
-                playerCardsCounter[msg.sender]++;
-                playerCards[msg.sender][playerCardsCounter[msg.sender]] = _card;
-                break;
-            }
-        }
+        Card memory _card = Card(cardId, uriToken);
         
-        emit ItemMinted(cardId, cardRarity, amount, circulatingSupplyPerItem[cardRarity][id], _card);
+        emit ItemMinted(cardId, circulatingSupplyPerItem[cardRarity][id], _card);
     }
     
     function randomNumberGenerator(uint256 _minRarity, uint256 _maxRarity) internal returns (uint) {
