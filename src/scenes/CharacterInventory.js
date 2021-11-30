@@ -7,9 +7,9 @@ import { doc, updateDoc } from "firebase/firestore";
 
 class CharacterInventory extends BaseScene {
     create(){
-        this.gameBg = this.add.image(0,0,'inventory_bg');
+        this.gameBg = this.add.image(-2,-7.5,'inventory_bg');
         this.gameBg.setOrigin(0,0);
-        this.gameBg.setScale(1.11);
+        this.gameBg.setScale(1.10);
 
         const gameW = this.game.config.width;
         const gameH = this.game.config.height;
@@ -38,26 +38,34 @@ class CharacterInventory extends BaseScene {
             {fontFamily: 'Arial'}
         ).setOrigin(0, 0.5);
 
-        let sampleData = [
+        let backButton = this.add.sprite(gameW-paddingX, paddingX, 'exitIcon').setOrigin(1,0).setScale(0.6).setInteractive();
+        backButton.on('pointerdown', () => this.scene.start("game"));
+
+        let cardInventoryData = [
             {
-                "name": "Alpha",
-                "description": "Alpha is a beast djinn ready to give a helping hand to any adventurer who summons him. He uses his arm-like tail to deal massive damage to his enemies. It is rummored that his eyes can locate hidden treasures and dungeons.",
-                "image": "https://ipfs.infura.io/ipfs/QmXwhouX6z9DLtBmpGiGwpDu9W8NCyMhtzHW4Bqfct3Rfd",
-                "image_alt": ""
+                name: "Alpha",
+                description: "Alpha is a beast djinn ready to give a helping hand to any adventurer who summons him. He uses his arm-like tail to deal massive damage to his enemies. It is rummored that his eyes can locate hidden treasures and dungeons.",
+                image: "https://ipfs.infura.io/ipfs/QmXwhouX6z9DLtBmpGiGwpDu9W8NCyMhtzHW4Bqfct3Rfd",
+                properties: {
+                    attribute: "fire",
+                    rarity: 1
+                }
             },
             {
                 name: "Saya",
                 description: "Saya is a dragon djinn ascended to its human form that's always been mistaken as a demon because of her wing's appearance. She once saved a child from werewolves but instead of thanking her, villagers threw mud at her calling her a demon. Saya uses ice type spells to pierce into enemies' defence.",
                 image: "https://ipfs.infura.io/ipfs/QmUDQdkK6DVm6r281TMgskRDdU7WK6x2dkw2TMCiJ9mzYF",
-                image_alt: ""
-            }
+                properties: {
+                    attribute: "water",
+                    rarity: 5
+                }
+            },
         ]
 
         let sizer = new FixWidthSizer(this, {
             space: {
                 left: 10,
                 right: 10,
-                top: 10,
                 bottom: 10,
                 item: 10,
                 line: 10
@@ -65,13 +73,15 @@ class CharacterInventory extends BaseScene {
         }).layout();
         this.add.existing(sizer);
 
-        sampleData.forEach((item, index) => {
+        cardInventoryData.forEach((item, index) => {
             sizer.add(
                 this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive().setData(item)
                     .on('pointerdown', () => {
                         this.detailsText.setText(item.description); 
                         detailsImage.setTexture(`${item.name}_alt`);
                         displayName.setText(item.name);
+                        rarity.setTexture(`rarity_${item.properties.rarity}`);
+                        attribute.setTexture(item.properties.attribute);
                     })
             );
         })
@@ -93,8 +103,8 @@ class CharacterInventory extends BaseScene {
                 bottom: 10,
             },
             slider: {
-                track: this.add.rectangle(0,0, 10, gameH*0.745, 0x000000, 0.9).setStrokeStyle(1, 0xffffff, 0.8),
-                thumb: this.add.rectangle(0,0,10,paddingX*2, 0xffffff,0.8),
+                track: this.add.rectangle(0,0, 10, gameH*0.745, 0x000000, 0.9).setStrokeStyle(0.5, 0xffffff, 0.8),
+                thumb: this.add.rectangle(0,0,10,paddingX*4, 0xffffff,0.8).setAlpha(0.6),
                 input: 'drag',
                 position: 'right',
             },
@@ -109,43 +119,59 @@ class CharacterInventory extends BaseScene {
             height: gameH*0.745,
             panel: panelBox,
             topButtons: [
-                this.add.rectangle(0, 0, paddingX*3, paddingX*2, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
-                this.add.rectangle(0, 0, paddingX*3, paddingX*2, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
-                this.add.rectangle(0, 0, paddingX*3, paddingX*2, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
             ]
         }).setOrigin(0).layout();
+
+        tabs.getElement('topButtons').forEach((tab, index) => {
+            tab.setStrokeStyle(2, 0x000000, 1);
+            if(index == 0){
+                this.add.sprite(tab.x, tab.y - tab.displayHeight/2 ,'cards_icon').setOrigin(0.5);
+            }
+            else if(index == 1){
+                this.add.sprite(tab.x, tab.y - tab.displayHeight/2,'backpack_icon').setOrigin(0.5);
+            }
+            else{
+                this.add.sprite(tab.x, tab.y - tab.displayHeight/2 ,'magic_icon').setOrigin(0.5);
+            }
+
+        });
         
         tabs.on('button.click', (button, groupName, index) => {
-            // let tabButtons = tabs.getElement('topButtons');
+            let tabButtons = tabs.getElement('topButtons');
 
-            // tabButtons.forEach((button,indexButton) => {
-            //     if(indexButton == index){
-            //         button.setScale(1);
-            //     }
-            //     else{
-            //         button.setScale(1,0.8);
-            //     }
-            // })
+            tabButtons.forEach((button,indexButton) => {
+                if(indexButton == index){
+                    button.fillColor = 0x000000 ;
+                }
+                else{
+                    button.fillColor = 0x23140a;
+                }
+            })
 
             sizer.clear(true);
 
             if(index == 0){
-                sampleData.forEach((item, index) => {
+                cardInventoryData.forEach((item, index) => {
                     sizer.add(
                         this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive().setData(item)
                         .on('pointerdown', () => {
                             this.detailsText.setText(item.description);
                             detailsImage.setTexture(`${item.name}_alt`);
                             displayName.setText(item.name);
+                            rarity.setTexture(`rarity_${item.properties.rarity}`);
+                            attribute.setTexture(item.properties.attribute);
                         })
                     );
                 })
             }
             else if(index == 1){
-                sizer.add(this.add.text(0,0, 'No items available', {fontFamily: 'Arial'}));
+                sizer.add(this.add.text(0,0, 'No items acquired', {fontFamily: 'Arial'}));
             }
             else{
-                sizer.add(this.add.text(0,0, 'No skills available', {fontFamily: 'Arial'}));
+                sizer.add(this.add.text(0,0, 'No available skills to learn', {fontFamily: 'Arial'}));
             }    
             
             panelBox.layout();
@@ -156,7 +182,7 @@ class CharacterInventory extends BaseScene {
         let itemsOnTab = sizer.getElement('items');
 
         //Details Box
-        const detailsBox = this.add.rectangle(gameW/2 - paddingX*2, tabs.y + paddingX*2 - 10, gameW/2 + paddingX, gameH*0.745, 0x000000, 0.9).setOrigin(0);
+        const detailsBox = this.add.rectangle(gameW/2 - paddingX*2, tabs.y + paddingX*2.1 - 10, gameW/2 + paddingX, gameH*0.745, 0x000000, 0.9).setOrigin(0);
 
         const summonCircle = this.add.sprite(
             detailsBox.x + detailsBox.displayWidth/2,
@@ -185,6 +211,18 @@ class CharacterInventory extends BaseScene {
             itemsOnTab[0].data.list.name, 
             { fontFamily:'Arial', fontSize: 20, fontStyle: 'Bold Italic'} 
         ).setOrigin(0);
+
+        const rarity = this.add.sprite(
+            displayName.x,
+            displayName.y + displayName.displayHeight + paddingX/4,
+            `rarity_${itemsOnTab[0].data.list.properties.rarity}`
+        ).setOrigin(0).setScale(0.2);
+
+        const attribute = this.add.sprite(
+            detailsBox.x + detailsBox.displayWidth - paddingX,
+            displayName.y,
+            itemsOnTab[0].data.list.properties.attribute
+        ).setOrigin(1,0).setScale(0.35);
 
         this.tweens.add({
             targets: detailsImage,

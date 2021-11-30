@@ -85,6 +85,16 @@ import youtubeIcon from '../images/settings/youtube.png';
 import alphaAlt from '../images/image_alt/alpha_alt.png';
 import sayaAlt from '../images/image_alt/saya_alt.png';
 import summoningCircle2 from '../images/summoning_circle_2.png';
+import rarity_1 from '../images/rarity/rarity-1.png';
+import rarity_2 from '../images/rarity/rarity-2.png';
+import rarity_3 from '../images/rarity/rarity-3.png';
+import rarity_4 from '../images/rarity/rarity-4.png';
+import rarity_5 from '../images/rarity/rarity-5.png';
+import fire from '../images/attribute/fire.png';
+import water from '../images/attribute/water.png';
+import cards_icon from '../images/icons/cards_icon.png';
+import backpack_icon from '../images/icons/bagpack_icon.png';
+import magic_icon from '../images/icons/magic_icon.png';
 
 class LoadingScreen extends Phaser.Scene {
 
@@ -153,7 +163,19 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('twitterIcon', twitterIcon);
         this.load.image('volumeIcon', volumeIcon);
         this.load.image('youtubeIcon', youtubeIcon);
-        
+
+        //Inventory
+        this.load.image('rarity_1', rarity_1);
+        this.load.image('rarity_2', rarity_2);
+        this.load.image('rarity_3', rarity_3);
+        this.load.image('rarity_4', rarity_4);
+        this.load.image('rarity_5', rarity_5);
+        this.load.image('fire', fire);
+        this.load.image('water', water);
+        this.load.image('cards_icon', cards_icon);
+        this.load.image('magic_icon', magic_icon);
+        this.load.image('backpack_icon', backpack_icon);
+
         this.load.image('dialogueBox', dialogueBox);
         this.load.image('summoningCircle', summoningCircle);
         this.load.image('freeBtn', freeButton);
