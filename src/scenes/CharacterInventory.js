@@ -19,13 +19,13 @@ class CharacterInventory extends BaseScene {
         //Gems
         let gems = this.add.container();
         const gem_icon = this.add.sprite(gameW/2 - paddingX*3, gameH*0.07,'gems').setOrigin(0.5).setDepth(2);
-        const gem_box = this.add.rectangle(gem_icon.x, gem_icon.y, paddingX*4, paddingX, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
+        const gem_box = this.add.rexRoundRectangle(gem_icon.x, gem_icon.y, paddingX*4, paddingX, paddingX/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
         const gem_value = this.add.text(gem_box.x + gem_box.width/2, gem_box.y, this.player.playerInfo.gems || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
 
         //Gold
         let gold = this.add.container();
         const gold_icon = this.add.sprite(gameW/2 + paddingX*3, gameH*0.07,'gold').setOrigin(0.5).setDepth(2);
-        const gold_box = this.add.rectangle(gold_icon.x, gem_icon.y, paddingX*4, paddingX, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
+        const gold_box = this.add.rexRoundRectangle(gold_icon.x, gem_icon.y, paddingX*4, paddingX, paddingX/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
         const gold_value = this.add.text(gold_box.x + gold_box.width/2, gold_box.y, this.player.playerInfo.gold || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
 
         //Player Stat GUI
@@ -84,8 +84,8 @@ class CharacterInventory extends BaseScene {
                 bottom: 10,
             },
             slider: {
-                track: this.add.rectangle(0,0, 10, gameH*0.745, 0x000000, 0.9).setStrokeStyle(0.5, 0xffffff, 0.8),
-                thumb: this.add.rectangle(0,0,10,paddingX*4, 0xffffff,0.8).setAlpha(0.6),
+                track: this.add.rexRoundRectangle(0, 0, 10, gameH*0.745, 4.5, 0x000000, 0.9).setStrokeStyle(0.5, 0xffffff, 0.8),
+                thumb: this.add.rexRoundRectangle(0, 0, 10, paddingX*4, 4.5, 0xffffff, 0.8).setAlpha(0.5),
                 input: 'drag',
                 position: 'right',
             },

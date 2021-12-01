@@ -6,15 +6,29 @@ class TitleScreen extends Phaser.Scene {
 
     loadData = async() => {
         // Load Data from blockchain
+        this.loadingIndicator.setAlpha(1)
+        this.loadingIndicator.play('loading');
+
         this.connectButton.disableInteractive();
         await this.player.loadWeb3();
         if(this.player.playerInfo.address){
             this.connectButton.setTexture('startBtn');
         }
         this.connectButton.setInteractive();
+        this.loadingIndicator.setAlpha(0)
+        this.loadingIndicator.stop();
     }
  
     create(){
+        this.anims.create({
+            key: "loading",
+            frameRate: 8,
+            frames: this.anims.generateFrameNumbers("loading", { start: 0, end: 7 }),
+            repeat: -1
+        });
+
+        this.loadingIndicator = this.add.sprite(this.game.config.width/2, this.game.config.height/2, 'loading').setDepth(20).setScale(0.3).setAlpha(0);
+
         this.gameBg = this.add.image(0,0,'background');
         this.gameBg.setOrigin(0,0);
         this.gameBg.setScale(1.1);

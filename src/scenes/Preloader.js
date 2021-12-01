@@ -61,6 +61,7 @@ import gift_button from '../images/buttons/gift_button.png';
 import gold from '../images/buttons/gold.png';
 import gems from '../images/buttons/gems.png';
 import player_gui_box from '../images/buttons/player_gui_box.png';
+import loading from '../images/spritesheets/loading_spritesheet.png'
 
 //Daily Roullete
 import elfPirate from '../images/daily_roullete/elf-pirate.png';
@@ -113,6 +114,7 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('summoningCircle2', summoningCircle2);
         
         //Main Screen
+        this.load.spritesheet("loading", loading, { frameWidth: 300, frameHeight: 300 });
         this.load.image('explore_button', explore_button);
         this.load.image('mining_button', mining_button);
         this.load.image('pvp_button', pvp_button);
