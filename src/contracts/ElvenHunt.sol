@@ -27,9 +27,15 @@ contract ElvenHunt is ERC1155, Ownable {
     //NFT Marketplace
     uint public itemCounter = 0;
     mapping(uint => Item) public items;
-    mapping(address => mapping(uint => uint)) public playerToItemsOnSale;
+    mapping(address => mapping(uint => ItemSale)) public playerToItemsOnSale;
     mapping(address => uint) public playerToRewardPoints;
     uint public commissionFeePercentage = 3;
+
+    struct ItemSale{
+        uint orderId;
+        uint quantity;
+        uint price;
+    }
 
     struct Item {
         uint id; // auto generated id
@@ -132,23 +138,27 @@ contract ElvenHunt is ERC1155, Ownable {
     }
 
     function sellItem(uint _itemId, uint _price, uint quantity) public{
-        uint itemOnSale = playerToItemsOnSale[msg.sender][_itemId];
+        uint itemOnSale = playerToItemsOnSale[msg.sender][_itemId].quantity;
 
         require(msg.sender != address(0), "Not a valid wallet address");
         require(quantity >= 1, "Quantity should be more than 1");
         require(balanceOf(msg.sender, _itemId) >= 1, "You don't have this item to sell");
         require(balanceOf(msg.sender, _itemId) >= quantity, "Not enough item in your wallet to sell");
+        require(playerToItemsOnSale[msg.sender][_itemId].orderId <= 0, "You have an existing sale on this item. Please cancel it first");
         require(balanceOf(msg.sender, _itemId) - itemOnSale >= quantity, "You have an existing sale. You can't sell more than what you have");
 
         itemCounter++;
         Item memory _item = Item(itemCounter, _itemId, _price, quantity, 0, payable(msg.sender), new address[](0), true);
         items[itemCounter] = _item;
-        playerToItemsOnSale[msg.sender][_itemId] = itemOnSale + quantity;
+
+        ItemSale memory itemSale = ItemSale(itemCounter, itemOnSale + quantity, _price);
+        playerToItemsOnSale[msg.sender][_itemId] = itemSale;
 
         emit ItemListed(itemCounter, _itemId, _price, quantity, 0, payable(msg.sender), new address[](0), true);
     }
 
-    function buyItem(uint _orderId, uint quantity) public payable {        
+    function buyItem(uint _orderId, uint quantity) public payable {
+        
         address payable _seller = items[_orderId].seller;
         uint _itemId = items[_orderId].itemId;
 
@@ -163,17 +173,21 @@ contract ElvenHunt is ERC1155, Ownable {
         uint netSale = msg.value - salesCommission; 
 
         _seller.transfer(netSale);
+
         _safeTransferFrom(_seller, msg.sender, _itemId, quantity, "");
 
         items[_orderId].buyers.push(msg.sender);
+
         items[_orderId].available = items[_orderId].available - quantity;
         items[_orderId].sold = items[_orderId].sold + quantity;
 
         if(items[_orderId].available <= 0){
             items[_orderId].forSale = false;
+            playerToItemsOnSale[_seller][_itemId].price = 0;
+            playerToItemsOnSale[_seller][_itemId].orderId = 0;
         }
 
-        playerToItemsOnSale[_seller][_itemId] = playerToItemsOnSale[_seller][_itemId] - quantity;
+        playerToItemsOnSale[_seller][_itemId].quantity = playerToItemsOnSale[_seller][_itemId].quantity - quantity;
         playerToRewardPoints[msg.sender] = msg.value;
 
         emit ItemSold(items[_orderId].id, _itemId, msg.value, quantity, items[_orderId].sold, _seller, items[_orderId].buyers, items[_orderId].forSale);
@@ -182,6 +196,10 @@ contract ElvenHunt is ERC1155, Ownable {
     function cancelSale(uint _orderId) public {
         require(msg.sender == items[_orderId].seller, "You do not have permission to cancel this sale");
         items[_orderId].forSale = false;
+
+        ItemSale memory itemSaleToCancel = ItemSale(0,0,0);
+
+        playerToItemsOnSale[msg.sender][items[_orderId].itemId] = itemSaleToCancel;
     }
 
     function withdraw(uint _amount) public onlyOwner{
