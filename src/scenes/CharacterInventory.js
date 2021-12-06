@@ -4,6 +4,7 @@ import { Tabs } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { ScrollablePanel } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { FixWidthSizer } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { doc, updateDoc } from "firebase/firestore";
+import { cardStats } from '../js/cardStats';
 
 class CharacterInventory extends BaseScene {
     create(){

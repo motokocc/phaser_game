@@ -96,6 +96,8 @@ import water from '../images/attribute/water.png';
 import cards_icon from '../images/icons/cards_icon.png';
 import backpack_icon from '../images/icons/bagpack_icon.png';
 import magic_icon from '../images/icons/magic_icon.png';
+import stats_icon from '../images/icons/stats_icon.png';
+import cart_icon from '../images/icons/cart_icon.png';
 
 class LoadingScreen extends Phaser.Scene {
 
@@ -177,6 +179,8 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('cards_icon', cards_icon);
         this.load.image('magic_icon', magic_icon);
         this.load.image('backpack_icon', backpack_icon);
+        this.load.image('stats_icon', stats_icon);
+        this.load.image('cart_icon', cart_icon);
 
         this.load.image('dialogueBox', dialogueBox);
         this.load.image('summoningCircle', summoningCircle);

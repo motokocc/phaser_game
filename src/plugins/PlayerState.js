@@ -180,7 +180,7 @@ class Player extends Phaser.Plugins.BasePlugin {
 
                 const response = await fetch(cardData.tokenURI);
                 let data = await response.json();
-                data = {...data, quantity, id: cardData.id, type: "card" };
+                data = {...data, quantity, id: cardData.id, type: "card", fromBlockchain: true };
 
                 newCard = {...data};
 
@@ -214,7 +214,7 @@ class Player extends Phaser.Plugins.BasePlugin {
                     let tokenURI = await this.gameData.methods.uri(id).call();
                     const response = await fetch(tokenURI);
                     let data = await response.json();
-                    data = {...data, quantity, id, type: "card"};
+                    data = {...data, quantity, id, type: "card", fromBlockchain: true };
 
                     blockchainCards.push(data);
                 }

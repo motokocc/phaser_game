@@ -4,6 +4,7 @@
     "image": "",
     "quantity": 1,
     "type": "card",
+    "fromBlockchain" : false,
     "id": 888,
     "properties": {
         "attribute": "fire",
