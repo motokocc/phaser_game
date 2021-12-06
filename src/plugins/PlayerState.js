@@ -25,6 +25,8 @@ class Player extends Phaser.Plugins.BasePlugin {
             drawCount: 0,
             gold: 0,
             gems: 0,
+            level: 1,
+            role: "Adventurer",
             dateJoined: null,
             lastLogin: new Date(),
             lastSpin: null,
@@ -81,7 +83,7 @@ class Player extends Phaser.Plugins.BasePlugin {
 
                     if (user.exists()) {
                         //To add more data later for drops that can be exchanged to nfts
-                        const { gold, drawCount, isFirstTime, name, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes } = user.data();
+                        const { gold, drawCount, isFirstTime, name, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes, role, level } = user.data();
 
                         cardData = user.data().cards? user.data().cards.filter(card => card.name === "Alpha") : [];
 
@@ -95,7 +97,7 @@ class Player extends Phaser.Plugins.BasePlugin {
                         }
                             
                         //Set Player Data
-                        this.setPlayerInfo(name, accounts[0], drawCount, gold, cards, isFirstTime, gems, lastLogin.toDate(), lastSpin? lastSpin.toDate() : null, dateJoined.toDate(), lastReward? lastReward.toDate():null, lastRead, couponCodes );
+                        this.setPlayerInfo(name, accounts[0], drawCount, gold, cards, isFirstTime, gems, lastLogin.toDate(), lastSpin? lastSpin.toDate() : null, dateJoined.toDate(), lastReward? lastReward.toDate():null, lastRead, couponCodes, role, level );
                         
                         //Set mail
                         this.announcements = mail.data();
@@ -119,7 +121,7 @@ class Player extends Phaser.Plugins.BasePlugin {
         }
     }
 
-    setPlayerInfo(name, address, drawCount, gold, cards,isFirstTime, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes ){
+    setPlayerInfo(name, address, drawCount, gold, cards,isFirstTime, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes, role, level ){
         this.playerInfo = {
             name,
             address,
@@ -133,7 +135,9 @@ class Player extends Phaser.Plugins.BasePlugin {
             dateJoined,
             lastReward,
             lastRead,
-            couponCodes
+            couponCodes,
+            role,
+            level
         }
         console.log('Player Info Set!',this.playerInfo);
     }
@@ -176,7 +180,7 @@ class Player extends Phaser.Plugins.BasePlugin {
 
                 const response = await fetch(cardData.tokenURI);
                 let data = await response.json();
-                data = {...data, quantity, id: cardData.id };
+                data = {...data, quantity, id: cardData.id, type: "card" };
 
                 newCard = {...data};
 
@@ -210,7 +214,7 @@ class Player extends Phaser.Plugins.BasePlugin {
                     let tokenURI = await this.gameData.methods.uri(id).call();
                     const response = await fetch(tokenURI);
                     let data = await response.json();
-                    data = {...data, quantity, id};
+                    data = {...data, quantity, id, type: "card"};
 
                     blockchainCards.push(data);
                 }

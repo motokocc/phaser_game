@@ -3,6 +3,7 @@
     "description": "",
     "image": "",
     "quantity": 1,
+    "type": "card",
     "id": 888,
     "properties": {
         "attribute": "fire",

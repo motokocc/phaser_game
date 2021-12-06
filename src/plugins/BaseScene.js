@@ -99,6 +99,8 @@ class BaseScene extends Phaser.Scene {
                         drawCount: 0,
                         gold: 0,
                         gems: 0,
+                        level: 1,
+                        role: "Adventurer",
                         dateJoined: null,
                         lastLogin: new Date(),
                         lastSpin: null,
