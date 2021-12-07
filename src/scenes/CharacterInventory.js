@@ -60,13 +60,15 @@ class CharacterInventory extends BaseScene {
                 this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive().setData(item)
                     .on('pointerdown', () => {
                         this.detailsText.setText(item.description); 
-                        detailsImage.setTexture(`${item.name}_alt`);
+                        detailsImage.setTexture(`${item.name}_alt`).setData(item);
                         displayName.setText(item.name);
                         rarity.setTexture(`rarity_${item.properties.rarity}`);
                         attribute.setTexture(item.properties.attribute);
                     })
             );
         })
+
+        
 
         let panelBox = new ScrollablePanel(this, {
             x: 0,
@@ -110,13 +112,13 @@ class CharacterInventory extends BaseScene {
         tabs.getElement('topButtons').forEach((tab, index) => {
             tab.setStrokeStyle(2, 0x000000, 1);
             if(index == 0){
-                this.add.sprite(tab.x, tab.y - tab.displayHeight/2 ,'cards_icon').setOrigin(0.5);
+                this.cardIcon = this.add.sprite(tab.x, tab.y - tab.displayHeight/2 ,'cards_icon').setOrigin(0.5);
             }
             else if(index == 1){
-                this.add.sprite(tab.x, tab.y - tab.displayHeight/2,'backpack_icon').setOrigin(0.5);
+                this.backpackIcon = this.add.sprite(tab.x, tab.y - tab.displayHeight/2,'backpack_icon').setOrigin(0.5);
             }
             else{
-                this.add.sprite(tab.x, tab.y - tab.displayHeight/2 ,'magic_icon').setOrigin(0.5);
+                this.magicIcon = this.add.sprite(tab.x, tab.y - tab.displayHeight/2 ,'magic_icon').setOrigin(0.5);
             }
 
         });
@@ -141,7 +143,7 @@ class CharacterInventory extends BaseScene {
                         this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive().setData(item)
                         .on('pointerdown', () => {
                             this.detailsText.setText(item.description);
-                            detailsImage.setTexture(`${item.name}_alt`);
+                            detailsImage.setTexture(`${item.name}_alt`).setData(item);
                             displayName.setText(item.name);
                             rarity.setTexture(`rarity_${item.properties.rarity}`);
                             attribute.setTexture(item.properties.attribute);
@@ -155,13 +157,98 @@ class CharacterInventory extends BaseScene {
             else{
                 sizer.add(this.add.text(0,0, 'No available skills to learn', {fontFamily: 'Arial'}));
             }    
-            
+
             panelBox.layout();
         });
 
         this.add.existing(tabs);
+        
 
         let itemsOnTab = sizer.getElement('items');
+
+        //Stats Tabs
+        let sizerRight = new FixWidthSizer(this, {
+            space: {
+                item: 10,
+                line: 10
+            }
+        }).layout();
+        this.add.existing(sizerRight);
+
+        let panelBoxRight = new ScrollablePanel(this, {
+            x: 0,
+            y: 0,
+            width: gameW* 0.4,
+            height: gameH*0.745,
+            scrollMode:0,
+            background: this.add.rectangle(0,0, gameW* 0.4, gameH*0.745, 0x000000, 0.9),
+            panel: {
+                child: sizerRight
+            },
+            space:{
+                left: paddingX,
+                right: 20,
+                top: paddingX,
+                bottom: 10,
+            },
+            slider: {
+                track: this.add.rexRoundRectangle(0, 0, 10, gameH*0.745, 4.5, 0x000000, 0),
+                thumb: this.add.rexRoundRectangle(0, 0, 10, paddingX*4, 4.5, 0xffffff, 0),
+                input: 'drag',
+                position: 'right',
+            },
+        }).setOrigin(0).layout();
+        this.add.existing(panelBoxRight);
+        
+        let statsTitle = this.add.text(0,0, 'Stats', { fontFamily:'Arial', fontSize: 20, fontStyle: 'Bold Italic'} );
+
+        sizerRight.add(statsTitle);
+
+        let tabsRight = new Tabs(this, {
+            x: gameW,
+            y: gameH * 0.22 - paddingX*2 + 10,
+            width: gameW* 0.4,
+            panel: panelBoxRight,
+            space:{
+                topButtonsOffset:  (gameW*0.4) - paddingX*9.5
+            },
+            topButtons: [
+                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x000000, 0.95 ).setOrigin(0,1).setScale(0.8),
+                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.95 ).setOrigin(0,1).setScale(0.8),
+                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.95 ).setOrigin(0,1).setScale(0.8),
+            ]
+        }).setOrigin(0).layout();
+
+        
+        tabsRight.getElement('topButtons').forEach((tab, index) => {
+            tab.setStrokeStyle(2, 0x000000, 0.9);
+            if(index == 0){
+                this.statsIcon = this.add.sprite(tab.x + tab.displayWidth/2, tab.y - tab.displayHeight/2 ,'stats_icon').setOrigin(0.5);
+            }
+            else if(index == 1){
+                this.skillIcon = this.add.sprite(tab.x + tab.displayWidth/2, tab.y - tab.displayHeight/2,'magic_icon').setOrigin(0.5);
+            }
+            else{
+                this.cartIcon = this.add.sprite(tab.x + tab.displayWidth/2, tab.y - tab.displayHeight/2 ,'cart_icon').setOrigin(0.5);
+            }
+
+        });
+
+        tabsRight.on('button.click', (button, groupName, index) => {
+            let tabButtonsRight = tabsRight.getElement('topButtons');
+
+            tabButtonsRight.forEach((button,indexButton) => {
+                if(indexButton == index){
+                    button.fillColor = 0x000000 ;
+                }
+                else{
+                    button.fillColor = 0x23140a;
+                }
+            })
+            panelBoxRight.layout();
+        });
+
+        this.add.existing(tabsRight);
 
         //Details Box
         const detailsBox = this.add.rectangle(gameW/2 - paddingX*2, tabs.y + paddingX*2.1 - 10, gameW/2 + paddingX, gameH*0.745, 0x000000, 0.9).setOrigin(0);
@@ -176,7 +263,7 @@ class CharacterInventory extends BaseScene {
             detailsBox.x + detailsBox.displayWidth/2,
             detailsBox.y+ detailsBox.displayHeight - 1,
             `${itemsOnTab[0].data.list.name}_alt`
-        ).setOrigin(0.5,1); 
+        ).setOrigin(0.5,1).setInteractive().setData(itemsOnTab[0].data.list); 
         
         const messageDetailsBox = this.add.rectangle(
             detailsBox.x  + paddingX/2,
@@ -219,11 +306,93 @@ class CharacterInventory extends BaseScene {
             repeat: -1
         });
 
+        //Slide effect
+        this.allUiGroup = this.add.container();
+
+        this.allUiGroup.add(tabs.getElement('topButtons'));
+        this.allUiGroup.add([panelBox.getElement('background'), panelBox.getElement('slider.track'), panelBox.getElement('slider.thumb')]);
+        this.allUiGroup.add([
+            this.magicIcon, this.backpackIcon, this.cardIcon,
+            detailsBox, summonCircle, displayName, rarity, attribute, detailsImage, messageDetailsBox, this.detailsText
+        ]);
+
+        this.allUiGroup.add(tabsRight.getElement('topButtons'));
+        this.allUiGroup.add([panelBoxRight.getElement('background'), panelBoxRight.getElement('slider.track'), panelBoxRight.getElement('slider.thumb')]);
+        this.allUiGroup.add([
+            this.statsIcon, this.skillIcon, this.cartIcon
+        ]);
+
+        this.detailsImageToggle = false;
+        detailsImage.on('pointerdown', () => {
+            sizerRight.clear(true);
+
+            let stat = cardStats.filter(data => data.name == detailsImage.data.list.name)[0];
+            let { health, attack, defence, speed, critRate, critDamage, evasion, accuracy, cooldownReduction } = stat;
+
+            let statDetails = this.add.rexTagText(0,0,
+                [
+                    `<class='statLine'>Health : ${health}</class>`,
+                    `<class='statLine'>Attack : ${attack}</class>`,
+                    `<class='statLine'>Defence : ${defence}</class>`,
+                    `<class='statLine'>Speed : ${speed}</class>`,
+                    `<class='statLine'>Crit Rate : ${critRate.toFixed(2)}%</class>`,
+                    `<class='statLine'>Crit Damage : ${critDamage.toFixed(2)}%</class>`,
+                    `<class='statLine'>Evasion : ${evasion.toFixed(2)}%</class>`,
+                    `<class='statLine'>Accuracy : ${accuracy.toFixed(2)}%</class>`,
+                    `<class='statLine'>Cooldown Reduction : ${cooldownReduction.toFixed(2)}%</class>`
+                ]
+                ,{
+                    fontFamily: 'Arial',
+                    lineSpacing: 10, 
+                    tags: {
+                        additionalStat:{
+                            color: "green"
+                        }
+                    }
+                }
+            );
+
+            let statsTitle = this.add.text(0,0, 'Stats', { fontFamily:'Arial', fontSize: 20, fontStyle: 'Bold Italic'} );
+
+            sizerRight.add(statsTitle, { padding : { right: gameW *0.2, bottom: 10 } });
+            sizerRight.add(statDetails);
+            panelBoxRight.layout();
+
+            let sizerChildren = sizer.getElement('items');
+            let sizerChildrenRight = sizerRight.getElement('items');
+
+            this.allUiGroup.add(sizerChildren);
+            this.allUiGroup.add(sizerChildrenRight);
+
+            if(detailsImage.data.list.type == "card"){
+                this.slideEffect(-(tabs.width + paddingX));
+            }
+        });
+
         //UI Containers/Groups
         gems.add([gem_box, gem_icon, gem_value]);
         gold.add([gold_box, gold_icon, gold_value]);
         playerUI.add([player_gui_box, player_name]);
 
+    }
+
+    slideEffect(distance){
+        this.detailsImageToggle = !this.detailsImageToggle;
+
+        if(this.detailsImageToggle){
+            this.tweens.add({
+                targets: [this.allUiGroup],
+                x: { value: distance , duration: 250, ease: 'Linear'},
+                yoyo: false
+            });
+        }
+        else{
+            this.tweens.add({
+                targets: [this.allUiGroup],
+                x: { value: 0, duration: 250, ease: 'Linear'},
+                yoyo: false
+            });
+        }
     }
 }
 
