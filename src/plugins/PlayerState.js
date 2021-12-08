@@ -226,6 +226,24 @@ class Player extends Phaser.Plugins.BasePlugin {
      
         return blockchainCards;
     }
+
+    getCardSaleStatus = async(cardId) => {
+        let onSale = {};
+
+        try{
+            let itemOnSale = await this.gameData.methods.playerToItemsOnSale(this.playerInfo.address, cardId).call();
+            let itemOnHand = Number(await this.gameData.methods.balanceOf(this.playerInfo.address, cardId).call());
+
+            let { orderId, price, quantity } = itemOnSale;
+
+            onSale = { orderId: Number(orderId), price: Number(price), quantityOnSale: Number(quantity), itemOnHand };
+        }
+        catch(e){
+            console.log(e.message);
+        }
+
+        return onSale;
+    }
 }
 
 export default Player;

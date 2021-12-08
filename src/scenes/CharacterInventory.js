@@ -3,6 +3,7 @@ import BaseScene from '../plugins/BaseScene';
 import { Tabs } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { ScrollablePanel } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { FixWidthSizer } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
+import { OverlapSizer } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { doc, updateDoc } from "firebase/firestore";
 import { cardStats } from '../js/cardStats';
 
@@ -187,7 +188,7 @@ class CharacterInventory extends BaseScene {
             },
             space:{
                 left: paddingX,
-                right: 20,
+                right: paddingX,
                 top: paddingX,
                 bottom: 10,
             },
@@ -234,7 +235,7 @@ class CharacterInventory extends BaseScene {
 
         });
 
-        tabsRight.on('button.click', (button, groupName, index) => {
+        tabsRight.on('button.click', async(button, groupName, index) => {
             let tabButtonsRight = tabsRight.getElement('topButtons');
 
             tabButtonsRight.forEach((button,indexButton) => {
@@ -285,7 +286,33 @@ class CharacterInventory extends BaseScene {
                 sizerRight.add(this.add.text(0,0, 'No skills equipped', {fontFamily: 'Arial'}));
             }
             else{
-                sizerRight.add(this.add.text(0,0, 'Cart', {fontFamily: 'Arial'}));
+                try{
+                    let cartItems = await this.player.getCardSaleStatus(detailsImage.data.list.id);
+                    let { orderId, price, quantityOnSale, itemOnHand } = cartItems;
+
+                    if(detailsImage.data.list.fromBlockchain){                
+                        if(quantityOnSale >= 1){
+                            sizerRight.add(this.add.text(0,0, 'Cancel On going sale', {fontFamily: 'Arial'}));
+                        }
+                        else{                           
+                            let salesDetails = this.add.text(0,0, [
+                                `Item on hand : ${itemOnHand}`,
+                                `Item on sale : ${quantityOnSale}`,
+                                `Price : ${price > 0? price : 'N/A'}`,
+                            ], {fontFamily: 'Arial'});
+
+                            let sellbutton = this.add.rexRoundRectangle(0,0,60,salesDetails.height,5, 0x005500,1);
+                            
+                           sizerRight.add([sellbutton, salesDetails]);
+                        }  
+                    }
+                    else{
+                        sizerRight.add(this.add.text(0,0, 'This item cannot be sold in the marketplace', {fontFamily: 'Arial'}));
+                    }           
+                }
+                catch(e){
+                    console.log(e.message);
+                }
             }
 
             this.panelBoxRight.layout();
