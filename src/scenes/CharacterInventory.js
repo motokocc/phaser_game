@@ -175,7 +175,7 @@ class CharacterInventory extends BaseScene {
         }).layout();
         this.add.existing(sizerRight);
 
-        let panelBoxRight = new ScrollablePanel(this, {
+        this.panelBoxRight = new ScrollablePanel(this, {
             x: 0,
             y: 0,
             width: gameW* 0.4,
@@ -198,7 +198,7 @@ class CharacterInventory extends BaseScene {
                 position: 'right',
             },
         }).setOrigin(0).layout();
-        this.add.existing(panelBoxRight);
+        this.add.existing(this.panelBoxRight);
         
         let statsTitle = this.add.text(0,0, 'Stats', { fontFamily:'Arial', fontSize: 20, fontStyle: 'Bold Italic'} );
 
@@ -208,7 +208,7 @@ class CharacterInventory extends BaseScene {
             x: gameW,
             y: gameH * 0.22 - paddingX*2 + 10,
             width: gameW* 0.4,
-            panel: panelBoxRight,
+            panel: this.panelBoxRight,
             space:{
                 topButtonsOffset:  (gameW*0.4) - paddingX*9.5
             },
@@ -244,8 +244,58 @@ class CharacterInventory extends BaseScene {
                 else{
                     button.fillColor = 0x23140a;
                 }
-            })
-            panelBoxRight.layout();
+            });
+
+            sizerRight.clear(true);
+            this.panelBoxRight.layout();
+
+            if(index == 0){
+                let stat = cardStats.filter(data => data.name == detailsImage.data.list.name)[0];
+                let { health, attack, defence, speed, critRate, critDamage, evasion, accuracy, cooldownReduction } = stat;
+    
+                let statDetails = this.add.rexTagText(0,0,
+                    [
+                        `<class='statLine'>Health : ${health}</class>`,
+                        `<class='statLine'>Attack : ${attack}</class>`,
+                        `<class='statLine'>Defence : ${defence}</class>`,
+                        `<class='statLine'>Speed : ${speed}</class>`,
+                        `<class='statLine'>Crit Rate : ${critRate.toFixed(2)}%</class>`,
+                        `<class='statLine'>Crit Damage : ${critDamage.toFixed(2)}%</class>`,
+                        `<class='statLine'>Evasion : ${evasion.toFixed(2)}%</class>`,
+                        `<class='statLine'>Accuracy : ${accuracy.toFixed(2)}%</class>`,
+                        `<class='statLine'>Cooldown Reduction : ${cooldownReduction.toFixed(2)}%</class>`
+                    ]
+                    ,{
+                        fontFamily: 'Arial',
+                        lineSpacing: 10, 
+                        tags: {
+                            additionalStat:{
+                                color: "green"
+                            }
+                        }
+                    }
+                );
+    
+                let statsTitle = this.add.text(0,0, 'Stats', { fontFamily:'Arial', fontSize: 20, fontStyle: 'Bold Italic'} )
+    
+                sizerRight.add(statsTitle, { padding : { right: gameW *0.2, bottom: 10 } });
+                sizerRight.add(statDetails);
+            }
+            else if(index == 1){
+                sizerRight.add(this.add.text(0,0, 'No skills equipped', {fontFamily: 'Arial'}));
+            }
+            else{
+                sizerRight.add(this.add.text(0,0, 'Cart', {fontFamily: 'Arial'}));
+            }
+
+            this.panelBoxRight.layout();
+
+            let sizerChildren = sizer.getElement('items');
+            let sizerChildrenRight = sizerRight.getElement('items');
+
+            this.allUiGroup.add(sizerChildren);
+            this.allUiGroup.add(sizerChildrenRight);
+
         });
 
         this.add.existing(tabsRight);
@@ -317,53 +367,16 @@ class CharacterInventory extends BaseScene {
         ]);
 
         this.allUiGroup.add(tabsRight.getElement('topButtons'));
-        this.allUiGroup.add([panelBoxRight.getElement('background'), panelBoxRight.getElement('slider.track'), panelBoxRight.getElement('slider.thumb')]);
+        this.allUiGroup.add([this.panelBoxRight.getElement('background'), this.panelBoxRight.getElement('slider.track'), this.panelBoxRight.getElement('slider.thumb')]);
         this.allUiGroup.add([
             this.statsIcon, this.skillIcon, this.cartIcon
         ]);
 
         this.detailsImageToggle = false;
+
         detailsImage.on('pointerdown', () => {
-            sizerRight.clear(true);
-
-            let stat = cardStats.filter(data => data.name == detailsImage.data.list.name)[0];
-            let { health, attack, defence, speed, critRate, critDamage, evasion, accuracy, cooldownReduction } = stat;
-
-            let statDetails = this.add.rexTagText(0,0,
-                [
-                    `<class='statLine'>Health : ${health}</class>`,
-                    `<class='statLine'>Attack : ${attack}</class>`,
-                    `<class='statLine'>Defence : ${defence}</class>`,
-                    `<class='statLine'>Speed : ${speed}</class>`,
-                    `<class='statLine'>Crit Rate : ${critRate.toFixed(2)}%</class>`,
-                    `<class='statLine'>Crit Damage : ${critDamage.toFixed(2)}%</class>`,
-                    `<class='statLine'>Evasion : ${evasion.toFixed(2)}%</class>`,
-                    `<class='statLine'>Accuracy : ${accuracy.toFixed(2)}%</class>`,
-                    `<class='statLine'>Cooldown Reduction : ${cooldownReduction.toFixed(2)}%</class>`
-                ]
-                ,{
-                    fontFamily: 'Arial',
-                    lineSpacing: 10, 
-                    tags: {
-                        additionalStat:{
-                            color: "green"
-                        }
-                    }
-                }
-            );
-
-            let statsTitle = this.add.text(0,0, 'Stats', { fontFamily:'Arial', fontSize: 20, fontStyle: 'Bold Italic'} );
-
-            sizerRight.add(statsTitle, { padding : { right: gameW *0.2, bottom: 10 } });
-            sizerRight.add(statDetails);
-            panelBoxRight.layout();
-
-            let sizerChildren = sizer.getElement('items');
-            let sizerChildrenRight = sizerRight.getElement('items');
-
-            this.allUiGroup.add(sizerChildren);
-            this.allUiGroup.add(sizerChildrenRight);
-
+            tabsRight.emitButtonClick('top', 0);
+            
             if(detailsImage.data.list.type == "card"){
                 this.slideEffect(-(tabs.width + paddingX));
             }
@@ -382,15 +395,15 @@ class CharacterInventory extends BaseScene {
         if(this.detailsImageToggle){
             this.tweens.add({
                 targets: [this.allUiGroup],
-                x: { value: distance , duration: 250, ease: 'Linear'},
+                x: { value: distance , duration: 150, ease: 'Linear'},
                 yoyo: false
             });
         }
         else{
             this.tweens.add({
                 targets: [this.allUiGroup],
-                x: { value: 0, duration: 250, ease: 'Linear'},
-                yoyo: false
+                x: { value: 0, duration: 150, ease: 'Linear'},
+                yoyo: false,
             });
         }
     }
