@@ -188,7 +188,7 @@ class CharacterInventory extends BaseScene {
             },
             space:{
                 left: paddingX,
-                right: paddingX,
+                right: paddingX-10,
                 top: paddingX,
                 bottom: 10,
             },
@@ -211,7 +211,7 @@ class CharacterInventory extends BaseScene {
             width: gameW* 0.4,
             panel: this.panelBoxRight,
             space:{
-                topButtonsOffset:  (gameW*0.4) - paddingX*9.5
+                topButtonsOffset:  (gameW*0.4) - paddingX*9.6
             },
             topButtons: [
                 this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x000000, 0.95 ).setOrigin(0,1).setScale(0.8),
@@ -290,20 +290,25 @@ class CharacterInventory extends BaseScene {
                     let cartItems = await this.player.getCardSaleStatus(detailsImage.data.list.id);
                     let { orderId, price, quantityOnSale, itemOnHand } = cartItems;
 
-                    if(detailsImage.data.list.fromBlockchain){                
+                    if(detailsImage.data.list.fromBlockchain){           
                         if(quantityOnSale >= 1){
                             sizerRight.add(this.add.text(0,0, 'Cancel On going sale', {fontFamily: 'Arial'}));
                         }
-                        else{                           
-                            let salesDetails = this.add.text(0,0, [
-                                `Item on hand : ${itemOnHand}`,
-                                `Item on sale : ${quantityOnSale}`,
-                                `Price : ${price > 0? price : 'N/A'}`,
-                            ], {fontFamily: 'Arial'});
+                        else{      
+                            this.salesSizer = new OverlapSizer(this,0,0,this.panelBoxRight.width - (paddingX*2),100, {space:0}).setOrigin(0,0);
+                            this.add.existing(this.salesSizer);
 
-                            let sellbutton = this.add.rexRoundRectangle(0,0,60,salesDetails.height,5, 0x005500,1);
-                            
-                           sizerRight.add([sellbutton, salesDetails]);
+                            this.salesSizer                                
+                                .add(this.add.rectangle(0,0,this.panelBoxRight.width - (paddingX*2),100, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
+                                .add(this.add.text(0,0, [
+                                    `Item on hand : ${itemOnHand}`,
+                                    `Item on sale : ${quantityOnSale}`,
+                                    `Price : ${price > 0? price : 'N/A'}`,
+                                ], {fontFamily: 'Arial'}), {key: 'details', expand:false, align: 'left-center', padding: { left: 10 }})
+                                .add(this.add.rexRoundRectangle(0,0,60,30,5, 0x005500,1), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 10 }})
+                                .layout();
+                           
+                                sizerRight.add(this.salesSizer);
                         }  
                     }
                     else{
@@ -322,6 +327,13 @@ class CharacterInventory extends BaseScene {
 
             this.allUiGroup.add(sizerChildren);
             this.allUiGroup.add(sizerChildrenRight);
+
+            if(this.salesSizer){              
+                let saleItem = this.salesSizer.getElement('items');
+                if(saleItem){
+                    this.allUiGroup.add([saleItem.details, saleItem.salesBox, saleItem.sellButton]);
+                }                              
+            }
 
         });
 
