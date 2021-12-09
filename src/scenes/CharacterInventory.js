@@ -253,25 +253,27 @@ class CharacterInventory extends BaseScene {
             if(index == 0){
                 let stat = cardStats.filter(data => data.name == detailsImage.data.list.name)[0];
                 let { health, attack, defence, speed, critRate, critDamage, evasion, accuracy, cooldownReduction } = stat;
-    
+
+                let statBonuses = this.getStatBonuses(detailsImage.data.list);
+
                 let statDetails = this.add.rexTagText(0,0,
                     [
-                        `<class='statLine'>Health : ${health}</class>`,
-                        `<class='statLine'>Attack : ${attack}</class>`,
-                        `<class='statLine'>Defence : ${defence}</class>`,
-                        `<class='statLine'>Speed : ${speed}</class>`,
-                        `<class='statLine'>Crit Rate : ${critRate.toFixed(2)}%</class>`,
-                        `<class='statLine'>Crit Damage : ${critDamage.toFixed(2)}%</class>`,
-                        `<class='statLine'>Evasion : ${evasion.toFixed(2)}%</class>`,
-                        `<class='statLine'>Accuracy : ${accuracy.toFixed(2)}%</class>`,
-                        `<class='statLine'>Cooldown Reduction : ${cooldownReduction.toFixed(2)}%</class>`
+                        `Health : ${health} <class="additionalStat">${statBonuses.health? '+ ' + statBonuses.health.toString(): ''}</class>`,
+                        `Attack : ${attack} <class="additionalStat">${statBonuses.attack? '+ ' + statBonuses.attack.toString(): ''}</class>`,
+                        `Defence : ${defence} <class="additionalStat">${statBonuses.defence? '+ ' + statBonuses.defence.toString():''}</class>`,
+                        `Speed : ${speed}`,
+                        `Crit Rate : ${critRate.toFixed(2)}%`,
+                        `Crit Damage : ${critDamage.toFixed(2)}%`,
+                        `Evasion : ${evasion.toFixed(2)}%`,
+                        `Accuracy : ${accuracy.toFixed(2)}%`,
+                        `Cooldown Reduction : ${cooldownReduction.toFixed(2)}%`
                     ]
                     ,{
                         fontFamily: 'Arial',
                         lineSpacing: 10, 
                         tags: {
                             additionalStat:{
-                                color: "green"
+                                color: "#00ff00"
                             }
                         }
                     }
@@ -287,29 +289,44 @@ class CharacterInventory extends BaseScene {
             }
             else{
                 try{
+                    let loading = this.add.text(0,0, 'Loading Data.. Please wait...', { fontFamily: 'Arial', padding:10 })
+                    sizerRight.add(loading).layout();
+                    this.allUiGroup.add(loading);
                     let cartItems = await this.player.getCardSaleStatus(detailsImage.data.list.id);
+                    sizerRight.clear(true);
+
                     let { orderId, price, quantityOnSale, itemOnHand } = cartItems;
 
                     if(detailsImage.data.list.fromBlockchain){           
-                        if(quantityOnSale >= 1){
-                            sizerRight.add(this.add.text(0,0, 'Cancel On going sale', {fontFamily: 'Arial'}));
-                        }
-                        else{      
-                            this.salesSizer = new OverlapSizer(this,0,0,this.panelBoxRight.width - (paddingX*2),100, {space:0}).setOrigin(0,0);
-                            this.add.existing(this.salesSizer);
 
-                            this.salesSizer                                
-                                .add(this.add.rectangle(0,0,this.panelBoxRight.width - (paddingX*2),100, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
-                                .add(this.add.text(0,0, [
-                                    `Item on hand : ${itemOnHand}`,
-                                    `Item on sale : ${quantityOnSale}`,
-                                    `Price : ${price > 0? price : 'N/A'}`,
-                                ], {fontFamily: 'Arial'}), {key: 'details', expand:false, align: 'left-center', padding: { left: 10 }})
-                                .add(this.add.rexRoundRectangle(0,0,60,30,5, 0x005500,1), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 10 }})
-                                .layout();
-                           
-                                sizerRight.add(this.salesSizer);
-                        }  
+                        this.salesSizer = new OverlapSizer(this,0,0,this.panelBoxRight.width - (paddingX*2),100, {space:0}).setOrigin(0,0);
+                        this.add.existing(this.salesSizer);
+
+                        this.salesSizer                                
+                            .add(this.add.rectangle(0,0,this.panelBoxRight.width - (paddingX*2),100, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
+                            .add(this.add.text(0,0, [
+                                `Item on hand : ${itemOnHand}`,
+                                `Item on sale : ${quantityOnSale}`,
+                                `Price : ${price > 0? price : 'N/A'}`,
+                            ], {fontFamily: 'Arial'}), {key: 'details', expand:false, align: 'left-center', padding: { left: 10 }})
+                            .add(this.add.rexRoundRectangle(0,0,60,30,5, 0x005500,1).setInteractive(), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 10 }})
+                            .layout();
+                        
+                        sizerRight.add(this.salesSizer);
+
+                        let { sellButton } = this.salesSizer.getElement('items');
+                        sellButton.on('pointerdown',() => {
+                            if(quantityOnSale >= 1){
+                                const cancelSaleGroup = this.add.group();
+
+
+                                this.popUp('Sell item',cancelSaleGroup);
+                            }
+                            else{
+                                this.sellItemPopUp(itemOnHand);
+                            }
+                        })
+ 
                     }
                     else{
                         sizerRight.add(this.add.text(0,0, 'This item cannot be sold in the marketplace', {fontFamily: 'Arial'}));
@@ -445,6 +462,85 @@ class CharacterInventory extends BaseScene {
                 yoyo: false,
             });
         }
+    }
+
+    getStatBonuses(data){
+        let { level } = this.player.playerInfo;
+        let { quantity, properties }  = data;
+     
+        level--;
+        quantity--;
+
+        return {
+            attack: 0 + level + (quantity * properties.rarity),
+            defence: 0 + level + (quantity * properties.rarity),
+            health: 0 + level + (quantity * properties.rarity),
+        }
+    }
+
+    sellItemPopUp(itemOnHand) {
+        const sellItemGroup = this.add.group();
+
+        let quantity = 1;
+        let price = 0;
+
+        //Quantity of item to be sold
+        const sellquantity = this.add.rexInputText(
+            this.game.config.width/2,
+            this.game.config.height/2 - 30,
+            100,
+            25,
+            { 
+                type: "number",
+                maxLength: 2,
+                fontSize : "18px",
+                fontFamily: 'Arial',
+                backgroundColor : "white",
+                color: "black",
+            }
+        ).setOrigin(0.5).setScale(0,1.3)
+        .on('textchange', inputText => {
+            quantity = inputText.text;
+        });
+
+        sellquantity.setText(quantity);
+        sellquantity.setStyle("border-radius", "5px");
+        sellquantity.setStyle("text-align", "center");
+
+        //Price of item to be sold
+        const sellingPrice = this.add.rexInputText(
+            this.game.config.width/2,
+            this.game.config.height/2 + 30,
+            100,
+            25,
+            { 
+                type: "number",
+                maxLength: 2,
+                fontSize : "18px",
+                fontFamily: 'Arial',
+                backgroundColor : "white",
+                color: "black",
+            }
+        ).setOrigin(0.5).setScale(0,1.3)
+        .on('textchange', inputText => {
+            price = inputText.text;
+        });
+
+        sellingPrice.setText(price);
+        sellingPrice.setStyle("border-radius", "5px");
+        sellingPrice.setStyle("text-align", "center");
+
+        let quantityInput = document.querySelector('input');
+        quantityInput.max = itemOnHand;
+        quantityInput.min = 1;
+        quantityInput.pattern = '/^[0-9]*[1-9][0-9]*$/';
+
+        let priceInput = document.querySelectorAll('input')[1];
+        priceInput.min = 0;
+        
+        sellItemGroup.addMultiple([sellquantity, sellingPrice]);
+
+        this.popUp('Sell item',sellItemGroup);
     }
 }
 
