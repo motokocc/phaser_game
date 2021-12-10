@@ -235,14 +235,37 @@ class Player extends Phaser.Plugins.BasePlugin {
             let itemOnHand = Number(await this.gameData.methods.balanceOf(this.playerInfo.address, cardId).call());
 
             let { orderId, price, quantity } = itemOnSale;
+            
+            let priceInEth = Web3.utils.fromWei(price.toString(), 'ether');
 
-            onSale = { orderId: Number(orderId), price: Number(price), quantityOnSale: Number(quantity), itemOnHand };
+            onSale = { orderId: Number(orderId), price: Number(priceInEth), quantityOnSale: Number(quantity), itemOnHand };
         }
         catch(e){
             console.log(e.message);
         }
 
         return onSale;
+    }
+
+    sellItem = async(itemId, price, quantity) => {
+         let priceInWei = Web3.utils.toWei(price.toString(), 'ether');
+
+         try{
+            this.gameData.methods.sellItem(itemId, priceInWei, quantity).send({from: this.playerInfo.address});
+         }
+         catch(e){
+             console.log(e.message);
+         }
+    }
+
+    cancelSale = async(orderId) => {
+        console.log('ID', orderId);
+        try{
+            this.gameData.methods.cancelSale(orderId).send({from: this.playerInfo.address});
+        }
+        catch(e){
+            console.log(e.message);
+        }
     }
 }
 

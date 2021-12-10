@@ -12,6 +12,37 @@ class BaseScene extends Phaser.Scene {
         this.hoverSound = this.sound.add('hoverEffect', {loop: false});
     }
 
+    formPopUp(title, content, titleSize){
+        content.setDepth(25);
+        this.formPopupContainer = this.add.group().setDepth(15);
+
+        let popupBg = this.add.rectangle(0,0, this.game.config.width, this.game.config.height, 0x000000, 0.7)
+            .setOrigin(0)
+            .setInteractive();
+
+        let popupBody = this.add.rexRoundRectangle(
+            this.game.config.width/2,
+            this.game.config.height/2,
+            260,
+            250,
+            5,
+            0x000000,1
+        ).setScale(1.3).setStrokeStyle(1, 0xffffff, 1).setInteractive();
+
+        let popupTitle = this.add.text(
+            popupBody.x,
+            popupBody.y - popupBody.displayHeight*0.4,
+            title, {fontFamily:'Arial', color: 'white', fontSize: titleSize || '20px', fontStyle: 'Bold'})
+        .setOrigin(0.5).setScale(1.3);
+
+        this.formPopupContainer.addMultiple([popupBg, popupBody, popupTitle].concat(content.getChildren()));
+
+
+        popupBg.on('pointerdown', () => {
+            this.formPopupContainer.destroy(true);
+        });
+    }
+
     popUp(title, content, titleSize){
         content.setDepth(25);
         this.popupContainer = this.add.group().setDepth(15);

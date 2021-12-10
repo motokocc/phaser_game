@@ -307,9 +307,9 @@ class CharacterInventory extends BaseScene {
                             .add(this.add.text(0,0, [
                                 `Item on hand : ${itemOnHand}`,
                                 `Item on sale : ${quantityOnSale}`,
-                                `Price : ${price > 0? price : 'N/A'}`,
+                                `Price : ${price > 0? `${price.toFixed(6)} ETH` : 'N/A'}`,
                             ], {fontFamily: 'Arial'}), {key: 'details', expand:false, align: 'left-center', padding: { left: 10 }})
-                            .add(this.add.rexRoundRectangle(0,0,60,30,5, 0x005500,1).setInteractive(), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 10 }})
+                            .add(this.add.sprite(0,0,'confirmButton').setScale(0.8).setInteractive(), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 10 }})
                             .layout();
                         
                         sizerRight.add(this.salesSizer);
@@ -319,11 +319,47 @@ class CharacterInventory extends BaseScene {
                             if(quantityOnSale >= 1){
                                 const cancelSaleGroup = this.add.group();
 
+                                const cancelMessage = this.add.text(
+                                    gameW/2,
+                                    gameH/2 -25,
+                                    "Are you sure you want to cancel this item's on-going sale?",
+                                    {fontFamily: 'Arial', color:'#613e1e', align: 'center'}
+                                ).setOrigin(0.5).setWordWrapWidth(200).setScale(0,1.3);
 
-                                this.popUp('Sell item',cancelSaleGroup);
+                                const cancelConfirmButton = this.add.sprite(
+                                    cancelMessage.x - 5,
+                                    cancelMessage.y + 45,
+                                    'confirmButton'
+                                ).setOrigin(1,0).setInteractive().setScale(0,1.3);
+
+                                const cancelButton = this.add.sprite(
+                                    cancelMessage.x + 5,
+                                    cancelMessage.y + 45,
+                                    'confirmButton'
+                                ).setOrigin(0).setInteractive().setScale(0,1.3);
+
+                                cancelButton.on("pointerdown", () => {
+                                    this.popupContainer.destroy(true);
+                                });
+
+                                cancelConfirmButton.on('pointerdown', async () => {
+                                    try{
+                                        await this.player.cancelSale(orderId);
+                                        this.popupContainer.destroy(true);
+                                        tabsRight.emitButtonClick('top', 2);
+                                    }
+                                    catch(e){
+                                        console.log(e.message);
+                                    }
+
+                                });
+
+                                cancelSaleGroup.addMultiple([cancelMessage, cancelConfirmButton, cancelButton]);
+
+                                this.popUp('Cancel Sale',cancelSaleGroup);
                             }
                             else{
-                                this.sellItemPopUp(itemOnHand);
+                                this.sellItemPopUp(itemOnHand, detailsImage.data.list.id);
                             }
                         })
  
@@ -478,7 +514,7 @@ class CharacterInventory extends BaseScene {
         }
     }
 
-    sellItemPopUp(itemOnHand) {
+    sellItemPopUp(itemOnHand, itemId) {
         const sellItemGroup = this.add.group();
 
         let quantity = 1;
@@ -487,18 +523,18 @@ class CharacterInventory extends BaseScene {
         //Quantity of item to be sold
         const sellquantity = this.add.rexInputText(
             this.game.config.width/2,
-            this.game.config.height/2 - 30,
-            100,
+            this.game.config.height/2 - 50,
+            215,
             25,
             { 
                 type: "number",
                 maxLength: 2,
-                fontSize : "18px",
+                fontSize : "17px",
                 fontFamily: 'Arial',
                 backgroundColor : "white",
                 color: "black",
             }
-        ).setOrigin(0.5).setScale(0,1.3)
+        ).setOrigin(0.5).setScale(1.3)
         .on('textchange', inputText => {
             quantity = inputText.text;
         });
@@ -510,20 +546,35 @@ class CharacterInventory extends BaseScene {
         //Price of item to be sold
         const sellingPrice = this.add.rexInputText(
             this.game.config.width/2,
-            this.game.config.height/2 + 30,
-            100,
+            this.game.config.height/2 + 35,
+            215,
             25,
             { 
                 type: "number",
                 maxLength: 2,
-                fontSize : "18px",
+                fontSize : "17px",
                 fontFamily: 'Arial',
                 backgroundColor : "white",
                 color: "black",
             }
-        ).setOrigin(0.5).setScale(0,1.3)
-        .on('textchange', inputText => {
+        ).setOrigin(0.5).setScale(1.3)
+        .on('textchange', async(inputText) => {
             price = inputText.text;
+
+            //Get ETH current price in usd
+            try{
+                let response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum');
+                let ethData = await response.json();
+                let { current_price } = ethData[0];
+
+                let priceInUsd = price * current_price;
+    
+                priceText.setText(`Price per item - ETH ($${priceInUsd.toFixed(2)})`);
+            }
+            catch(e){
+                console.log(e.message);
+            }
+
         });
 
         sellingPrice.setText(price);
@@ -533,14 +584,58 @@ class CharacterInventory extends BaseScene {
         let quantityInput = document.querySelector('input');
         quantityInput.max = itemOnHand;
         quantityInput.min = 1;
-        quantityInput.pattern = '/^[0-9]*[1-9][0-9]*$/';
 
         let priceInput = document.querySelectorAll('input')[1];
         priceInput.min = 0;
-        
-        sellItemGroup.addMultiple([sellquantity, sellingPrice]);
 
-        this.popUp('Sell item',sellItemGroup);
+        //input title
+        let quantityText = this.add.text(
+            sellquantity.x - sellquantity.displayWidth*0.65,
+            sellquantity.y - sellquantity.displayHeight,
+            'Quantity',
+            {fontFamily: 'Arial', fontSize: 14}
+        ).setOrigin(0,1);
+
+        let priceText = this.add.text(
+            sellingPrice.x - sellingPrice.displayWidth*0.65,
+            sellingPrice.y - sellingPrice.displayHeight,
+            'Price per item - ETH ($0.00)',
+            {fontFamily: 'Arial', fontSize: 14}
+        ).setOrigin(0,1);
+
+        let sellcancelButton = this.add.sprite(
+            sellingPrice.x + 10,
+            sellingPrice.y + sellingPrice.displayHeight + 35,
+            'confirmButton'
+        ).setOrigin(0).setInteractive();
+
+        let sellOkButton = this.add.sprite(
+            sellingPrice.x -10,
+            sellingPrice.y + sellingPrice.displayHeight + 35,
+            'confirmButton'
+        ).setOrigin(1,0).setInteractive();
+
+        sellcancelButton.on('pointerdown', () => {
+            this.formPopupContainer.destroy(true);
+        })
+
+        sellOkButton.on("pointerdown", async() => {
+            sellOkButton.disableInteractive();
+            try{
+                 await this.player.sellItem(itemId, price, quantity);
+                 sellOkButton.setInteractive();
+                 this.formPopupContainer.destroy(true);
+            }
+            catch(e){
+                alert(e.message);
+                sellOkButton.setInteractive();
+                this.formPopupContainer.destroy(true);
+            }
+        })
+        
+        sellItemGroup.addMultiple([sellquantity, sellingPrice, quantityText, priceText, sellOkButton, sellcancelButton]);
+
+        this.formPopUp('Sell item',sellItemGroup);
     }
 }
 
