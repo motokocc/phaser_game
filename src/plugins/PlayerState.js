@@ -251,7 +251,7 @@ class Player extends Phaser.Plugins.BasePlugin {
          let priceInWei = Web3.utils.toWei(price.toString(), 'ether');
 
          try{
-            this.gameData.methods.sellItem(itemId, priceInWei, quantity).send({from: this.playerInfo.address});
+            await this.gameData.methods.sellItem(itemId, priceInWei, quantity).send({from: this.playerInfo.address});
          }
          catch(e){
              console.log(e.message);
@@ -259,9 +259,8 @@ class Player extends Phaser.Plugins.BasePlugin {
     }
 
     cancelSale = async(orderId) => {
-        console.log('ID', orderId);
         try{
-            this.gameData.methods.cancelSale(orderId).send({from: this.playerInfo.address});
+            await this.gameData.methods.cancelSale(orderId).send({from: this.playerInfo.address});
         }
         catch(e){
             console.log(e.message);

@@ -205,7 +205,7 @@ class CharacterInventory extends BaseScene {
 
         sizerRight.add(statsTitle);
 
-        let tabsRight = new Tabs(this, {
+        this.tabsRight = new Tabs(this, {
             x: gameW,
             y: gameH * 0.22 - paddingX*2 + 10,
             width: gameW* 0.4,
@@ -221,7 +221,7 @@ class CharacterInventory extends BaseScene {
         }).setOrigin(0).layout();
 
         
-        tabsRight.getElement('topButtons').forEach((tab, index) => {
+        this.tabsRight.getElement('topButtons').forEach((tab, index) => {
             tab.setStrokeStyle(2, 0x000000, 0.9);
             if(index == 0){
                 this.statsIcon = this.add.sprite(tab.x + tab.displayWidth/2, tab.y - tab.displayHeight/2 ,'stats_icon').setOrigin(0.5);
@@ -235,8 +235,8 @@ class CharacterInventory extends BaseScene {
 
         });
 
-        tabsRight.on('button.click', async(button, groupName, index) => {
-            let tabButtonsRight = tabsRight.getElement('topButtons');
+        this.tabsRight.on('button.click', async(button, groupName, index) => {
+            let tabButtonsRight = this.tabsRight.getElement('topButtons');
 
             tabButtonsRight.forEach((button,indexButton) => {
                 if(indexButton == index){
@@ -309,13 +309,17 @@ class CharacterInventory extends BaseScene {
                                 `Item on sale : ${quantityOnSale}`,
                                 `Price : ${price > 0? `${price.toFixed(6)} ETH` : 'N/A'}`,
                             ], {fontFamily: 'Arial'}), {key: 'details', expand:false, align: 'left-center', padding: { left: 10 }})
-                            .add(this.add.sprite(0,0,'confirmButton').setScale(0.8).setInteractive(), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 10 }})
+                            .add(this.add.sprite(0,0,'sellButton').setScale(0.8).setInteractive(), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 10 }})
                             .layout();
                         
                         sizerRight.add(this.salesSizer);
 
                         let { sellButton } = this.salesSizer.getElement('items');
+
+                        sellButton.setTexture(quantityOnSale?'cancelButton': 'sellButton');
+
                         sellButton.on('pointerdown',() => {
+                            this.sound.play('clickEffect', {loop: false});
                             if(quantityOnSale >= 1){
                                 const cancelSaleGroup = this.add.group();
 
@@ -327,15 +331,15 @@ class CharacterInventory extends BaseScene {
                                 ).setOrigin(0.5).setWordWrapWidth(200).setScale(0,1.3);
 
                                 const cancelConfirmButton = this.add.sprite(
-                                    cancelMessage.x - 5,
-                                    cancelMessage.y + 45,
-                                    'confirmButton'
+                                    cancelMessage.x - 10,
+                                    cancelMessage.y + 50,
+                                    'confirmButtonAlt'
                                 ).setOrigin(1,0).setInteractive().setScale(0,1.3);
 
                                 const cancelButton = this.add.sprite(
-                                    cancelMessage.x + 5,
-                                    cancelMessage.y + 45,
-                                    'confirmButton'
+                                    cancelMessage.x + 10,
+                                    cancelMessage.y + 50,
+                                    'cancelButtonAlt'
                                 ).setOrigin(0).setInteractive().setScale(0,1.3);
 
                                 cancelButton.on("pointerdown", () => {
@@ -343,16 +347,26 @@ class CharacterInventory extends BaseScene {
                                 });
 
                                 cancelConfirmButton.on('pointerdown', async () => {
+                                    cancelConfirmButton.setAlpha(0.7);
+                                    this.sound.play('clickEffect', {loop: false});
+                                    cancelConfirmButton.disableInteractive();
                                     try{
                                         await this.player.cancelSale(orderId);
-                                        this.popupContainer.destroy(true);
-                                        tabsRight.emitButtonClick('top', 2);
+                                        
                                     }
                                     catch(e){
                                         console.log(e.message);
                                     }
 
+                                    cancelConfirmButton.setInteractive();                                   
+                                    this.popupContainer.destroy(true);
+                                    this.tabsRight.emitButtonClick('top', 2);
+
                                 });
+
+                                cancelConfirmButton.on("pointerup", () => {
+                                    cancelConfirmButton.setAlpha(1);
+                                })
 
                                 cancelSaleGroup.addMultiple([cancelMessage, cancelConfirmButton, cancelButton]);
 
@@ -390,7 +404,7 @@ class CharacterInventory extends BaseScene {
 
         });
 
-        this.add.existing(tabsRight);
+        this.add.existing(this.tabsRight);
 
         //Details Box
         const detailsBox = this.add.rectangle(gameW/2 - paddingX*2, tabs.y + paddingX*2.1 - 10, gameW/2 + paddingX, gameH*0.745, 0x000000, 0.9).setOrigin(0);
@@ -458,7 +472,7 @@ class CharacterInventory extends BaseScene {
             detailsBox, summonCircle, displayName, rarity, attribute, detailsImage, messageDetailsBox, this.detailsText
         ]);
 
-        this.allUiGroup.add(tabsRight.getElement('topButtons'));
+        this.allUiGroup.add(this.tabsRight.getElement('topButtons'));
         this.allUiGroup.add([this.panelBoxRight.getElement('background'), this.panelBoxRight.getElement('slider.track'), this.panelBoxRight.getElement('slider.thumb')]);
         this.allUiGroup.add([
             this.statsIcon, this.skillIcon, this.cartIcon
@@ -467,7 +481,7 @@ class CharacterInventory extends BaseScene {
         this.detailsImageToggle = false;
 
         detailsImage.on('pointerdown', () => {
-            tabsRight.emitButtonClick('top', 0);
+            this.tabsRight.emitButtonClick('top', 0);
             
             if(detailsImage.data.list.type == "card"){
                 this.slideEffect(-(tabs.width + paddingX));
@@ -606,7 +620,7 @@ class CharacterInventory extends BaseScene {
         let sellcancelButton = this.add.sprite(
             sellingPrice.x + 10,
             sellingPrice.y + sellingPrice.displayHeight + 35,
-            'confirmButton'
+            'cancelButton'
         ).setOrigin(0).setInteractive();
 
         let sellOkButton = this.add.sprite(
@@ -620,17 +634,23 @@ class CharacterInventory extends BaseScene {
         })
 
         sellOkButton.on("pointerdown", async() => {
+            sellOkButton.setAlpha(0.7);
+            this.sound.play('clickEffect', {loop: false});
             sellOkButton.disableInteractive();
             try{
                  await this.player.sellItem(itemId, price, quantity);
-                 sellOkButton.setInteractive();
-                 this.formPopupContainer.destroy(true);
             }
             catch(e){
                 alert(e.message);
-                sellOkButton.setInteractive();
-                this.formPopupContainer.destroy(true);
             }
+
+            sellOkButton.setInteractive();
+            this.formPopupContainer.destroy(true);
+            this.tabsRight.emitButtonClick('top', 2);
+        });
+
+        sellOkButton.on("pointerup", () => {
+            sellOkButton.setAlpha(1);
         })
         
         sellItemGroup.addMultiple([sellquantity, sellingPrice, quantityText, priceText, sellOkButton, sellcancelButton]);
