@@ -288,103 +288,108 @@ class CharacterInventory extends BaseScene {
                 sizerRight.add(this.add.text(0,0, 'No skills equipped', {fontFamily: 'Arial'}));
             }
             else{
-                try{
-                    let loading = this.add.text(0,0, 'Loading Data.. Please wait...', { fontFamily: 'Arial', padding:10 })
-                    sizerRight.add(loading).layout();
-                    this.allUiGroup.add(loading);
-                    let cartItems = await this.player.getCardSaleStatus(detailsImage.data.list.id);
-                    sizerRight.clear(true);
-
-                    let { orderId, price, quantityOnSale, itemOnHand } = cartItems;
-
-                    if(detailsImage.data.list.fromBlockchain){           
-
-                        this.salesSizer = new OverlapSizer(this,0,0,this.panelBoxRight.width - (paddingX*2),100, {space:0}).setOrigin(0,0);
-                        this.add.existing(this.salesSizer);
-
-                        this.salesSizer                                
-                            .add(this.add.rectangle(0,0,this.panelBoxRight.width - (paddingX*2),100, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
-                            .add(this.add.text(0,0, [
-                                `Item on hand : ${itemOnHand}`,
-                                `Item on sale : ${quantityOnSale}`,
-                                `Price : ${price > 0? `${price.toFixed(6)} ETH` : 'N/A'}`,
-                            ], {fontFamily: 'Arial'}), {key: 'details', expand:false, align: 'left-center', padding: { left: 10 }})
-                            .add(this.add.sprite(0,0,'sellButton').setScale(0.8).setInteractive(), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 10 }})
-                            .layout();
+                if(detailsImage.data.list.fromBlockchain){    
+                    try{
+                        let loading = this.add.text(0,0, 'Loading Data.. Please wait...', { fontFamily: 'Arial', padding:10 })
+                        sizerRight.add(loading).layout();
+                        this.allUiGroup.add(loading);
+                        let cartItems = await this.player.getCardSaleStatus(detailsImage.data.list.id);
+                        sizerRight.clear(true);
+    
+                        let { orderId, price, quantityOnSale, itemOnHand } = cartItems;    
                         
-                        sizerRight.add(this.salesSizer);
-
-                        let { sellButton } = this.salesSizer.getElement('items');
-
-                        sellButton.setTexture(quantityOnSale?'cancelButton': 'sellButton');
-
-                        sellButton.on('pointerdown',() => {
-                            this.sound.play('clickEffect', {loop: false});
-                            if(quantityOnSale >= 1){
-                                const cancelSaleGroup = this.add.group();
-
-                                const cancelMessage = this.add.text(
-                                    gameW/2,
-                                    gameH/2 -25,
-                                    "Are you sure you want to cancel this item's on-going sale?",
-                                    {fontFamily: 'Arial', color:'#613e1e', align: 'center'}
-                                ).setOrigin(0.5).setWordWrapWidth(200).setScale(0,1.3);
-
-                                const cancelConfirmButton = this.add.sprite(
-                                    cancelMessage.x - 10,
-                                    cancelMessage.y + 50,
-                                    'confirmButtonAlt'
-                                ).setOrigin(1,0).setInteractive().setScale(0,1.3);
-
-                                const cancelButton = this.add.sprite(
-                                    cancelMessage.x + 10,
-                                    cancelMessage.y + 50,
-                                    'cancelButtonAlt'
-                                ).setOrigin(0).setInteractive().setScale(0,1.3);
-
-                                cancelButton.on("pointerdown", () => {
-                                    this.popupContainer.destroy(true);
-                                });
-
-                                cancelConfirmButton.on('pointerdown', async () => {
-                                    cancelConfirmButton.setAlpha(0.7);
-                                    this.sound.play('clickEffect', {loop: false});
-                                    cancelConfirmButton.disableInteractive();
-                                    try{
-                                        await this.player.cancelSale(orderId);
-                                        
-                                    }
-                                    catch(e){
-                                        console.log(e.message);
-                                    }
-
-                                    cancelConfirmButton.setInteractive();                                   
-                                    this.popupContainer.destroy(true);
-                                    this.tabsRight.emitButtonClick('top', 2);
-
-                                });
-
-                                cancelConfirmButton.on("pointerup", () => {
-                                    cancelConfirmButton.setAlpha(1);
-                                })
-
-                                cancelSaleGroup.addMultiple([cancelMessage, cancelConfirmButton, cancelButton]);
-
-                                this.popUp('Cancel Sale',cancelSaleGroup);
-                            }
-                            else{
-                                this.sellItemPopUp(itemOnHand, detailsImage.data.list.id);
-                            }
-                        })
- 
+                        if(!itemOnHand){
+                            this.scene.restart();
+                        }
+                        else{   
+                            this.salesSizer = new OverlapSizer(this,0,0,this.panelBoxRight.width - (paddingX*2),100, {space:0}).setOrigin(0,0);
+                            this.add.existing(this.salesSizer);
+        
+                            this.salesSizer                                
+                                .add(this.add.rexRoundRectangle(0,0,this.panelBoxRight.width - (paddingX*2),100, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
+                                .add(this.add.text(0,0, [
+                                    `Item on hand : ${itemOnHand}`,
+                                    `Item on sale : ${quantityOnSale}`,
+                                    `Price : ${price > 0? `${price.toFixed(6)} ETH` : 'N/A'}`,
+                                ], {fontFamily: 'Arial', lineSpacing:5 }), {key: 'details', expand:false, align: 'left-center', padding: { left: 20 }})
+                                .add(this.add.sprite(0,0,'sellButton').setScale(0.8).setInteractive(), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 20 }})
+                                .layout();
+                            
+                            sizerRight.add(this.salesSizer);  
+        
+                            let { sellButton } = this.salesSizer.getElement('items');
+        
+                            sellButton.setTexture(quantityOnSale?'cancelButton': 'sellButton');
+        
+                            sellButton.on('pointerdown',() => {
+                                this.sound.play('clickEffect', {loop: false});
+                                if(quantityOnSale >= 1){
+                                    const cancelSaleGroup = this.add.group();
+        
+                                    const cancelMessage = this.add.text(
+                                        gameW/2,
+                                        gameH/2 -25,
+                                        "Are you sure you want to cancel this item's on-going sale?",
+                                        {fontFamily: 'Arial', color:'#613e1e', align: 'center'}
+                                    ).setOrigin(0.5).setWordWrapWidth(200).setScale(0,1.3);
+        
+                                    const cancelConfirmButton = this.add.sprite(
+                                        cancelMessage.x - 10,
+                                        cancelMessage.y + 50,
+                                        'confirmButtonAlt'
+                                    ).setOrigin(1,0).setInteractive().setScale(0,1.3);
+        
+                                    const cancelButton = this.add.sprite(
+                                        cancelMessage.x + 10,
+                                        cancelMessage.y + 50,
+                                        'cancelButtonAlt'
+                                    ).setOrigin(0).setInteractive().setScale(0,1.3);
+        
+                                    cancelButton.on("pointerdown", () => {
+                                        this.sound.play('clickEffect', {loop: false});
+                                        this.popupContainer.destroy(true);
+                                    });
+        
+                                    cancelConfirmButton.on('pointerdown', async () => {
+                                        cancelConfirmButton.setAlpha(0.6);
+                                        this.sound.play('clickEffect', {loop: false});
+                                        cancelConfirmButton.disableInteractive();
+                                        try{
+                                            await this.player.cancelSale(orderId);
+                                            
+                                        }
+                                        catch(e){
+                                            console.log(e.message);
+                                        }
+        
+                                        cancelConfirmButton.setInteractive();                                   
+                                        this.popupContainer.destroy(true);
+                                        this.tabsRight.emitButtonClick('top', 2);
+        
+                                    });
+        
+                                    cancelConfirmButton.on("pointerup", () => {
+                                        cancelConfirmButton.setAlpha(1);
+                                    })
+        
+                                    cancelSaleGroup.addMultiple([cancelMessage, cancelConfirmButton, cancelButton]);
+        
+                                    this.popUp('Cancel Sale',cancelSaleGroup);
+                                }
+                                else{
+                                    this.sellItemPopUp(itemOnHand, detailsImage.data.list.id);
+                                }
+                            })
+                        }
+    
                     }
-                    else{
-                        sizerRight.add(this.add.text(0,0, 'This item cannot be sold in the marketplace', {fontFamily: 'Arial'}));
-                    }           
+                    catch(e){
+                        console.log(e.message);
+                    }                    
                 }
-                catch(e){
-                    console.log(e.message);
-                }
+                else{
+                    sizerRight.add(this.add.text(0,0, 'This item cannot be sold in the marketplace', {fontFamily: 'Arial'}));
+                }           
             }
 
             this.panelBoxRight.layout();
@@ -528,11 +533,11 @@ class CharacterInventory extends BaseScene {
         }
     }
 
-    sellItemPopUp(itemOnHand, itemId) {
+    sellItemPopUp = async(itemOnHand, itemId) => {
         const sellItemGroup = this.add.group();
 
         let quantity = 1;
-        let price = 0;
+        let price = 0.00001;
 
         //Quantity of item to be sold
         const sellquantity = this.add.rexInputText(
@@ -550,7 +555,19 @@ class CharacterInventory extends BaseScene {
             }
         ).setOrigin(0.5).setScale(1.3)
         .on('textchange', inputText => {
-            quantity = inputText.text;
+            let allowedKey = /^[1-9]\d*$/g;
+            let wholeNumbersOnly = new RegExp(allowedKey);
+
+            let inputValue = Number(inputText.text);
+
+            if(wholeNumbersOnly.test(inputValue) && inputValue <= itemOnHand ){
+                quantity = inputValue;
+            }
+            else{
+                sellquantity.setText("");
+                quantity = 1;
+            }
+
         });
 
         sellquantity.setText(quantity);
@@ -573,7 +590,10 @@ class CharacterInventory extends BaseScene {
             }
         ).setOrigin(0.5).setScale(1.3)
         .on('textchange', async(inputText) => {
-            price = inputText.text;
+
+            let inputPrice = Number(inputText.text).toFixed(5);
+
+            price = inputPrice? inputPrice: 0.00001;
 
             //Get ETH current price in usd
             try{
@@ -600,7 +620,13 @@ class CharacterInventory extends BaseScene {
         quantityInput.min = 1;
 
         let priceInput = document.querySelectorAll('input')[1];
-        priceInput.min = 0;
+        priceInput.min = 0.00001;
+        priceInput.step = 0.00001;
+        priceInput.onkeydown = function(e){
+            if(e.key == '-' || e.key == 'e' ||  e.key == '+'){
+                return false;
+            }
+        }
 
         //input title
         let quantityText = this.add.text(
@@ -630,11 +656,14 @@ class CharacterInventory extends BaseScene {
         ).setOrigin(1,0).setInteractive();
 
         sellcancelButton.on('pointerdown', () => {
+            this.sound.play('clickEffect', {loop: false});
             this.formPopupContainer.destroy(true);
         })
 
         sellOkButton.on("pointerdown", async() => {
-            sellOkButton.setAlpha(0.7);
+            sellOkButton.setAlpha(0.6);
+            sellquantity.setText(quantity);
+            sellingPrice.setText(price);
             this.sound.play('clickEffect', {loop: false});
             sellOkButton.disableInteractive();
             try{
@@ -656,6 +685,18 @@ class CharacterInventory extends BaseScene {
         sellItemGroup.addMultiple([sellquantity, sellingPrice, quantityText, priceText, sellOkButton, sellcancelButton]);
 
         this.formPopUp('Sell item',sellItemGroup);
+
+        try{
+            let data = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum');
+            let ethData = await data.json();
+            let { current_price } = ethData[0];
+            let priceInUsd = price * current_price;
+    
+            priceText.setText(priceInUsd? `Price per item - ETH ($${priceInUsd.toFixed(2)})` : 'Price per item - ETH ($0.00)');
+        }
+        catch(e){
+            console.log(e.message);
+        }
     }
 }
 
