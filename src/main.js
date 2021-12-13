@@ -13,6 +13,7 @@ import SummoningArea from './scenes/SummoningArea';
 import DailyRoullete from './scenes/Roullete';
 import Credits from './scenes/Credits';
 import CharacterInventory from './scenes/CharacterInventory';
+import Marketplace from './scenes/Marketplace';
 
 const config = {
     widht: 800,
@@ -50,12 +51,14 @@ game.scene.add("summoningArea", SummoningArea);
 game.scene.add("roullete", DailyRoullete);
 game.scene.add("credits", Credits);
 game.scene.add("inventory", CharacterInventory);
+game.scene.add("marketplace", Marketplace);
 game.scene.add("game", Game);
 
-game.scene.start("loading", {nextPage: "titlescreen"});
+//game.scene.start("loading", {nextPage: "titlescreen"});
 //game.scene.start("loading", {nextPage: "summoningArea"});
 //game.scene.start("loading", {nextPage: "tutorial"});
 //game.scene.start("loading", {nextPage: "game"});
 //game.scene.start("loading", {nextPage: "roullete"});
 //game.scene.start("credits");
 //game.scene.start("loading", {nextPage: "inventory"});
+game.scene.start("loading", {nextPage: "marketplace"});

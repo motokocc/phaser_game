@@ -12,6 +12,38 @@ class BaseScene extends Phaser.Scene {
         this.hoverSound = this.sound.add('hoverEffect', {loop: false});
     }
 
+    generateUpperUI(){
+        const gameW = this.game.config.width;
+        const gameH = this.game.config.height;
+        const paddingX = gameW * 0.025;
+        const buttonScale = gameW * 0.00078;
+        
+        //Gems
+        let gems = this.add.container();
+        const gem_icon = this.add.sprite(gameW/2 - paddingX*3, gameH*0.07,'gems').setOrigin(0.5).setDepth(2);
+        const gem_box = this.add.rexRoundRectangle(gem_icon.x, gem_icon.y, paddingX*4, paddingX, paddingX/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
+        const gem_value = this.add.text(gem_box.x + gem_box.width/2, gem_box.y, this.player.playerInfo.gems || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
+
+        //Gold
+        let gold = this.add.container();
+        const gold_icon = this.add.sprite(gameW/2 + paddingX*3, gameH*0.07,'gold').setOrigin(0.5).setDepth(2);
+        const gold_box = this.add.rexRoundRectangle(gold_icon.x, gem_icon.y, paddingX*4, paddingX, paddingX/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
+        const gold_value = this.add.text(gold_box.x + gold_box.width/2, gold_box.y, this.player.playerInfo.gold || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
+
+        //Player Stat GUI
+        let playerUI = this.add.container();
+        const player_gui_box = this.add.sprite(paddingX, gameH*0.07,'player_gui_box').setOrigin(0, 0.5).setScale(buttonScale).setInteractive();
+        const player_name = this.add.text(
+            player_gui_box.x* 3.6,
+            player_gui_box.y,
+            this.player.playerInfo.name || 'Adventurer',
+            {fontFamily: 'Arial'}
+        ).setOrigin(0, 0.5); 
+
+        let backButton = this.add.sprite(gameW-paddingX, paddingX, 'exitIcon').setOrigin(1,0).setScale(0.6).setInteractive();
+        backButton.on('pointerdown', () => this.scene.start("game"));
+    }
+
     formPopUp(title, content, titleSize){
         content.setDepth(25);
         this.formPopupContainer = this.add.group().setDepth(15);
