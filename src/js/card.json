@@ -3,11 +3,11 @@
     "description": "",
     "image": "",
     "quantity": 1,
-    "type": "card",
     "fromBlockchain" : false,
     "id": 888,
     "properties": {
         "attribute": "fire",
-        "rarity": 1
+        "rarity": 1,
+        "type": "card"
     }
 }

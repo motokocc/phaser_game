@@ -180,7 +180,7 @@ class Player extends Phaser.Plugins.BasePlugin {
 
                 const response = await fetch(cardData.tokenURI);
                 let data = await response.json();
-                data = {...data, quantity, id: cardData.id, type: "card", fromBlockchain: true };
+                data = {...data, quantity, id: cardData.id, fromBlockchain: true };
 
                 newCard = {...data};
 
@@ -214,7 +214,7 @@ class Player extends Phaser.Plugins.BasePlugin {
                     let tokenURI = await this.gameData.methods.uri(id).call();
                     const response = await fetch(tokenURI);
                     let data = await response.json();
-                    data = {...data, quantity, id, type: "card", fromBlockchain: true };
+                    data = {...data, quantity, id, fromBlockchain: true };
 
                     blockchainCards.push(data);
                 }
@@ -265,6 +265,39 @@ class Player extends Phaser.Plugins.BasePlugin {
         catch(e){
             console.log(e.message);
         }
+    }
+
+    getAllItemsOnSale = async() => {
+        let itemsOnSale = [];
+        let itemCounter = await this.gameData.methods.itemCounter().call();
+
+        for(let i=1; i<= itemCounter; i++){
+            let item = await this.gameData.methods.items(i).call();
+            let {itemId, available, forSale, price, seller, sold, id } = item;
+
+            if(forSale){
+                let tokenURI = await this.gameData.methods.uri(itemId).call();
+                const response = await fetch(tokenURI);
+
+                let data = await response.json();
+                let { name, description, properties } = data;
+
+                let formattedItem = {
+                    saleId: id,
+                    itemId,
+                    itemAvailable: Number(available),
+                    itemSold: Number(sold),
+                    seller,
+                    price: Web3.utils.fromWei(price.toString(), 'ether'),
+                    name,
+                    description,
+                    properties
+                }    
+                itemsOnSale.push(formattedItem);
+            }
+        }
+
+        return itemsOnSale;
     }
 }
 

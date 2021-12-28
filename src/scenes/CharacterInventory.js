@@ -467,7 +467,7 @@ class CharacterInventory extends BaseScene {
         this.detailsImage.on('pointerdown', () => {
             this.tabsRight.emitButtonClick('top', 0);
             
-            if(this.detailsImage.data.list.type == "card"){
+            if(this.detailsImage.data.list.properties.type == "card"){
                 this.slideEffect(-(tabs.width + paddingX));
             }
         });
