@@ -1,13 +1,11 @@
 import 'regenerator-runtime/runtime';
 import BaseScene from '../plugins/BaseScene';
-import { Tabs } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
-import { ScrollablePanel } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
-import { FixWidthSizer } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
-import { OverlapSizer } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
+import { Tabs, ScrollablePanel, FixWidthSizer, OverlapSizer } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { doc, updateDoc } from "firebase/firestore";
 import { cardStats } from '../js/cardStats';
 
 class CharacterInventory extends BaseScene {
+
     create(){
         this.gameBg = this.add.image(-2,-7.5,'inventory_bg');
         this.gameBg.setOrigin(0,0);
@@ -40,12 +38,53 @@ class CharacterInventory extends BaseScene {
             {fontFamily: 'Arial'}
         ).setOrigin(0, 0.5);
 
-        let backButton = this.add.sprite(gameW-paddingX, paddingX, 'exitIcon').setOrigin(1,0).setScale(0.6).setInteractive();
-        backButton.on('pointerdown', () => this.scene.start("game"));
+        //Details Box
+        const detailsBox = this.add.rectangle(gameW/2 - paddingX*2, gameH * 0.22, gameW/2 + paddingX, gameH*0.745, 0x000000, 0.9).setOrigin(0);
 
-        let cardInventoryData = this.player.playerInfo.cards.sort((a, b) => (b.properties.rarity - a.properties.rarity));
+        const summonCircle = this.add.sprite(
+            detailsBox.x + detailsBox.displayWidth/2,
+            detailsBox.y+ detailsBox.displayHeight/2 - paddingX,  
+            'summoningCircle2'
+        ).setOrigin(0.5).setScale(0.9).setAlpha(0.7);
 
-        let sizer = new FixWidthSizer(this, {
+        this.detailsImage = this.add.sprite(
+            detailsBox.x + detailsBox.displayWidth/2,
+            detailsBox.y+ detailsBox.displayHeight - 1,
+            `Alpha_alt`
+        ).setOrigin(0.5,1).setInteractive(); 
+        
+        const messageDetailsBox = this.add.rectangle(
+            detailsBox.x  + paddingX/2,
+            detailsBox.y + detailsBox.displayHeight - paddingX/2 - 110 ,
+            detailsBox.displayWidth - paddingX,
+            110, 0x000000,1).setStrokeStyle(0.5, 0xffffff,1).setOrigin(0);
+
+        this.detailsText = this.add.text(messageDetailsBox.x + 10, messageDetailsBox.y + 10,
+            'Alpha is a beast djinn ready to give a helping hand to any adventurer who summons him. He uses his arm-like tail to deal massive damage to his enemies. It is rummored that his eyes can locate hidden treasures and dungeons.',
+                {fontFamily: 'Arial', align: 'justify'})
+            .setOrigin(0)
+            .setWordWrapWidth(messageDetailsBox.displayWidth-20, true);
+
+        this.displayName = this.add.text(
+            detailsBox.x + paddingX, detailsBox.y + paddingX, 
+            'Alpha', 
+            { fontFamily:'Arial', fontSize: 20, fontStyle: 'Bold Italic'} 
+        ).setOrigin(0);
+
+        this.rarity = this.add.sprite(
+            this.displayName.x,
+            this.displayName.y + this.displayName.displayHeight + paddingX/4,
+            'rarity_1'
+        ).setOrigin(0).setScale(0.2);
+
+        this.attribute = this.add.sprite(
+            detailsBox.x + detailsBox.displayWidth - paddingX,
+            this.displayName.y,
+            'fire'
+        ).setOrigin(1,0).setScale(0.35);
+
+        //Left Tab
+        this.sizerLeft = new FixWidthSizer(this, {
             space: {
                 left: 10,
                 right: 10,
@@ -54,24 +93,11 @@ class CharacterInventory extends BaseScene {
                 line: 10
             }
         }).layout();
-        this.add.existing(sizer);
+        this.add.existing(this.sizerLeft);
 
-        cardInventoryData.forEach((item, index) => {
-            sizer.add(
-                this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive().setData(item)
-                    .on('pointerdown', () => {
-                        this.detailsText.setText(item.description); 
-                        detailsImage.setTexture(`${item.name}_alt`).setData(item);
-                        displayName.setText(item.name);
-                        rarity.setTexture(`rarity_${item.properties.rarity}`);
-                        attribute.setTexture(item.properties.attribute);
-                    })
-            );
-        })
+        this.loadCards();
 
-        
-
-        let panelBox = new ScrollablePanel(this, {
+        this.panelBox = new ScrollablePanel(this, {
             x: 0,
             y: 0,
             width: gameW* 0.4,
@@ -79,7 +105,7 @@ class CharacterInventory extends BaseScene {
             scrollMode:0,
             background: this.add.rectangle(0,0, gameW* 0.4, gameH*0.745, 0x000000, 0.9),
             panel: {
-                child: sizer
+                child: this.sizerLeft
             },
             space:{
                 left: 10,
@@ -94,7 +120,7 @@ class CharacterInventory extends BaseScene {
                 position: 'right',
             },
         }).setOrigin(0).layout();
-        this.add.existing(panelBox);
+        this.add.existing(this.panelBox);
 
         //Inventory Tabs
         let tabs = new Tabs(this, {
@@ -102,7 +128,7 @@ class CharacterInventory extends BaseScene {
             y: gameH * 0.22 - paddingX*2 + 10,
             width: gameW* 0.4,
             height: gameH*0.745,
-            panel: panelBox,
+            panel: this.panelBox,
             topButtons: [
                 this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
                 this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
@@ -136,36 +162,32 @@ class CharacterInventory extends BaseScene {
                 }
             })
 
-            sizer.clear(true);
+            this.sizerLeft.clear(true);
 
             if(index == 0){
-                cardInventoryData.forEach((item, index) => {
-                    sizer.add(
+                this.player.playerInfo.cards.forEach((item, index) => {
+                    this.sizerLeft.add(
                         this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive().setData(item)
                         .on('pointerdown', () => {
-                            this.detailsText.setText(item.description);
-                            detailsImage.setTexture(`${item.name}_alt`).setData(item);
-                            displayName.setText(item.name);
-                            rarity.setTexture(`rarity_${item.properties.rarity}`);
-                            attribute.setTexture(item.properties.attribute);
+                            this.setImageData(item);   
                         })
                     );
                 })
             }
             else if(index == 1){
-                sizer.add(this.add.text(0,0, 'No items acquired', {fontFamily: 'Arial'}));
+                this.sizerLeft.add(this.add.text(0,0, 'No items acquired', {fontFamily: 'Arial'}));
             }
             else{
-                sizer.add(this.add.text(0,0, 'No available skills to learn', {fontFamily: 'Arial'}));
+                this.sizerLeft.add(this.add.text(0,0, 'No available skills to learn', {fontFamily: 'Arial'}));
             }    
 
-            panelBox.layout();
+            this.panelBox.layout();
         });
 
         this.add.existing(tabs);
         
 
-        let itemsOnTab = sizer.getElement('items');
+        let itemsOnTab = this.sizerLeft.getElement('items');
 
         //Stats Tabs
         let sizerRight = new FixWidthSizer(this, {
@@ -251,10 +273,10 @@ class CharacterInventory extends BaseScene {
             this.panelBoxRight.layout();
 
             if(index == 0){
-                let stat = cardStats.filter(data => data.name == detailsImage.data.list.name)[0];
+                let stat = cardStats.filter(data => data.name == this.detailsImage.data.list.name)[0];
                 let { health, attack, defence, speed, critRate, critDamage, evasion, accuracy, cooldownReduction } = stat;
 
-                let statBonuses = this.getStatBonuses(detailsImage.data.list);
+                let statBonuses = this.getStatBonuses(this.detailsImage.data.list);
 
                 let statDetails = this.add.rexTagText(0,0,
                     [
@@ -288,12 +310,12 @@ class CharacterInventory extends BaseScene {
                 sizerRight.add(this.add.text(0,0, 'No skills equipped', {fontFamily: 'Arial'}));
             }
             else{
-                if(detailsImage.data.list.fromBlockchain){    
+                if(this.detailsImage.data.list.fromBlockchain){    
                     try{
                         let loading = this.add.text(0,0, 'Loading Data.. Please wait...', { fontFamily: 'Arial', padding:10 })
                         sizerRight.add(loading).layout();
                         this.allUiGroup.add(loading);
-                        let cartItems = await this.player.getCardSaleStatus(detailsImage.data.list.id);
+                        let cartItems = await this.player.getCardSaleStatus(this.detailsImage.data.list.id);
                         sizerRight.clear(true);
     
                         let { orderId, price, quantityOnSale, itemOnHand } = cartItems;    
@@ -377,7 +399,7 @@ class CharacterInventory extends BaseScene {
                                     this.popUp('Cancel Sale',cancelSaleGroup);
                                 }
                                 else{
-                                    this.sellItemPopUp(itemOnHand, detailsImage.data.list.id);
+                                    this.sellItemPopUp(itemOnHand, this.detailsImage.data.list.id);
                                 }
                             })
                         }
@@ -394,7 +416,7 @@ class CharacterInventory extends BaseScene {
 
             this.panelBoxRight.layout();
 
-            let sizerChildren = sizer.getElement('items');
+            let sizerChildren = this.sizerLeft.getElement('items');
             let sizerChildrenRight = sizerRight.getElement('items');
 
             this.allUiGroup.add(sizerChildren);
@@ -411,51 +433,8 @@ class CharacterInventory extends BaseScene {
 
         this.add.existing(this.tabsRight);
 
-        //Details Box
-        const detailsBox = this.add.rectangle(gameW/2 - paddingX*2, tabs.y + paddingX*2.1 - 10, gameW/2 + paddingX, gameH*0.745, 0x000000, 0.9).setOrigin(0);
-
-        const summonCircle = this.add.sprite(
-            detailsBox.x + detailsBox.displayWidth/2,
-            detailsBox.y+ detailsBox.displayHeight/2 - paddingX,  
-            'summoningCircle2'
-        ).setOrigin(0.5).setScale(0.9).setAlpha(0.7);
-
-        const detailsImage = this.add.sprite(
-            detailsBox.x + detailsBox.displayWidth/2,
-            detailsBox.y+ detailsBox.displayHeight - 1,
-            `${itemsOnTab[0].data.list.name}_alt`
-        ).setOrigin(0.5,1).setInteractive().setData(itemsOnTab[0].data.list); 
-        
-        const messageDetailsBox = this.add.rectangle(
-            detailsBox.x  + paddingX/2,
-            detailsBox.y + detailsBox.displayHeight - paddingX/2 - 110 ,
-            detailsBox.displayWidth - paddingX,
-            110, 0x000000,1).setStrokeStyle(0.5, 0xffffff,1).setOrigin(0);
-
-        this.detailsText = this.add.text(messageDetailsBox.x + 10, messageDetailsBox.y + 10, itemsOnTab[0].data.list.description, {fontFamily: 'Arial', align: 'justify'})
-            .setOrigin(0)
-            .setWordWrapWidth(messageDetailsBox.displayWidth-20, true);
-
-        const displayName = this.add.text(
-            detailsBox.x + paddingX, detailsBox.y + paddingX, 
-            itemsOnTab[0].data.list.name, 
-            { fontFamily:'Arial', fontSize: 20, fontStyle: 'Bold Italic'} 
-        ).setOrigin(0);
-
-        const rarity = this.add.sprite(
-            displayName.x,
-            displayName.y + displayName.displayHeight + paddingX/4,
-            `rarity_${itemsOnTab[0].data.list.properties.rarity}`
-        ).setOrigin(0).setScale(0.2);
-
-        const attribute = this.add.sprite(
-            detailsBox.x + detailsBox.displayWidth - paddingX,
-            displayName.y,
-            itemsOnTab[0].data.list.properties.attribute
-        ).setOrigin(1,0).setScale(0.35);
-
         this.tweens.add({
-            targets: detailsImage,
+            targets: this.detailsImage,
             scale: { value: 1.01, duration: 800, ease: 'easeIn'},
             yoyo: true,
             repeat: -1
@@ -471,10 +450,10 @@ class CharacterInventory extends BaseScene {
         this.allUiGroup = this.add.container();
 
         this.allUiGroup.add(tabs.getElement('topButtons'));
-        this.allUiGroup.add([panelBox.getElement('background'), panelBox.getElement('slider.track'), panelBox.getElement('slider.thumb')]);
+        this.allUiGroup.add([this.panelBox.getElement('background'), this.panelBox.getElement('slider.track'), this.panelBox.getElement('slider.thumb')]);
         this.allUiGroup.add([
             this.magicIcon, this.backpackIcon, this.cardIcon,
-            detailsBox, summonCircle, displayName, rarity, attribute, detailsImage, messageDetailsBox, this.detailsText
+            detailsBox, summonCircle, this.displayName, this.rarity, this.attribute, this.detailsImage, messageDetailsBox, this.detailsText
         ]);
 
         this.allUiGroup.add(this.tabsRight.getElement('topButtons'));
@@ -485,13 +464,16 @@ class CharacterInventory extends BaseScene {
 
         this.detailsImageToggle = false;
 
-        detailsImage.on('pointerdown', () => {
+        this.detailsImage.on('pointerdown', () => {
             this.tabsRight.emitButtonClick('top', 0);
             
-            if(detailsImage.data.list.type == "card"){
+            if(this.detailsImage.data.list.type == "card"){
                 this.slideEffect(-(tabs.width + paddingX));
             }
         });
+
+        let backButton = this.add.sprite(gameW-paddingX, paddingX, 'exitIcon').setOrigin(1,0).setScale(0.6).setInteractive();
+        backButton.on('pointerdown', () => this.scene.start("game"));
 
         //UI Containers/Groups
         gems.add([gem_box, gem_icon, gem_value]);
@@ -697,6 +679,50 @@ class CharacterInventory extends BaseScene {
         catch(e){
             console.log(e.message);
         }
+    }
+
+    async loadCards(){
+        let cardData = [];
+        let { cards, address } = this.player.playerInfo;
+
+        this.sizerLeft.add(
+            this.add.text(0,0, 'Loading Data.. Please wait...', { fontFamily: 'Arial', padding:10 }).setDepth(10)
+        );
+        
+        cardData = cards? cards.filter(card => card.name === "Alpha") : [];
+        let cardsTotal = [...cardData];
+
+        let blockchainCards = await this.player.getCards(address);
+
+        this.sizerLeft.removeAll(true);
+
+        if(blockchainCards){
+            cardsTotal = [...cardData].concat(blockchainCards);           
+            cardsTotal.sort((a, b) => (b.properties.rarity - a.properties.rarity));
+
+            this.player.playerInfo.cards = cardsTotal;
+        }
+
+        this.player.playerInfo.cards.forEach((item, index) => {
+            if(index == 0){
+                this.setImageData(item);                 
+            }
+ 
+            this.sizerLeft.add(
+                this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive().setData(item)
+                    .on('pointerdown', () => {this.setImageData(item);})
+            );
+        })
+
+        this.panelBox.layout();
+    }
+
+    setImageData = (item) => {
+        this.detailsText.setText(item.description); 
+        this.detailsImage.setTexture(`${item.name}_alt`).setData(item);
+        this.displayName.setText(item.name);
+        this.rarity.setTexture(`rarity_${item.properties.rarity}`);
+        this.attribute.setTexture(item.properties.attribute);      
     }
 }
 
