@@ -229,7 +229,7 @@ class LoadingScreen extends Phaser.Scene {
         let loaderPosY = this.game.config.height/2 - barHeight/2;
 
         this.loaderText = this.add.text(this.game.config.width/2, this.game.config.height/2, "Loading...");
-        this.completeText = this.add.text(this.game.config.width/2, this.game.config.height - barHeight, '');
+        this.completeText = this.add.text(this.game.config.width/2, this.game.config.height - barHeight, '').setInteractive();
         this.loaderText.setFontSize(20);
         this.loaderText.setOrigin(0.5,0.5);
         this.completeText.setFontSize(20);
@@ -248,9 +248,10 @@ class LoadingScreen extends Phaser.Scene {
 
     create(){
 
-        this.completeText.setText('Click anywhere to continue');
+        this.completeText.setText('Click here to continue');
 
-        this.input.on('pointerdown', () => {
+        this.completeText.on('pointerdown', () => {
+            this.completeText.disableInteractive();
             this.progressBar.destroy();
             this.progressBox.destroy();
             this.loaderText.destroy();

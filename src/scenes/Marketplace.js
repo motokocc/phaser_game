@@ -17,7 +17,7 @@ class Marketplace extends BaseScene {
         this.generateUpperUI();
 
         //Market UI
-        this.sizer = new FixWidthSizer(this, {
+        this.marketplaceSizer = new FixWidthSizer(this, {
             space: {
                 left: 10,
                 right: 10,
@@ -25,26 +25,10 @@ class Marketplace extends BaseScene {
                 item: 10,
                 line: 10
             }
-        }).layout();
-        this.add.existing(this.sizer);
+        });
+        this.add.existing(this.marketplaceSizer);
 
-        // let cardInventoryData = [
-        //     {
-        //         name: "Saya",
-        //         properties: {
-        //             attribute: "water",
-        //             rarity: 5
-        //         }
-        //     },
-        //     {
-        //         name: "Alpha",
-        //         properties: {
-        //             attribute: "fire",
-        //             rarity: 1
-        //         }
-        //     },            
-        // ];
-
+        this.marketplaceSizer.layout();
         this.loadNFTMarketplace();
 
         this.panelBox = new ScrollablePanel(this, {
@@ -55,7 +39,7 @@ class Marketplace extends BaseScene {
             scrollMode:0,
             background: this.add.rectangle(0,0, gameW - paddingX*2, gameH*0.745, 0x000000, 0.9),
             panel: {
-                child: this.sizer
+                child: this.marketplaceSizer
             },
             space:{
                 left: 10,
@@ -112,25 +96,25 @@ class Marketplace extends BaseScene {
                 }
             })
 
-            this.sizer.clear(true);
+            this.marketplaceSizer.clear(true);
 
             if(index == 0){
                 if(this.itemsOnSale){
                     this.itemsOnSale.forEach((item, index) => {
-                        this.sizer.add(
+                        this.marketplaceSizer.add(
                             this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive()
                         );
                     })
                 }
                 else{
-                    this.sizer.add(this.add.text(0,0, 'No cards being sold at the moment', {fontFamily: 'Arial'}));
+                    this.marketplaceSizer.add(this.add.text(0,0, 'No cards being sold at the moment', {fontFamily: 'Arial'}));
                 }
             }
             else if(index == 1){
-                this.sizer.add(this.add.text(0,0, 'No items being sold at the moment', {fontFamily: 'Arial'}));
+                this.marketplaceSizer.add(this.add.text(0,0, 'No items being sold at the moment', {fontFamily: 'Arial'}));
             }
             else{
-                this.sizer.add(this.add.text(0,0, 'No skills being sold at the moment', {fontFamily: 'Arial'}));
+                this.marketplaceSizer.add(this.add.text(0,0, 'No skills being sold at the moment', {fontFamily: 'Arial'}));
             }    
 
             this.panelBox.layout();
@@ -139,28 +123,43 @@ class Marketplace extends BaseScene {
         this.add.existing(tabs);
         
 
-        let itemsOnTab = this.sizer.getElement('items');
+        let itemsOnTab = this.marketplaceSizer.getElement('items');
         
     }
 
     async loadNFTMarketplace(){
-        this.sizer.add(this.add.text(0,0, 'Loading NFT marketplace.. Please wait...', {fontFamily: 'Arial'})).setDepth(10);
+        this.marketplaceSizer.add(
+            this.add.text(0,0, 'Loading NFT marketplace.. Please wait...', {fontFamily: 'Arial'}).setDepth(10)
+        );
  
         this.itemsOnSale = await this.player.getAllItemsOnSale();
-        this.sizer.removeAll(true);
+        this.marketplaceSizer.removeAll(true);
 
-        if(this.itemsOnSale){
+        if(this.itemsOnSale.length >= 1){
             this.itemsOnSale.forEach((item, index) => {
-                this.sizer.add(
+                this.marketplaceSizer.add(
                     this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive()
+                        .on('pointerdown', () => this.buyItemPopUp(item))
                 );
             })
         }
         else{
-            this.sizer.add(this.add.text(0,0, 'No cards being sold at the moment', {fontFamily: 'Arial'})).setDepth(10);
+            this.marketplaceSizer.add(
+                this.add.text(0,0, 'No cards being sold at the moment', {fontFamily: 'Arial'}).setDepth(10)
+            );
         }
-
         this.panelBox.layout();
+    }
+
+    buyItemPopUp(item){
+        const buyItemGroup = this.add.group().setDepth(15);
+
+        const itemImage = this.add.sprite(this.game.config.width*0.45,this.game.config.height*0.54, item.name).setScale(0.7).setOrigin(1,0.5);
+        const itemName = this.add.text(this.game.config.width*0.5, this.game.config.height*0.5, `Name: ${item.name}`).setOrigin(0,0.5);
+
+        buyItemGroup.addMultiple([itemImage, itemName]);
+
+        this.formPopUp(`Buy ${item.properties.type}`, buyItemGroup, 20, 425, 300);
     }
 }
 

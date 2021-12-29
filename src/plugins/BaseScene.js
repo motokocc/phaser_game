@@ -44,7 +44,7 @@ class BaseScene extends Phaser.Scene {
         backButton.on('pointerdown', () => this.scene.start("game"));
     }
 
-    formPopUp(title, content, titleSize){
+    formPopUp(title, content, titleSize, width, height){
         content.setDepth(25);
         this.formPopupContainer = this.add.group().setDepth(15);
 
@@ -55,8 +55,8 @@ class BaseScene extends Phaser.Scene {
         let popupBody = this.add.rexRoundRectangle(
             this.game.config.width/2,
             this.game.config.height/2,
-            260,
-            250,
+            width || 260,
+            height || 250,
             5,
             0x000000,1
         ).setScale(1.3).setStrokeStyle(1, 0xffffff, 1).setInteractive();
