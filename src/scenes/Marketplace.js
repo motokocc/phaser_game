@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime';
 import BaseScene from '../plugins/BaseScene';
-import {  Tabs, ScrollablePanel, FixWidthSizer, Menu, Label, Click } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
+import {  Tabs, ScrollablePanel, FixWidthSizer, OverlapSizer, Menu, Label, Click } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { doc, updateDoc } from "firebase/firestore";
 
 class Marketplace extends BaseScene {
@@ -101,9 +101,27 @@ class Marketplace extends BaseScene {
             if(index == 0){
                 if(this.itemsOnSale){
                     this.itemsOnSale.forEach((item, index) => {
-                        this.marketplaceSizer.add(
-                            this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive()
-                        );
+                        let itemOnSaleSizer = new OverlapSizer(this,0,0,this.panelBox.width - (paddingX*2), 190, {space:0}).setOrigin(0,0);
+                        this.add.existing(itemOnSaleSizer);
+        
+                       itemOnSaleSizer                               
+                        .add(this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*2),190, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
+                        .add(this.add.sprite(0, 0, item.name).setScale(0.35), {key: 'itemImage', expand:false, align: 'left-center', padding: { left: 20}})
+                        .add(this.add.rexTagText(0,0, [
+                            `<style='fontStyle:bold'>Name</style> : ${item.name} #${item.saleId}`,
+                            `<style='fontStyle:bold'>Attribute</style> : ${item.properties.attribute}`,
+                            `<style='fontStyle:bold'>Rarity</style> : ${item.properties.rarity}`,
+                            `<style='fontStyle:bold'>Quantity on sale</style> : ${item.itemAvailable}`,
+                            `<style='fontStyle:bold'>Price</style> : ${item.price} ETH`,
+                            `<style='fontStyle:bold'>Seller</style> : ${item.seller}`,
+                        ], {
+                            fontFamily: 'Arial',
+                            lineSpacing: 9
+                        }), {key: 'details', expand:false, align: 'left-center', padding: { left: 145}})
+                        .add(this.add.sprite(0,0,'sellButton').setScale(0.8).setInteractive().on('pointerdown', () => this.buyItemPopUp(item)), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 20 }})
+                        .layout();
+        
+                        this.marketplaceSizer.add(itemOnSaleSizer);  
                     })
                 }
                 else{
@@ -135,12 +153,32 @@ class Marketplace extends BaseScene {
         this.itemsOnSale = await this.player.getAllItemsOnSale();
         this.marketplaceSizer.removeAll(true);
 
+        const gameW = this.game.config.width;
+        const paddingX = gameW * 0.025;
+
         if(this.itemsOnSale.length >= 1){
             this.itemsOnSale.forEach((item, index) => {
-                this.marketplaceSizer.add(
-                    this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive()
-                        .on('pointerdown', () => this.buyItemPopUp(item))
-                );
+                let itemOnSaleSizer = new OverlapSizer(this,0,0,this.panelBox.width - (paddingX*2), 190, {space:0}).setOrigin(0,0);
+                this.add.existing(itemOnSaleSizer);
+
+                itemOnSaleSizer                               
+                .add(this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*2),190, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
+                .add(this.add.sprite(0, 0, item.name).setScale(0.35), {key: 'itemImage', expand:false, align: 'left-center', padding: { left: 20}})
+                .add(this.add.rexTagText(0,0, [
+                    `<style='fontStyle:bold'>Name</style> : ${item.name} #${item.saleId}`,
+                    `<style='fontStyle:bold'>Attribute</style> : ${item.properties.attribute}`,
+                    `<style='fontStyle:bold'>Rarity</style> : ${item.properties.rarity}`,
+                    `<style='fontStyle:bold'>Quantity on sale</style> : ${item.itemAvailable}`,
+                    `<style='fontStyle:bold'>Price</style> : ${item.price} ETH`,
+                    `<style='fontStyle:bold'>Seller</style> : ${item.seller}`,
+                ], {
+                    fontFamily: 'Arial',
+                    lineSpacing: 9
+                }), {key: 'details', expand:false, align: 'left-center', padding: { left: 145}})
+                .add(this.add.sprite(0,0,'sellButton').setScale(0.8).setInteractive().on('pointerdown', () => this.buyItemPopUp(item)), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 20 }})
+                .layout();
+
+                this.marketplaceSizer.add(itemOnSaleSizer);
             })
         }
         else{
@@ -151,15 +189,160 @@ class Marketplace extends BaseScene {
         this.panelBox.layout();
     }
 
-    buyItemPopUp(item){
-        const buyItemGroup = this.add.group().setDepth(15);
+    async buyItemPopUp(item){
+        const buyItemGroup = this.add.group();
 
-        const itemImage = this.add.sprite(this.game.config.width*0.45,this.game.config.height*0.54, item.name).setScale(0.7).setOrigin(1,0.5);
-        const itemName = this.add.text(this.game.config.width*0.5, this.game.config.height*0.5, `Name: ${item.name}`).setOrigin(0,0.5);
+        let quantity = 1;
+        let price = item.price;
 
-        buyItemGroup.addMultiple([itemImage, itemName]);
+        //Quantity of item to be bought
+        const buyQuantity = this.add.rexInputText(
+            this.game.config.width/2,
+            this.game.config.height/2 - 50,
+            215,
+            25,
+            { 
+                type: "number",
+                maxLength: 2,
+                fontSize : "17px",
+                fontFamily: 'Arial',
+                backgroundColor : "white",
+                color: "black",
+            }
+        ).setOrigin(0.5).setScale(1.3)
+        .on('textchange', async(inputText) => {
+            let allowedKey = /^[1-9]\d*$/g;
+            let wholeNumbersOnly = new RegExp(allowedKey);
 
-        this.formPopUp(`Buy ${item.properties.type}`, buyItemGroup, 20, 425, 300);
+            let inputValue = Number(inputText.text);
+
+            if(wholeNumbersOnly.test(inputValue) && inputValue <= item.itemAvailable ){
+                quantity = inputValue;                               
+                price = item.price * quantity;
+
+                buyingPrice.setText(price);
+ 
+                //Get ETH current price in usd
+                try{
+                    let response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum');
+                    let ethData = await response.json();
+                    let { current_price } = ethData[0];
+
+                    let priceInUsd = price * current_price;
+        
+                    priceText.setText(`Total Price - ETH ($${priceInUsd.toFixed(2)})`);
+                }
+                catch(e){
+                    console.log(e.message);
+                }
+            }
+            else{
+                buyQuantity.setText("");
+                quantity = 1;
+                priceText.setText('Total Price - ETH ($0.00)');
+            }
+        });
+
+        buyQuantity.setText(quantity);
+        buyQuantity.setStyle("border-radius", "5px");
+        buyQuantity.setStyle("text-align", "center");
+
+        //Price of item to be bought
+        const buyingPrice = this.add.rexInputText(
+            this.game.config.width/2,
+            this.game.config.height/2 + 35,
+            215,
+            25,
+            { 
+                type: "number",
+                maxLength: 2,
+                fontSize : "17px",
+                fontFamily: 'Arial',
+                backgroundColor : "white",
+                color: "black",
+            }
+        ).setOrigin(0.5).setScale(1.3);
+
+        buyingPrice.setText(price);
+        buyingPrice.setStyle("border-radius", "5px");
+        buyingPrice.setStyle("text-align", "center");
+
+        let quantityInput = document.querySelector('input');
+        quantityInput.max = item.itemAvailable;
+        quantityInput.min = 1;
+
+        let priceInput = document.querySelectorAll('input')[1];
+        priceInput.disabled = true;
+
+        //input title
+        let quantityText = this.add.text(
+            buyQuantity.x - buyQuantity.displayWidth*0.65,
+            buyQuantity.y - buyQuantity.displayHeight,
+            'Quantity',
+            {fontFamily: 'Arial', fontSize: 14}
+        ).setOrigin(0,1);
+
+        let priceText = this.add.text(
+            buyingPrice.x - buyingPrice.displayWidth*0.65,
+            buyingPrice.y - buyingPrice.displayHeight,
+            'Total Price - ETH ($0.00)',
+            {fontFamily: 'Arial', fontSize: 14}
+        ).setOrigin(0,1);
+
+        let buycancelButton = this.add.sprite(
+            buyingPrice.x + 10,
+            buyingPrice.y + buyingPrice.displayHeight + 35,
+            'cancelButton'
+        ).setOrigin(0).setInteractive();
+
+        let buyOkButton = this.add.sprite(
+            buyingPrice.x -10,
+            buyingPrice.y + buyingPrice.displayHeight + 35,
+            'confirmButton'
+        ).setOrigin(1,0).setInteractive();
+
+        buycancelButton.on('pointerdown', () => {
+            this.sound.play('clickEffect', {loop: false});
+            this.formPopupContainer.destroy(true);
+        })
+
+        buyOkButton.on("pointerdown", async() => {
+            buyOkButton.setAlpha(0.6);
+            buyQuantity.setText(quantity);
+            buyingPrice.setText(price);
+            this.sound.play('clickEffect', {loop: false});
+            buyOkButton.disableInteractive();
+            try{
+                 console.log(price, quantity);
+            }
+            catch(e){
+                alert(e.message);
+            }
+
+            buyOkButton.setInteractive();
+            this.formPopupContainer.destroy(true);
+            this.tabsRight.emitButtonClick('top', 2);
+        });
+
+        buyOkButton.on("pointerup", () => {
+            buyOkButton.setAlpha(1);
+        })
+        
+        buyItemGroup.addMultiple([buyQuantity, buyingPrice, quantityText, priceText, buyOkButton, buycancelButton]);
+
+        this.formPopUp(`Buy ${item.properties.type}`,buyItemGroup);
+
+        try{
+            let data = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum');
+            let ethData = await data.json();
+            let { current_price } = ethData[0];
+            let priceInUsd = price * current_price;
+    
+            priceText.setText(priceInUsd? `Total Price - ETH ($${priceInUsd.toFixed(2)})` : 'Total Price - ETH ($0.00)');
+        }
+        catch(e){
+            console.log(e.message);
+        }
     }
 }
 

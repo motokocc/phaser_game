@@ -50,6 +50,7 @@ class BaseScene extends Phaser.Scene {
 
         let popupBg = this.add.rectangle(0,0, this.game.config.width, this.game.config.height, 0x000000, 0.7)
             .setOrigin(0)
+            .setDepth(12)
             .setInteractive();
 
         let popupBody = this.add.rexRoundRectangle(
@@ -59,13 +60,13 @@ class BaseScene extends Phaser.Scene {
             height || 250,
             5,
             0x000000,1
-        ).setScale(1.3).setStrokeStyle(1, 0xffffff, 1).setInteractive();
+        ).setDepth(12).setScale(1.3).setStrokeStyle(1, 0xffffff, 1).setInteractive();
 
         let popupTitle = this.add.text(
             popupBody.x,
             popupBody.y - popupBody.displayHeight*0.4,
             title, {fontFamily:'Arial', color: 'white', fontSize: titleSize || '20px', fontStyle: 'Bold'})
-        .setOrigin(0.5).setScale(1.3);
+            .setDepth(12).setOrigin(0.5).setScale(1.3);
 
         this.formPopupContainer.addMultiple([popupBg, popupBody, popupTitle].concat(content.getChildren()));
 
