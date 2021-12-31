@@ -267,6 +267,17 @@ class Player extends Phaser.Plugins.BasePlugin {
         }
     }
 
+    buyItem = async(saleId, quantity, price) => {
+        let priceInWei = Web3.utils.toWei(price.toString(), 'ether');
+
+        try{
+           await this.gameData.methods.buyItem(saleId, quantity).send({from: this.playerInfo.address, value: String(priceInWei)});
+        }
+        catch(e){
+            console.log(e.message);
+        }
+    }
+
     getAllItemsOnSale = async() => {
         let itemsOnSale = [];
         let itemCounter = await this.gameData.methods.itemCounter().call();
@@ -275,7 +286,7 @@ class Player extends Phaser.Plugins.BasePlugin {
             let item = await this.gameData.methods.items(i).call();
             let {itemId, available, forSale, price, seller, sold, id } = item;
 
-            if(forSale){
+            if(forSale && (seller.toUpperCase() != this.playerInfo.address.toUpperCase())){
                 let tokenURI = await this.gameData.methods.uri(itemId).call();
                 const response = await fetch(tokenURI);
 

@@ -57,7 +57,7 @@ class Marketplace extends BaseScene {
         this.add.existing(this.panelBox);
 
         //Inventory Tabs
-        let tabs = new Tabs(this, {
+        this.tabs = new Tabs(this, {
             x: paddingX,
             y: gameH * 0.22 - paddingX*2 + 10,
             width: gameW - paddingX*2,
@@ -70,7 +70,7 @@ class Marketplace extends BaseScene {
             ]
         }).setOrigin(0).layout();
 
-        tabs.getElement('topButtons').forEach((tab, index) => {
+        this.tabs.getElement('topButtons').forEach((tab, index) => {
             tab.setStrokeStyle(2, 0x000000, 1);
             if(index == 0){
                 this.cardIcon = this.add.sprite(tab.x, tab.y - tab.displayHeight/2 ,'cards_icon').setOrigin(0.5);
@@ -84,8 +84,8 @@ class Marketplace extends BaseScene {
 
         });
         
-        tabs.on('button.click', (button, groupName, index) => {
-            let tabButtons = tabs.getElement('topButtons');
+        this.tabs.on('button.click', (button, groupName, index) => {
+            let tabButtons = this.tabs.getElement('topButtons');
 
             tabButtons.forEach((button,indexButton) => {
                 if(indexButton == index){
@@ -99,34 +99,7 @@ class Marketplace extends BaseScene {
             this.marketplaceSizer.clear(true);
 
             if(index == 0){
-                if(this.itemsOnSale){
-                    this.itemsOnSale.forEach((item, index) => {
-                        let itemOnSaleSizer = new OverlapSizer(this,0,0,this.panelBox.width - (paddingX*2), 190, {space:0}).setOrigin(0,0);
-                        this.add.existing(itemOnSaleSizer);
-        
-                       itemOnSaleSizer                               
-                        .add(this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*2),190, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
-                        .add(this.add.sprite(0, 0, item.name).setScale(0.35), {key: 'itemImage', expand:false, align: 'left-center', padding: { left: 20}})
-                        .add(this.add.rexTagText(0,0, [
-                            `<style='fontStyle:bold'>Name</style> : ${item.name} #${item.saleId}`,
-                            `<style='fontStyle:bold'>Attribute</style> : ${item.properties.attribute}`,
-                            `<style='fontStyle:bold'>Rarity</style> : ${item.properties.rarity}`,
-                            `<style='fontStyle:bold'>Quantity on sale</style> : ${item.itemAvailable}`,
-                            `<style='fontStyle:bold'>Price</style> : ${item.price} ETH`,
-                            `<style='fontStyle:bold'>Seller</style> : ${item.seller}`,
-                        ], {
-                            fontFamily: 'Arial',
-                            lineSpacing: 9
-                        }), {key: 'details', expand:false, align: 'left-center', padding: { left: 145}})
-                        .add(this.add.sprite(0,0,'sellButton').setScale(0.8).setInteractive().on('pointerdown', () => this.buyItemPopUp(item)), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 20 }})
-                        .layout();
-        
-                        this.marketplaceSizer.add(itemOnSaleSizer);  
-                    })
-                }
-                else{
-                    this.marketplaceSizer.add(this.add.text(0,0, 'No cards being sold at the moment', {fontFamily: 'Arial'}));
-                }
+                this.scene.restart();
             }
             else if(index == 1){
                 this.marketplaceSizer.add(this.add.text(0,0, 'No items being sold at the moment', {fontFamily: 'Arial'}));
@@ -138,11 +111,7 @@ class Marketplace extends BaseScene {
             this.panelBox.layout();
         });
 
-        this.add.existing(tabs);
-        
-
-        let itemsOnTab = this.marketplaceSizer.getElement('items');
-        
+        this.add.existing(this.tabs);        
     }
 
     async loadNFTMarketplace(){
@@ -164,10 +133,12 @@ class Marketplace extends BaseScene {
                 itemOnSaleSizer                               
                 .add(this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*2),190, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
                 .add(this.add.sprite(0, 0, item.name).setScale(0.35), {key: 'itemImage', expand:false, align: 'left-center', padding: { left: 20}})
+                .add(this.add.sprite(0, 0, item.properties.attribute).setScale(0.2), {key: 'itemAttribute', expand:false, align: 'left-center', padding: { left: 225, bottom: 80 }})
+                .add(this.add.sprite(0, 0, `rarity_${item.properties.rarity}`).setScale(0.2), {key: 'itemRarity', expand:false, align: 'left-center', padding: { left: 205, bottom: 25 }})
                 .add(this.add.rexTagText(0,0, [
                     `<style='fontStyle:bold'>Name</style> : ${item.name} #${item.saleId}`,
-                    `<style='fontStyle:bold'>Attribute</style> : ${item.properties.attribute}`,
-                    `<style='fontStyle:bold'>Rarity</style> : ${item.properties.rarity}`,
+                    `<style='fontStyle:bold'>Attribute</style> : `,
+                    `<style='fontStyle:bold'>Rarity</style> : `,
                     `<style='fontStyle:bold'>Quantity on sale</style> : ${item.itemAvailable}`,
                     `<style='fontStyle:bold'>Price</style> : ${item.price} ETH`,
                     `<style='fontStyle:bold'>Seller</style> : ${item.seller}`,
@@ -175,7 +146,11 @@ class Marketplace extends BaseScene {
                     fontFamily: 'Arial',
                     lineSpacing: 9
                 }), {key: 'details', expand:false, align: 'left-center', padding: { left: 145}})
-                .add(this.add.sprite(0,0,'sellButton').setScale(0.8).setInteractive().on('pointerdown', () => this.buyItemPopUp(item)), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 20 }})
+                .add(this.add.sprite(0,0,'sellButton').setScale(0.8).setInteractive()
+                    .on('pointerdown', () => {
+                    this.sound.play('clickEffect', {loop: false});    
+                    this.buyItemPopUp(item)
+                }), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 20 }})
                 .layout();
 
                 this.marketplaceSizer.add(itemOnSaleSizer);
@@ -313,7 +288,7 @@ class Marketplace extends BaseScene {
             this.sound.play('clickEffect', {loop: false});
             buyOkButton.disableInteractive();
             try{
-                 console.log(price, quantity);
+                 await this.player.buyItem(item.saleId, quantity, price);
             }
             catch(e){
                 alert(e.message);
@@ -321,7 +296,7 @@ class Marketplace extends BaseScene {
 
             buyOkButton.setInteractive();
             this.formPopupContainer.destroy(true);
-            this.tabsRight.emitButtonClick('top', 2);
+            this.scene.restart();
         });
 
         buyOkButton.on("pointerup", () => {
