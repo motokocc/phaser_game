@@ -14,6 +14,7 @@ class Marketplace extends BaseScene {
         const gameH = this.game.config.height;
         const paddingX = gameW * 0.025;
 
+        this.itemsOnSale=[];
         this.generateUpperUI();
 
         //Market UI
@@ -29,6 +30,7 @@ class Marketplace extends BaseScene {
         this.add.existing(this.marketplaceSizer);
 
         this.marketplaceSizer.layout();
+        this.searchBox();
         this.loadNFTMarketplace();
 
         this.panelBox = new ScrollablePanel(this, {
@@ -122,38 +124,9 @@ class Marketplace extends BaseScene {
         this.itemsOnSale = await this.player.getAllItemsOnSale();
         this.marketplaceSizer.removeAll(true);
 
-        const gameW = this.game.config.width;
-        const paddingX = gameW * 0.025;
-
         if(this.itemsOnSale.length >= 1){
             this.itemsOnSale.forEach((item, index) => {
-                let itemOnSaleSizer = new OverlapSizer(this,0,0,this.panelBox.width - (paddingX*2), 190, {space:0}).setOrigin(0,0);
-                this.add.existing(itemOnSaleSizer);
-
-                itemOnSaleSizer                               
-                .add(this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*2),190, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
-                .add(this.add.sprite(0, 0, item.name).setScale(0.35), {key: 'itemImage', expand:false, align: 'left-center', padding: { left: 20}})
-                .add(this.add.sprite(0, 0, item.properties.attribute).setScale(0.2), {key: 'itemAttribute', expand:false, align: 'left-center', padding: { left: 225, bottom: 80 }})
-                .add(this.add.sprite(0, 0, `rarity_${item.properties.rarity}`).setScale(0.2), {key: 'itemRarity', expand:false, align: 'left-center', padding: { left: 205, bottom: 25 }})
-                .add(this.add.rexTagText(0,0, [
-                    `<style='fontStyle:bold'>Name</style> : ${item.name} #${item.saleId}`,
-                    `<style='fontStyle:bold'>Attribute</style> : `,
-                    `<style='fontStyle:bold'>Rarity</style> : `,
-                    `<style='fontStyle:bold'>Quantity on sale</style> : ${item.itemAvailable}`,
-                    `<style='fontStyle:bold'>Price</style> : ${item.price} ETH`,
-                    `<style='fontStyle:bold'>Seller</style> : ${item.seller}`,
-                ], {
-                    fontFamily: 'Arial',
-                    lineSpacing: 9
-                }), {key: 'details', expand:false, align: 'left-center', padding: { left: 145}})
-                .add(this.add.sprite(0,0,'sellButton').setScale(0.8).setInteractive()
-                    .on('pointerdown', () => {
-                    this.sound.play('clickEffect', {loop: false});    
-                    this.buyItemPopUp(item)
-                }), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 20 }})
-                .layout();
-
-                this.marketplaceSizer.add(itemOnSaleSizer);
+                this.generateItemUI(item);
             })
         }
         else{
@@ -164,7 +137,98 @@ class Marketplace extends BaseScene {
         this.panelBox.layout();
     }
 
+    generateItemUI(item){
+        const gameW = this.game.config.width;
+        const paddingX = gameW * 0.025;
+
+         let itemOnSaleSizer = new OverlapSizer(this,0,0,this.panelBox.width - (paddingX*3), 190, {space:0}).setOrigin(0,0);
+        this.add.existing(itemOnSaleSizer);
+
+        itemOnSaleSizer                               
+        .add(this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*3),190, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
+        .add(this.add.sprite(0, 0, item.name).setScale(0.35), {key: 'itemImage', expand:false, align: 'left-center', padding: { left: 20}})
+        .add(this.add.sprite(0, 0, item.properties.attribute).setScale(0.2), {key: 'itemAttribute', expand:false, align: 'left-center', padding: { left: 225, bottom: 80 }})
+        .add(this.add.sprite(0, 0, `rarity_${item.properties.rarity}`).setScale(0.2), {key: 'itemRarity', expand:false, align: 'left-center', padding: { left: 205, bottom: 25 }})
+        .add(this.add.rexTagText(0,0, [
+            `<style='fontStyle:bold'>Name</style> : ${item.name} #${item.saleId}`,
+            `<style='fontStyle:bold'>Attribute</style> : `,
+            `<style='fontStyle:bold'>Rarity</style> : `,
+            `<style='fontStyle:bold'>Quantity on sale</style> : ${item.itemAvailable}`,
+            `<style='fontStyle:bold'>Price</style> : ${item.price} ETH`,
+            `<style='fontStyle:bold'>Seller</style> : ${item.seller}`,
+        ], {
+            fontFamily: 'Arial',
+            lineSpacing: 9
+        }), {key: 'details', expand:false, align: 'left-center', padding: { left: 145}})
+        .add(this.add.sprite(0,0,'buyButton').setScale(0.8).setInteractive()
+            .on('pointerdown', () => {
+            this.sound.play('clickEffect', {loop: false});    
+            this.buyItemPopUp(item)
+        }), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 20 }})
+        .layout();   
+
+        this.marketplaceSizer.add(itemOnSaleSizer);    
+    }
+
+    searchBox(){
+        const gameW = this.game.config.width;
+        const paddingX = gameW * 0.025;
+        this.searchInput = this.add.rexInputText(
+            this.game.config.width - paddingX - 4,
+            this.game.config.height * 0.22 - paddingX,
+            340,
+            35,
+            {
+                fontSize : "17px",
+                fontFamily: 'Arial',
+                backgroundColor : "black",
+                color: "white",
+                placeholder: "Search for name, attribute, seller...",
+                border: 1,
+                borderColor: "white",
+                paddingLeft: "15px"
+            }
+        ).setOrigin(1,0.5)
+        .on('textchange', (inputText) => {
+            let searchOutput = [];
+
+            let filter = inputText.text.toUpperCase();
+
+            for (let i = 0; i < this.itemsOnSale.length; i++) {
+                let { name, seller, properties } = this.itemsOnSale[i];
+                let { attribute } = properties;
+
+                if (name.toUpperCase().indexOf(filter) > -1 || 
+                    attribute.toUpperCase() == filter ||
+                    seller.toUpperCase().indexOf(filter) > -1) 
+                {
+                    searchOutput.push(this.itemsOnSale[i])
+                }
+            }
+
+            this.marketplaceSizer.removeAll(true);
+
+            if(searchOutput.length >= 1){
+                searchOutput.forEach(item => {
+                    this.generateItemUI(item);
+                    this.panelBox.layout();
+                });
+            }
+            else{
+                this.marketplaceSizer.add(
+                    this.add.text(0,0, 'No match found', {fontFamily: 'Arial'}).setDepth(10)
+                ); 
+                this.panelBox.layout();               
+            }
+
+        })
+
+        this.searchInput.setStyle("border-radius", "5px");
+ 
+    }
+
     async buyItemPopUp(item){
+        this.searchInput.setBlur();
         const buyItemGroup = this.add.group();
 
         let quantity = 1;
@@ -242,11 +306,11 @@ class Marketplace extends BaseScene {
         buyingPrice.setStyle("border-radius", "5px");
         buyingPrice.setStyle("text-align", "center");
 
-        let quantityInput = document.querySelector('input');
+        let quantityInput = document.querySelectorAll('input')[1];
         quantityInput.max = item.itemAvailable;
         quantityInput.min = 1;
 
-        let priceInput = document.querySelectorAll('input')[1];
+        let priceInput = document.querySelectorAll('input')[2];
         priceInput.disabled = true;
 
         //input title
