@@ -87,6 +87,12 @@ import twitterIcon from '../images/settings/twitter.png';
 import volumeIcon from '../images/settings/volume.png';
 import youtubeIcon from '../images/settings/youtube.png';
 
+//Marketplace
+import list_icon from '../images/icons/list_icon.png';
+import square_icon from '../images/icons/square_icon.png';
+import fast_forward from '../images/icons/fast_forward.png';
+import forward_icon from '../images/icons/forward_arrow.png';
+
 //inventory
 import alphaAlt from '../images/image_alt/alpha_alt.png';
 import sayaAlt from '../images/image_alt/saya_alt.png';
@@ -186,6 +192,12 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('backpack_icon', backpack_icon);
         this.load.image('stats_icon', stats_icon);
         this.load.image('cart_icon', cart_icon);
+
+        //Marketplace
+        this.load.image('list_icon', list_icon);
+        this.load.image('square_icon', square_icon);
+        this.load.image('fast_forward', fast_forward);      
+        this.load.image('forward_icon', forward_icon);
 
         this.load.image('dialogueBox', dialogueBox);
         this.load.image('summoningCircle', summoningCircle);

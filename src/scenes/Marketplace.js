@@ -15,7 +15,14 @@ class Marketplace extends BaseScene {
         const paddingX = gameW * 0.025;
 
         this.itemsOnSale=[];
+        this.cardsOnSale=[];
+        this.utilitiesOnSale=[];
+        this.skillsOnSale=[];
+        this.currentTab = "card";
+        this.toggleList = true;
+        this.currentPage = 1;
         this.generateUpperUI();
+        this.generatePaginationUI();
 
         //Market UI
         this.marketplaceSizer = new FixWidthSizer(this, {
@@ -31,13 +38,15 @@ class Marketplace extends BaseScene {
 
         this.marketplaceSizer.layout();
         this.searchBox();
-        this.loadNFTMarketplace();
+        this.loadNFTMarketplace(this.currentTab);
+
+        this.thumbnailChanger();
 
         this.panelBox = new ScrollablePanel(this, {
             x: 0,
             y: 0,
             width: gameW - paddingX*2,
-            height: gameH*0.745,
+            height: gameH*0.78,
             scrollMode:0,
             background: this.add.rectangle(0,0, gameW - paddingX*2, gameH*0.745, 0x000000, 0.9),
             panel: {
@@ -47,7 +56,7 @@ class Marketplace extends BaseScene {
                 left: 10,
                 right: 20,
                 top: 20,
-                bottom: 20,
+                bottom: 45,
             },
             slider: {
                 track: this.add.rexRoundRectangle(0, 0, 10, gameH*0.745, 4.5, 0x000000, 0.9).setStrokeStyle(0.5, 0xffffff, 0.8),
@@ -63,7 +72,7 @@ class Marketplace extends BaseScene {
             x: paddingX,
             y: gameH * 0.22 - paddingX*2 + 10,
             width: gameW - paddingX*2,
-            height: gameH*0.745,
+            height: gameH*0.78,
             panel: this.panelBox,
             topButtons: [
                 this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
@@ -104,10 +113,16 @@ class Marketplace extends BaseScene {
                 this.scene.restart();
             }
             else if(index == 1){
-                this.marketplaceSizer.add(this.add.text(0,0, 'No items being sold at the moment', {fontFamily: 'Arial'}));
+                this.marketplaceSizer.removeAll(true);
+                this.currentPage = 1;
+                this.currentTab = 'item';
+                this.loadNFTMarketplace(this.currentTab);
             }
             else{
-                this.marketplaceSizer.add(this.add.text(0,0, 'No skills being sold at the moment', {fontFamily: 'Arial'}));
+                this.marketplaceSizer.removeAll(true);
+                this.currentPage = 1;
+                this.currentTab = 'skill';
+                this.loadNFTMarketplace(this.currentTab);
             }    
 
             this.panelBox.layout();
@@ -116,58 +131,180 @@ class Marketplace extends BaseScene {
         this.add.existing(this.tabs);        
     }
 
-    async loadNFTMarketplace(){
+    async loadNFTMarketplace(category){
         this.marketplaceSizer.add(
             this.add.text(0,0, 'Loading NFT marketplace.. Please wait...', {fontFamily: 'Arial'}).setDepth(10)
         );
  
-        this.itemsOnSale = await this.player.getAllItemsOnSale();
+        //this.itemsOnSale = await this.player.getAllItemsOnSale();
+
+        //Data test
+        for(let i=0; i<=60; i++){
+            let testData = {
+                name: 'Saya',
+                saleId: 20,
+                itemId: 500,
+                itemAvailable: 1,
+                itemSold:1,
+                seller: '0x0000000',
+                price: 0.555,
+                properties:{
+                    rarity: 5,
+                    type: "card",
+                    attribute: "water"
+                }
+            }            
+            testData.saleId = i + 1;
+            testData.itemAvailable = Math.floor(Math.random()*10);
+            testData.price = Math.random().toFixed(3);
+            let randomizer = Math.floor(Math.random()*2);
+            testData.name = randomizer == 1? 'Saya': 'Alpha';
+            testData.properties.attribute = randomizer == 1? 'water': 'fire';
+            testData.properties.rarity = randomizer == 1? 5: 1;
+            testData.seller = '0x00000' + i;
+            this.itemsOnSale.push(testData); 
+        }
+        //End of Data test
+
+        setTimeout(()=>{
         this.marketplaceSizer.removeAll(true);
 
-        if(this.itemsOnSale.length >= 1){
-            this.itemsOnSale.forEach((item, index) => {
-                this.generateItemUI(item);
-            })
+        if(category == 'card'){
+            this.cardsOnSale = this.itemsOnSale.filter(item => item.properties.type == category);
+            if(this.cardsOnSale.length >= 1){
+
+                this.paginate(this.cardsOnSale);
+            }
+            else{
+                this.marketplaceSizer.add(
+                    this.add.text(0,0, 'No cards being sold at the moment', {fontFamily: 'Arial'}).setDepth(10)
+                );
+            }
+        }
+        else if(category == 'item'){
+            this.utilitiesOnSale = this.itemsOnSale.filter(item => item.properties.type == category);
+            if(this.utilitiesOnSale.length >= 1){
+
+                this.paginate(this.utilitiesOnSale);
+            }
+            else{
+                this.marketplaceSizer.add(
+                    this.add.text(0,0, 'No items being sold at the moment', {fontFamily: 'Arial'}).setDepth(10)
+                );
+            }
+        }
+        else if(category == 'skill'){
+            this.skillsOnSale = this.itemsOnSale.filter(item => item.properties.type == category);
+            if(this.skillsOnSale.length >= 1){
+
+                this.paginate(this.skillsOnSale);
+            }
+            else{
+                this.marketplaceSizer.add(
+                    this.add.text(0,0, 'No skills being sold at the moment', {fontFamily: 'Arial'}).setDepth(10)
+                );
+            }
         }
         else{
-            this.marketplaceSizer.add(
-                this.add.text(0,0, 'No cards being sold at the moment', {fontFamily: 'Arial'}).setDepth(10)
-            );
+            this.paginate(this.itemsOnSale);
         }
+
         this.panelBox.layout();
+        },3000)
+    }
+
+    generatePaginationUI(){
+        this.paginationSizer = new OverlapSizer(
+            this,this.game.config.width/2,this.game.config.height - (this.game.config.width * 0.025),225, 45, {space:0}
+        ).setOrigin(0.5);
+        this.add.existing(this.paginationSizer); 
+
+        this.paginationPageNumber = this.add.text(0,0, '1 of 1 Page', {fontFamily: 'Arial'}).setDepth(12).setOrigin(0.5).setInteractive();
+        let paginationFirstPage = this.add.sprite(0,0, 'fast_forward').setDepth(12).setInteractive();
+        let paginationLastPage = this.add.sprite(0,0, 'fast_forward').setDepth(12).setInteractive();
+        let paginationNextPage = this.add.sprite(0,0, 'forward_icon').setDepth(12).setInteractive();
+        let paginationPreviousPage = this.add.sprite(0,0, 'forward_icon').setDepth(12).setInteractive();
+
+        paginationFirstPage.flipX = true;
+        paginationPreviousPage.flipX = true;
+
+        this.paginationSizer
+            .add(this.paginationPageNumber, {expand:false, align: 'center-center'})
+            .add(paginationPreviousPage, {expand:false, align: 'left-center', padding:{left: 40}})
+            .add(paginationFirstPage, { expand:false, align: 'left-center'})
+            .add(paginationNextPage, {expand:false, align: 'right-center', padding:{right:40}})
+            .add(paginationLastPage, {expand:false, align: 'right-center'})
+            .layout();
+
+        paginationFirstPage.on('pointerdown', () => {
+            this.sound.play('hoverEffect', {loop: false});
+            this.firstPage();
+        });
+        paginationLastPage.on('pointerdown', () => {
+            this.sound.play('hoverEffect', {loop: false});
+            this.lastPage();
+        });
+        paginationNextPage.on('pointerdown', () => {
+            this.sound.play('hoverEffect', {loop: false});
+            this.nextPage();
+        });
+        paginationPreviousPage.on('pointerdown', () => {
+            this.sound.play('hoverEffect', {loop: false});
+            this.prevPage();
+        });
     }
 
     generateItemUI(item){
         const gameW = this.game.config.width;
         const paddingX = gameW * 0.025;
 
-         let itemOnSaleSizer = new OverlapSizer(this,0,0,this.panelBox.width - (paddingX*3), 190, {space:0}).setOrigin(0,0);
-        this.add.existing(itemOnSaleSizer);
+        if(this.toggleList){
+            let itemOnSaleSizer = new OverlapSizer(this,0,0,this.panelBox.width - (paddingX*3), 190, {space:0}).setOrigin(0,0);
+            this.add.existing(itemOnSaleSizer);
 
-        itemOnSaleSizer                               
-        .add(this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*3),190, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
-        .add(this.add.sprite(0, 0, item.name).setScale(0.35), {key: 'itemImage', expand:false, align: 'left-center', padding: { left: 20}})
-        .add(this.add.sprite(0, 0, item.properties.attribute).setScale(0.2), {key: 'itemAttribute', expand:false, align: 'left-center', padding: { left: 225, bottom: 80 }})
-        .add(this.add.sprite(0, 0, `rarity_${item.properties.rarity}`).setScale(0.2), {key: 'itemRarity', expand:false, align: 'left-center', padding: { left: 205, bottom: 25 }})
-        .add(this.add.rexTagText(0,0, [
-            `<style='fontStyle:bold'>Name</style> : ${item.name} #${item.saleId}`,
-            `<style='fontStyle:bold'>Attribute</style> : `,
-            `<style='fontStyle:bold'>Rarity</style> : `,
-            `<style='fontStyle:bold'>Quantity on sale</style> : ${item.itemAvailable}`,
-            `<style='fontStyle:bold'>Price</style> : ${item.price} ETH`,
-            `<style='fontStyle:bold'>Seller</style> : ${item.seller}`,
-        ], {
-            fontFamily: 'Arial',
-            lineSpacing: 9
-        }), {key: 'details', expand:false, align: 'left-center', padding: { left: 145}})
-        .add(this.add.sprite(0,0,'buyButton').setScale(0.8).setInteractive()
-            .on('pointerdown', () => {
-            this.sound.play('clickEffect', {loop: false});    
-            this.buyItemPopUp(item)
-        }), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 20 }})
-        .layout();   
+            itemOnSaleSizer                               
+            .add(this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*3),190, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
+            .add(this.add.sprite(0, 0, item.name).setScale(0.35), { expand:false, align: 'left-center', padding: { left: 20}})
+            .add(this.add.sprite(0, 0, item.properties.attribute).setScale(0.2), { expand:false, align: 'left-center', padding: { left: 225, bottom: 80 }})
+            .add(this.add.sprite(0, 0, `rarity_${item.properties.rarity}`).setScale(0.2), { expand:false, align: 'left-center', padding: { left: 205, bottom: 25 }})
+            .add(this.add.rexTagText(0,0, [
+                `<style='fontStyle:bold'>Name</style> : ${item.name} #${item.saleId}`,
+                `<style='fontStyle:bold'>Attribute</style> : `,
+                `<style='fontStyle:bold'>Rarity</style> : `,
+                `<style='fontStyle:bold'>Quantity on sale</style> : ${item.itemAvailable}`,
+                `<style='fontStyle:bold'>Price</style> : ${item.price} ETH`,
+                `<style='fontStyle:bold'>Seller</style> : ${item.seller}`,
+            ], {
+                fontFamily: 'Arial',
+                lineSpacing: 9
+            }), { expand:false, align: 'left-center', padding: { left: 145}})
+            .add(this.add.sprite(0,0,'buyButton').setScale(0.8).setInteractive()
+                .on('pointerdown', () => {
+                this.sound.play('clickEffect', {loop: false});    
+                this.buyItemPopUp(item)
+            }), {expand:false, align: 'right-center', padding: { right: 20 }})
+            .layout(); 
 
-        this.marketplaceSizer.add(itemOnSaleSizer);    
+            this.marketplaceSizer.add(itemOnSaleSizer);         
+        }
+        else{
+            let itemOnSaleSizer = new OverlapSizer(this,0,0, 120, 190, {space:0}).setOrigin(0,0);
+            this.add.existing(itemOnSaleSizer);
+
+           itemOnSaleSizer
+            .add(this.add.sprite(0, 0, item.name).setScale(0.35), { expand:false, align: 'center-top'})
+            .add(this.add.rexRoundRectangle(0,0, 105, 30, 5, 0x005500, 1).setInteractive()
+                .on('pointerdown', () => {
+                    this.sound.play('clickEffect', {loop: false});    
+                    this.buyItemPopUp(item)
+                }), { expand:false, align: 'center-bottom'})
+            .add(this.add.text(0,0, `${item.price} ETH`, {fontFamily: 'Arial', fontSize: 12}).setOrigin(0.5), { expand:false, align: 'center-bottom', padding:{bottom: 7.5}})
+            .layout();
+
+            this.marketplaceSizer.add(itemOnSaleSizer); 
+        }
+
+        this.paginationPageNumber.setText(`${this.currentPage} of ${this.numberOfPages} ${this.numberOfPages >1? 'Pages' : 'Page'}`);      
     }
 
     searchBox(){
@@ -193,26 +330,36 @@ class Marketplace extends BaseScene {
             let searchOutput = [];
 
             let filter = inputText.text.toUpperCase();
+            let itemToFilter = this.itemsOnSale.filter(item => item.properties.type == this.currentTab);
 
-            for (let i = 0; i < this.itemsOnSale.length; i++) {
-                let { name, seller, properties } = this.itemsOnSale[i];
+            for (let i = 0; i < itemToFilter.length; i++) {
+                let { name, seller, properties } = itemToFilter[i];
                 let { attribute } = properties;
 
                 if (name.toUpperCase().indexOf(filter) > -1 || 
                     attribute.toUpperCase() == filter ||
                     seller.toUpperCase().indexOf(filter) > -1) 
                 {
-                    searchOutput.push(this.itemsOnSale[i])
+                    searchOutput.push(itemToFilter[i])
                 }
             }
 
             this.marketplaceSizer.removeAll(true);
 
             if(searchOutput.length >= 1){
-                searchOutput.forEach(item => {
-                    this.generateItemUI(item);
-                    this.panelBox.layout();
-                });
+                if(this.currentTab == 'card'){
+                    this.cardsOnSale = searchOutput;
+                    this.paginate(this.cardsOnSale);
+                }
+                else if(this.currentTab == 'item'){
+                    this.utilitiesOnSale = searchOutput;
+                    this.paginate(this.utilitiesOnSale);
+                }
+                else{
+                    this.skillsOnSale = searchOutput;
+                    this.paginate(this.skillsOnSale);
+                }
+
             }
             else{
                 this.marketplaceSizer.add(
@@ -225,6 +372,92 @@ class Marketplace extends BaseScene {
 
         this.searchInput.setStyle("border-radius", "5px");
  
+    }
+
+    thumbnailChanger(){
+        let thumbnail_icon_filter = this.add.sprite(this.searchInput.x - this.searchInput.displayWidth - 5, this.searchInput.y + 3,'square_icon')
+            .setOrigin(1,0.5).setInteractive();
+        let list_icon_filter = this.add.sprite(thumbnail_icon_filter.x - thumbnail_icon_filter.displayWidth - 5, thumbnail_icon_filter.y, 'list_icon')
+            .setOrigin(1,0.5).setInteractive();
+
+        let icons = [thumbnail_icon_filter, list_icon_filter];
+
+        icons.forEach(icon => {
+            icon.on('pointerover', () => icon.setAlpha(0.7));
+            icon.on('pointerout', () => icon.setAlpha(1));
+        })
+
+        thumbnail_icon_filter.on('pointerdown', () => {
+            this.toggleList = false;
+            this.sound.play('hoverEffect', {loop: false});
+            this.currentPage = 1;
+            this.paginateOnTabs();
+        })
+
+        list_icon_filter.on('pointerdown', () => {
+            this.toggleList = true;
+            this.currentPage = 1;
+            this.sound.play('hoverEffect', {loop: false});
+            this.paginateOnTabs();         
+        })
+
+    }
+
+    paginate(data, currentPageNow){
+         let numberOfItems = data.length;
+         let numberPerPage = this.toggleList? 5 : 14;
+         this.currentPage = currentPageNow || 1;
+         this.numberOfPages = Math.ceil(numberOfItems/numberPerPage);
+
+        const trimStart = (this.currentPage - 1) * numberPerPage;
+        const trimEnd = trimStart + numberPerPage;
+
+        let itemsOnDisplay = data.slice(trimStart, trimEnd);
+
+        this.marketplaceSizer.removeAll(true);
+
+        itemsOnDisplay.forEach(item => {
+            this.generateItemUI(item);
+            this.panelBox.layout();
+        });
+    }
+
+    nextPage(){
+        if(this.numberOfPages && this.currentPage != this.numberOfPages){
+            this.currentPage++;
+            this.paginateOnTabs();
+        }
+    }
+
+    prevPage(){
+        if(this.currentPage > 1){
+            this.currentPage--;
+            this.paginateOnTabs();
+        }
+    }
+
+    lastPage(){
+        if(this.numberOfPages &&  this.currentPage != this.numberOfPages){
+            this.currentPage = this.numberOfPages;
+            this.paginateOnTabs();
+        }
+    }
+    
+    firstPage(){
+        this.currentPage = 1;
+        this.paginateOnTabs();
+    }
+
+    paginateOnTabs = () => {
+        if(this.currentTab == 'card'){
+            this.paginate(this.cardsOnSale, this.currentPage);
+        }
+        else if(this.currentTab == 'item'){
+            this.paginate(this.utilitiesOnSale, this.currentPage);
+        }
+        else{
+            this.paginate(this.skillsOnSale, this.currentPage);
+        }        
     }
 
     async buyItemPopUp(item){
