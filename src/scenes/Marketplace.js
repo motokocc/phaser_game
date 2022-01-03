@@ -136,7 +136,7 @@ class Marketplace extends BaseScene {
             this.add.text(0,0, 'Loading NFT marketplace.. Please wait...', {fontFamily: 'Arial'}).setDepth(10)
         );
  
-        //this.itemsOnSale = await this.player.getAllItemsOnSale();
+        this.itemsOnSale = await this.player.getAllItemsOnSale();
 
         //Data test
         for(let i=0; i<=60; i++){
@@ -166,7 +166,6 @@ class Marketplace extends BaseScene {
         }
         //End of Data test
 
-        setTimeout(()=>{
         this.marketplaceSizer.removeAll(true);
 
         if(category == 'card'){
@@ -210,7 +209,6 @@ class Marketplace extends BaseScene {
         }
 
         this.panelBox.layout();
-        },3000)
     }
 
     generatePaginationUI(){
@@ -462,6 +460,8 @@ class Marketplace extends BaseScene {
 
     async buyItemPopUp(item){
         this.searchInput.setBlur();
+        this.searchInput.setAlpha(0.3);
+
         const buyItemGroup = this.add.group();
 
         let quantity = 1;
@@ -575,6 +575,7 @@ class Marketplace extends BaseScene {
 
         buycancelButton.on('pointerdown', () => {
             this.sound.play('clickEffect', {loop: false});
+            this.searchInput.setAlpha(1);
             this.formPopupContainer.destroy(true);
         })
 
@@ -592,6 +593,7 @@ class Marketplace extends BaseScene {
             }
 
             buyOkButton.setInteractive();
+            this.searchInput.setAlpha(1);
             this.formPopupContainer.destroy(true);
             this.scene.restart();
         });
@@ -602,7 +604,7 @@ class Marketplace extends BaseScene {
         
         buyItemGroup.addMultiple([buyQuantity, buyingPrice, quantityText, priceText, buyOkButton, buycancelButton]);
 
-        this.formPopUp(`Buy ${item.properties.type}`,buyItemGroup);
+        this.formPopUp(`Buy ${item.properties.type}`,buyItemGroup, null, null, null, this.searchInput);
 
         try{
             let data = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum');

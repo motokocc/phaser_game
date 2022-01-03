@@ -97,10 +97,24 @@ class Game extends BaseScene {
         const player_gui_box = this.add.sprite(paddingX, gameH*0.07,'player_gui_box').setOrigin(0, 0.5).setScale(buttonScale).setInteractive();
         const player_name = this.add.text(
             player_gui_box.x* 3.6,
-            player_gui_box.y,
-            this.player.playerInfo.name || 'Adventurer',
-            {fontFamily: 'Arial'}
+            player_gui_box.y - paddingX*0.33,
+            this.player.playerInfo.name || 'Player',
+            {fontFamily: 'Arial', fontSize:14}
         ).setOrigin(0, 0.5);
+
+        const player_role = this.add.text(
+            player_gui_box.x* 3.6,
+            player_gui_box.y + paddingX*0.33,
+            this.player.playerInfo.role || 'Adventurer',
+            {fontFamily: 'Arial', fontSize:13, color: '#00ff00'}
+        ).setOrigin(0, 0.5);
+
+        const player_level = this.add.text(
+            player_gui_box.x* 2.2,
+            player_gui_box.y + paddingX*0.1,
+            ['Lvl', this.player.playerInfo.level] || ['Lvl', 1],
+            {fontFamily: 'Arial', fontSize:13, align: 'center'}
+        ).setOrigin(0.5);
 
         //Gems
         let gems = this.add.container();
@@ -124,7 +138,7 @@ class Game extends BaseScene {
         gems.add([gem_box, gem_icon, gem_value]);
         gold.add([gold_box, gold_icon, gold_value]);
         currencyUI.add([gold, gems]);
-        playerUI.add([player_gui_box, player_name]);
+        playerUI.add([player_gui_box, player_name, player_role, player_level]);
         rightButtons.add([shop_button, pvp_button, mining_button, explore_button]);
         leftButtons.add([roullete_button, black_market_button, missions_button, summon_button, this.roullete_notif]);
 
@@ -160,7 +174,7 @@ class Game extends BaseScene {
             delay:1200
         });
 
-        player_gui_box.on('pointerdown', () => this.scene.start("inventory"));
+        player_gui_box.on('pointerdown', () => {this.sound.play('clickEffect', {loop: false}); this.scene.start("inventory")});
 
         const buttons = [
             shop_button, pvp_button, mining_button, explore_button,
@@ -190,6 +204,7 @@ class Game extends BaseScene {
 
             button.on('pointerdown', async() => {
                 //Daily Reward
+                this.sound.play('clickEffect', {loop: false});
                 if(button.name == 'gift'){
                     if(this.getDifferenceInMinutes(new Date(), this.player.playerInfo.lastReward)> 5 && this.player.playerInfo.address){                       
                         try{
