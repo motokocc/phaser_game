@@ -62,10 +62,10 @@ class Game extends BaseScene {
 
         //Right side buttons
         let rightButtons = this.add.container(200,0);
-        const shop_button = this.add.sprite(gameW - (paddingX*2.8), gameH*0.21 + paddingY, 'shop_button').setOrigin(0.5);
-        const pvp_button = this.add.sprite(gameW -(paddingX*2.8), gameH*0.42 + paddingY, 'pvp_button').setOrigin(0.5);
-        const mining_button = this.add.sprite(gameW - (paddingX*2.8), gameH*0.63 + paddingY, 'mining_button').setOrigin(0.5);
-        const explore_button = this.add.sprite(gameW - (paddingX*2.8), gameH*0.84 + paddingY, 'explore_button').setOrigin(0.5);
+        const shop_button = this.add.sprite(gameW - (paddingX*2.8), gameH*0.21 + paddingY, 'shop_button').setOrigin(0.5).setName('shop');
+        const pvp_button = this.add.sprite(gameW -(paddingX*2.8), gameH*0.42 + paddingY, 'pvp_button').setOrigin(0.5).setName('pvp');
+        const mining_button = this.add.sprite(gameW - (paddingX*2.8), gameH*0.63 + paddingY, 'mining_button').setOrigin(0.5).setName('mining');
+        const explore_button = this.add.sprite(gameW - (paddingX*2.8), gameH*0.84 + paddingY, 'explore_button').setOrigin(0.5).setName('explore');
 
         //Left side buttons
         let leftButtons = this.add.container(-250,0);

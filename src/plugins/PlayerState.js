@@ -5,7 +5,8 @@ import Web3 from 'web3';
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import { firebaseConfig } from '../js/config/firebase-config';
-import card from "../js/card.json"
+import card from "../js/card.json";
+import { skills, items } from '../js/shopItems';
 
 class Player extends Phaser.Plugins.BasePlugin {
     constructor(pluginManager) {
@@ -307,6 +308,21 @@ class Player extends Phaser.Plugins.BasePlugin {
                 itemsOnSale.push(formattedItem);
             }
         }
+
+        return itemsOnSale;
+    }
+
+    getShopItems = (category) => {
+        let itemsOnSale = [];
+
+        if(category == 'skill'){
+            itemsOnSale = skills;
+        }
+        else{
+            itemsOnSale = items;
+        }
+
+        //Add fetch of blockchain data later
 
         return itemsOnSale;
     }

@@ -14,6 +14,7 @@ import DailyRoullete from './scenes/Roullete';
 import Credits from './scenes/Credits';
 import CharacterInventory from './scenes/CharacterInventory';
 import Marketplace from './scenes/Marketplace';
+import Shop from './scenes/Shop';
 
 const config = {
     widht: 800,
@@ -52,9 +53,10 @@ game.scene.add("roullete", DailyRoullete);
 game.scene.add("credits", Credits);
 game.scene.add("inventory", CharacterInventory);
 game.scene.add("marketplace", Marketplace);
+game.scene.add("shop", Shop);
 game.scene.add("game", Game);
 
-game.scene.start("loading", {nextPage: "titlescreen"});
+//game.scene.start("loading", {nextPage: "titlescreen"});
 //game.scene.start("loading", {nextPage: "summoningArea"});
 //game.scene.start("loading", {nextPage: "tutorial"});
 //game.scene.start("loading", {nextPage: "game"});
@@ -62,3 +64,4 @@ game.scene.start("loading", {nextPage: "titlescreen"});
 //game.scene.start("credits");
 //game.scene.start("loading", {nextPage: "inventory"});
 //game.scene.start("loading", {nextPage: "marketplace"});
+game.scene.start("loading", {nextPage: "shop"});

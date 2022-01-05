@@ -109,6 +109,19 @@ import backpack_icon from '../images/icons/bagpack_icon.png';
 import magic_icon from '../images/icons/magic_icon.png';
 import stats_icon from '../images/icons/stats_icon.png';
 import cart_icon from '../images/icons/cart_icon.png';
+import eth_icon from '../images/icons/eth_icon.png';
+
+//Skills
+import fire_ball from '../images/skills/fire_ball.png';
+import fatal_wounds from '../images/skills/fatal_wounds.png';
+import ice_spikes from '../images/skills/ice_spikes.png';
+import icicle_spears from '../images/skills/icicle_spears.png';
+import meteor_rain from '../images/skills/meteor_rain.png';
+import war_cry from '../images/skills/war_cry.png';
+
+//Items
+import iron_pickaxe from '../images/items/iron_pickaxe.png';
+import small_heal_potion from '../images/items/small_heal_potion.png';
 
 class LoadingScreen extends Phaser.Scene {
 
@@ -192,6 +205,7 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('backpack_icon', backpack_icon);
         this.load.image('stats_icon', stats_icon);
         this.load.image('cart_icon', cart_icon);
+        this.load.image('eth', eth_icon);
 
         //Marketplace
         this.load.image('list_icon', list_icon);
@@ -199,6 +213,19 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('fast_forward', fast_forward);      
         this.load.image('forward_icon', forward_icon);
 
+        //Skills
+        this.load.image('Fire ball', fire_ball);
+        this.load.image('Fatal wounds', fatal_wounds);
+        this.load.image('Ice spikes', ice_spikes);
+        this.load.image('Icicle spears', icicle_spears);
+        this.load.image('Meteor rain', meteor_rain);
+        this.load.image('War cry', war_cry);
+
+        //Items
+        this.load.image('Iron pickaxe', iron_pickaxe);
+        this.load.image('Small heal potion', small_heal_potion);
+
+        //Others
         this.load.image('dialogueBox', dialogueBox);
         this.load.image('summoningCircle', summoningCircle);
         this.load.image('freeBtn', freeButton);

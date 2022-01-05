@@ -1,7 +1,6 @@
 import 'regenerator-runtime/runtime';
 import BaseScene from '../plugins/BaseScene';
-import {  Tabs, ScrollablePanel, FixWidthSizer, OverlapSizer, Menu, Label, Click } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
-import { doc, updateDoc } from "firebase/firestore";
+import {  Tabs, ScrollablePanel, FixWidthSizer, OverlapSizer } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 
 class Marketplace extends BaseScene {
 
