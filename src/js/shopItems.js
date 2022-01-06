@@ -24,7 +24,7 @@ export const skills = [
     {
         itemId: 602,
         name: "War cry",
-        description: "Increases djinn's attack, crit rate and crit damage by 25% whe its health is below 20% (Passive)",
+        description: "Increases djinn's attack, crit rate and crit damage by 25% when its health is below 20% (Passive)",
         price: 2500,
         priceCurrency: "gold",
         properties: {
@@ -57,7 +57,7 @@ export const skills = [
     {
         itemId: 605,
         name: "Fatal wounds",
-        description: "If your enemy is inflicted by burn or freeze, your attacks deals 25% more damage",
+        description: "If your enemy is inflicted by burn or freeze, your attacks deals 25% more damage (Passive)",
         price: 2000,
         priceCurrency: "gems",
         properties: {
@@ -76,7 +76,7 @@ export const items = [
         priceCurrency: "gold",
         properties: {
         	type: "item",
-        	attribute: null
+        	attribute: []
         }
     },
     {
@@ -87,7 +87,7 @@ export const items = [
         priceCurrency: "gems",
         properties: {
         	type: "item",
-        	attribute: null
+        	attribute: []
         }
     }
 ];

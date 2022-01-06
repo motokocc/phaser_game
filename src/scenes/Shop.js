@@ -17,6 +17,7 @@ class Shop extends BaseScene {
         this.utilitiesOnSale=[];
         this.skillsOnSale=[];
         this.currentTab = "skill";
+        this.currencySelected = 'gold';
         this.toggleList = true;
         this.currentPage = 1;
         this.generateUpperUI();
@@ -41,7 +42,7 @@ class Shop extends BaseScene {
         this.panelBox = new ScrollablePanel(this, {
             x: 0,
             y: 0,
-            width: gameW - paddingX*2,
+            width: gameW - paddingX*4.5,
             height: gameH*0.78,
             scrollMode:0,
             background: this.add.rectangle(0,0, gameW - paddingX*2, gameH*0.745, 0x000000, 0.9),
@@ -67,12 +68,18 @@ class Shop extends BaseScene {
         this.tabs = new Tabs(this, {
             x: paddingX,
             y: gameH * 0.22 - paddingX*2 + 10,
-            width: gameW - paddingX*2,
+            width: gameW - paddingX*4.5,
             height: gameH*0.78,
             panel: this.panelBox,
             topButtons: [
                 this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
                 this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+            ],
+            leftButtons:[
+                this.add.rectangle(0, 0, paddingX*3, paddingX*3, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, paddingX*3, paddingX*3, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, paddingX*3, paddingX*3, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, paddingX*3, paddingX*3, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
             ]
         }).setOrigin(0).layout();
 
@@ -86,26 +93,73 @@ class Shop extends BaseScene {
             }
 
         });
+
+        this.tabs.getElement('leftButtons').forEach((tab, index) => {
+            tab.setStrokeStyle(2, 0x000000, 1);
+            if(index == 0){
+                this.goldIcon = this.add.sprite(tab.x, tab.y - tab.displayHeight/2 ,'gold').setOrigin(0.5).setScale(0.7);
+            }
+            else if(index == 1){
+                this.gemsIcon = this.add.sprite(tab.x, tab.y - tab.displayHeight/2 ,'gems').setOrigin(0.5).setScale(0.8);
+            }
+            else if(index == 2){
+                this.ethIcon = this.add.sprite(tab.x, tab.y - tab.displayHeight/2 ,'eth').setOrigin(0.5).setScale(1.4);
+            }
+            else {
+                this.rewardsIcon = this.add.sprite(tab.x, tab.y - tab.displayHeight/2,'gift_button').setOrigin(0.5).setScale(0.6);
+            }
+
+        });
         
         this.tabs.on('button.click', (button, groupName, index) => {
-            let tabButtons = this.tabs.getElement('topButtons');
+            let tabButtonsTop = this.tabs.getElement('topButtons');
+            let tabButtonsLeft = this.tabs.getElement('leftButtons');
 
-            tabButtons.forEach((button,indexButton) => {
-                if(indexButton == index){
-                    button.fillColor = 0x000000 ;
-                }
-                else{
-                    button.fillColor = 0x23140a;
-                }
-            })
+
+            if(groupName == 'top'){
+                tabButtonsTop.forEach((button,indexButton) => {
+                    if(indexButton == index){
+                        button.fillColor = 0x000000 ;
+                    }
+                    else{
+                        button.fillColor = 0x23140a;
+                    }
+                })
+            } 
+
+            else{
+                tabButtonsLeft.forEach((button,indexButton) => {
+                    if(indexButton == index){
+                        button.fillColor = 0x000000 ;
+                    }
+                    else{
+                        button.fillColor = 0x23140a;
+                    }
+                })
+            }
 
             this.shopSizer.clear(true);
 
             this.shopSizer.removeAll(true);
             this.currentPage = 1;
 
-            if(index == 0){
+            if(index == 0 && groupName == 'top'){
                 this.currentTab = 'skill';                
+            }
+            else if(index == 1 && groupName == 'top'){
+                this.currentTab = 'item';                
+            }
+            else if(index == 0 && groupName == 'left'){
+                this.currencySelected = 'gold';                
+            }
+            else if(index == 1 && groupName == 'left'){
+                this.currencySelected = 'gems';                
+            }
+            else if(index == 2 && groupName == 'left'){
+                this.currencySelected = 'eth';                
+            }
+            else if(index == 3 && groupName == 'left'){
+                this.currencySelected = 'rewards';                
             }
             else{
                 this.currentTab = 'item';
@@ -127,10 +181,12 @@ class Shop extends BaseScene {
  
         this.itemsOnSale = this.player.getShopItems(category);
 
+        this.itemsOnSaleFiltered = this.itemsOnSale.filter(item => item.priceCurrency == this.currencySelected);
+
         this.shopSizer.removeAll(true);
 
         if(category == 'item'){
-            this.utilitiesOnSale = this.itemsOnSale.filter(item => item.properties.type == category);
+            this.utilitiesOnSale = this.itemsOnSaleFiltered.filter(item => item.properties.type == category);
             if(this.utilitiesOnSale.length >= 1){
 
                 this.paginate(this.utilitiesOnSale);
@@ -142,7 +198,7 @@ class Shop extends BaseScene {
             }
         }
         else if(category == 'skill'){
-            this.skillsOnSale = this.itemsOnSale.filter(item => item.properties.type == category);
+            this.skillsOnSale = this.itemsOnSaleFiltered.filter(item => item.properties.type == category);
             if(this.skillsOnSale.length >= 1){
 
                 this.paginate(this.skillsOnSale);
@@ -209,36 +265,46 @@ class Shop extends BaseScene {
             let itemOnSaleSizer = new OverlapSizer(this,0,0,this.panelBox.width - (paddingX*3), 170, {space:0}).setOrigin(0,0);
             this.add.existing(itemOnSaleSizer);
 
-            let itemName = this.add.rexTagText(0,0, `<style='fontStyle:bold'>Name</style> : ${item.name}`, {
+            let itemName = this.add.rexTagText(0,0, `<style='fontStyle:bold'>${item.name}</style>`, {
                 fontFamily: 'Arial',
                 lineSpacing: 9
             });
 
+            let itemPrice = this.add.text(0,0, `${item.price}`, {
+                fontFamily: 'Arial',
+                lineSpacing: 9
+            });
+
+            let itemCurrency  = this.add.sprite(0, 0, item.priceCurrency)
+                .setScale(item.priceCurrency =='gold'? 0.5: 0.6).setOrigin(0.5);
+
+            let itemDescription = this.add.text(0,0, `${item.description}`, {
+                fontFamily: 'Arial',
+                lineSpacing: 9,
+                align: 'justify'
+            }).setWordWrapWidth(this.panelBox.width * 0.55);
+
             itemOnSaleSizer                               
             .add(this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*3),170, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
-            .add(this.add.sprite(0, 0, item.name).setScale(2), { expand:false, align: 'left-center', padding: { left: 20}})
-            .add(itemName, { expand:false, align: 'left-top', padding: { left: 170, top: paddingX }})
-            .add(this.add.rexTagText(0,0, `<style='fontStyle:bold'>Description</style> : ${item.name}`, {
-                fontFamily: 'Arial',
-                lineSpacing: 9
-            }).setWrapMode('char').setWrapWidth(200), { expand:false, align: 'left-center', padding: { left: 170}})
-            .add(this.add.rexTagText(0,0, `<style='fontStyle:bold'>Price</style> : ${item.price}`, {
-                fontFamily: 'Arial',
-                lineSpacing: 9
-            }), { expand:false, align: 'left-bottom', padding: { left: 170, bottom:paddingX}})
+            .add(this.add.sprite(0, 0, item.name), { expand:false, align: 'left-center', padding: { left: 20}})
+            .add(itemName, { expand:false, align: 'left-top', padding: { left: 170, top: paddingX*0.95 }})
+            .add(itemDescription, { expand:false, align: 'left-center', padding: { left: 170}})
+            .add(itemPrice, { expand:false, align: 'left-bottom', padding: { left: 170, bottom:paddingX*0.95}})
             .add(this.add.sprite(0,0,'buyButton').setScale(0.8).setInteractive()
                 .on('pointerdown', () => {
                 this.sound.play('clickEffect', {loop: false});    
                 this.buyItemPopUp(item)
-            }), {expand:false, align: 'right-center', padding: { right: 20 }}).layout();
+            }), {expand:false, align: 'right-center', padding: { right: 20 }})
+            .add( itemCurrency, { expand:false, align: 'left-bottom', padding: { left: (item.priceCurrency =='gold'? 173: 165) + itemPrice.displayWidth, bottom: paddingX*0.85 }})
+            .layout();
+
+
 
             if(item.properties.attribute){
-                let attribute  = this.add.sprite(0, 0, item.properties.attribute[0]).setScale(0.2);
+                let attribute  = this.add.sprite(0, 0, item.properties.attribute[0]).setScale(0.2).setOrigin(0.5);
 
                 itemOnSaleSizer
-                .add( attribute, { key: 'itemAttribute', expand:false, align: 'left-top', padding: { left: 225, top: paddingX }}).layout();
-
-                itemAttribute.setPosition(itemName.x + itemName.width, itemName.y);
+                .add( attribute, { expand:false, align: 'left-top', padding: { left: 175 + itemName.displayWidth, top: paddingX*0.85 }}).layout();
             }
 
             this.shopSizer.add(itemOnSaleSizer);         
@@ -247,14 +313,26 @@ class Shop extends BaseScene {
             let itemOnSaleSizer = new OverlapSizer(this,0,0, 140, 170, {space:0}).setOrigin(0,0);
             this.add.existing(itemOnSaleSizer);
 
+            let itemPrice = this.add.text(0,0, `${item.price}    `, {fontFamily: 'Arial', fontSize: 12}).setOrigin(0.5).setDepth(10)
+            let itemCurrency  = this.add.sprite(0, 0, item.priceCurrency)
+                .setScale(item.priceCurrency =='gold'? 0.3: 0.4).setOrigin(0, 0.5).setDepth(10);
+
            itemOnSaleSizer
-            .add(this.add.sprite(0, 0, item.name).setScale(2), { expand:false, align: 'center-top'})
-            .add(this.add.rexRoundRectangle(0,0, 105, 30, 5, 0x005500, 1).setInteractive()
+            .add(this.add.sprite(0, 0, item.name).setScale(1.1), { expand:false, align: 'center-top'})
+            .add(this.add.rexRoundRectangle(0,0, 110, 30, 5, 0x005500, 1).setInteractive()
                 .on('pointerdown', () => {
                     this.sound.play('clickEffect', {loop: false});    
                     this.buyItemPopUp(item)
                 }), { expand:{ width: true }, align: 'center-bottom'})
-            .add(this.add.text(0,0, `${item.price}`, {fontFamily: 'Arial', fontSize: 12}).setOrigin(0.5), { expand:false , align: 'center-bottom', padding:{bottom: 7.5}})
+            .add(itemPrice, { expand:false , align: 'center-bottom', padding:{bottom: 7.5}})
+            .add( itemCurrency, { 
+                expand:false, 
+                align: 'center-bottom', 
+                padding: { 
+                    left: itemPrice.displayWidth*(item.priceCurrency =='gold'? 0.8: 0.6),
+                    bottom: item.priceCurrency =='gold'? 6: 4
+                 }
+            })
             .layout();
 
             this.shopSizer.add(itemOnSaleSizer); 
@@ -289,10 +367,12 @@ class Shop extends BaseScene {
             let itemToFilter = this.itemsOnSale.filter(item => item.properties.type == this.currentTab);
 
             for (let i = 0; i < itemToFilter.length; i++) {
-                let { name, properties } = itemToFilter[i];
+                let { name, priceCurrency, properties } = itemToFilter[i];
                 let { attribute } = properties;
 
-                if (name.toUpperCase().indexOf(filter) > -1 || attribute.includes(inputText.text)) 
+                if (name.toUpperCase().indexOf(filter) > -1 || 
+                    attribute.includes(inputText.text) || 
+                    priceCurrency.toUpperCase() == filter) 
                 {
                     searchOutput.push(itemToFilter[i])
                 }
@@ -302,11 +382,11 @@ class Shop extends BaseScene {
 
             if(searchOutput.length >= 1){
                 if(this.currentTab == 'item'){
-                    this.utilitiesOnSale = searchOutput;
+                    this.utilitiesOnSale = searchOutput.filter(item => item.priceCurrency == this.currencySelected);
                     this.paginate(this.utilitiesOnSale);
                 }
                 else{
-                    this.skillsOnSale = searchOutput;
+                    this.skillsOnSale = searchOutput.filter(item => item.priceCurrency == this.currencySelected);
                     this.paginate(this.skillsOnSale);
                 }
 
