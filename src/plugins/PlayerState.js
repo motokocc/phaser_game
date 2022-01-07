@@ -24,8 +24,8 @@ class Player extends Phaser.Plugins.BasePlugin {
             name: '',
             address: null,
             drawCount: 0,
-            gold: 0,
-            gems: 0,
+            gold: 3000,
+            gems: 3000,
             level: 1,
             role: "Adventurer",
             dateJoined: null,
@@ -35,7 +35,12 @@ class Player extends Phaser.Plugins.BasePlugin {
             isFirstTime: true,
             lastRead: 0,
             cards:[],
-            couponCodes:[]
+            couponCodes:[],
+            rewards: 0,
+            inventory:{
+                skill:[],
+                item:[]
+            }
         }
 
         this.announcements = {
@@ -84,7 +89,7 @@ class Player extends Phaser.Plugins.BasePlugin {
 
                     if (user.exists()) {
                         //To add more data later for drops that can be exchanged to nfts
-                        const { gold, drawCount, isFirstTime, name, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes, role, level } = user.data();
+                        const { gold, drawCount, isFirstTime, name, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes, role, level, rewards, inventory } = user.data();
 
                         cardData = user.data().cards? user.data().cards.filter(card => card.name === "Alpha") : [];
 
@@ -92,13 +97,11 @@ class Player extends Phaser.Plugins.BasePlugin {
 
                         if(cardsFromBlockchain){
                             cards = [...cardData].concat(cardsFromBlockchain);
-
-                            console.log('Cards', cards);
                             await updateDoc(doc(this.users, accounts[0]), { cards });
                         }
                             
                         //Set Player Data
-                        this.setPlayerInfo(name, accounts[0], drawCount, gold, cards, isFirstTime, gems, lastLogin.toDate(), lastSpin? lastSpin.toDate() : null, dateJoined.toDate(), lastReward? lastReward.toDate():null, lastRead, couponCodes, role, level );
+                        this.setPlayerInfo(name, accounts[0], drawCount, gold, cards, isFirstTime, gems, lastLogin.toDate(), lastSpin? lastSpin.toDate() : null, dateJoined.toDate(), lastReward? lastReward.toDate():null, lastRead, couponCodes, role, level, rewards, inventory );
                         
                         //Set mail
                         this.announcements = mail.data();
@@ -122,7 +125,7 @@ class Player extends Phaser.Plugins.BasePlugin {
         }
     }
 
-    setPlayerInfo(name, address, drawCount, gold, cards,isFirstTime, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes, role, level ){
+    setPlayerInfo(name, address, drawCount, gold, cards,isFirstTime, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes, role, level, rewards, inventory ){
         this.playerInfo = {
             name,
             address,
@@ -138,7 +141,9 @@ class Player extends Phaser.Plugins.BasePlugin {
             lastRead,
             couponCodes,
             role,
-            level
+            level,
+            rewards,
+            inventory
         }
         console.log('Player Info Set!',this.playerInfo);
     }
@@ -325,6 +330,41 @@ class Player extends Phaser.Plugins.BasePlugin {
         //Add fetch of blockchain data later
 
         return itemsOnSale;
+    }
+
+    buyItemOnShop = async(quantity, price, item) => {
+        let { priceCurrency, properties } = item;
+
+        if(priceCurrency == 'eth'){
+            console.log('Make smart contract interaction later');
+            //Mint the item
+        }
+        else if(priceCurrency == 'rewards'){
+            console.log('Make smart contract interaction later');
+            //Subtract the rewards
+            //Save to firebase
+            //Mint the item
+        }
+        else{
+            this.playerInfo[priceCurrency] = this.playerInfo[priceCurrency] - price;
+            //Check if its already in the inventory
+            let hasItem = this.playerInfo.inventory[properties.type].some(data => data.name == item.name);
+
+            if(hasItem){
+                let itemFiltered = this.playerInfo.inventory[properties.type].filter(data => data.name == item.name)[0];
+                let newItems = this.playerInfo.inventory[properties.type].filter(data => data.name != item.name);
+                itemFiltered.quantity = itemFiltered.quantity + quantity;
+
+                newItems.push(itemFiltered);
+
+                this.playerInfo.inventory[properties.type] = newItems;
+            }
+            else{
+                Object.assign(item, { equipped: false, quantity, fromBlockchain: false });
+                this.playerInfo.inventory[properties.type].push(item);
+                //Save to firebase
+            }
+        }
     }
 }
 

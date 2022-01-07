@@ -20,7 +20,7 @@ class Shop extends BaseScene {
         this.currencySelected = 'gold';
         this.toggleList = true;
         this.currentPage = 1;
-        this.generateUpperUI();
+        this.generateUpperUI(true);
         this.generatePaginationUI();
 
         //Market UI
@@ -166,7 +166,7 @@ class Shop extends BaseScene {
             } 
 
             this.loadNFTMarketplace(this.currentTab);
-            this.panelBox.layout();
+            this.panelBox.layout(0.2);
         });
 
         this.add.existing(this.tabs);
@@ -193,7 +193,7 @@ class Shop extends BaseScene {
             }
             else{
                 this.shopSizer.add(
-                    this.add.text(0,0, 'No items being sold at the moment', {fontFamily: 'Arial'}).setDepth(10)
+                    this.add.text(0,0, `There is no available ${category} that can be bought using ${this.currencySelected} at the moment`, {fontFamily: 'Arial'}).setDepth(10)
                 );
             }
         }
@@ -205,7 +205,7 @@ class Shop extends BaseScene {
             }
             else{
                 this.shopSizer.add(
-                    this.add.text(0,0, 'No skills being sold at the moment', {fontFamily: 'Arial'}).setDepth(10)
+                    this.add.text(0,0, `There is no available ${category} that can be bought using ${this.currencySelected} at the moment`, {fontFamily: 'Arial'}).setDepth(10)
                 );
             }
         }
@@ -407,10 +407,10 @@ class Shop extends BaseScene {
     thumbnailChanger(){
         let thumbnail_icon_filter = this.add.sprite(this.searchInput.x - this.searchInput.displayWidth - 5, this.searchInput.y + 3,'square_icon')
             .setOrigin(1,0.5).setInteractive();
-        let list_icon_filter = this.add.sprite(thumbnail_icon_filter.x - thumbnail_icon_filter.displayWidth - 5, thumbnail_icon_filter.y, 'list_icon')
+        this.list_icon_filter = this.add.sprite(thumbnail_icon_filter.x - thumbnail_icon_filter.displayWidth - 5, thumbnail_icon_filter.y, 'list_icon')
             .setOrigin(1,0.5).setInteractive();
 
-        let icons = [thumbnail_icon_filter, list_icon_filter];
+        let icons = [thumbnail_icon_filter, this.list_icon_filter];
 
         icons.forEach(icon => {
             icon.on('pointerover', () => icon.setAlpha(0.7));
@@ -424,7 +424,7 @@ class Shop extends BaseScene {
             this.paginateOnTabs();
         })
 
-        list_icon_filter.on('pointerdown', () => {
+        this.list_icon_filter.on('pointerdown', () => {
             this.toggleList = true;
             this.currentPage = 1;
             this.sound.play('hoverEffect', {loop: false});
@@ -526,6 +526,8 @@ class Shop extends BaseScene {
             else{
                 buyQuantity.setText("");
                 quantity = 1;
+                price = item.price;
+                buyingPrice.setText(price);
             }
         });
 
@@ -554,7 +556,8 @@ class Shop extends BaseScene {
         buyingPrice.setStyle("text-align", "center");
 
         let quantityInput = document.querySelectorAll('input')[1];
-        quantityInput.max = 100;
+        quantityInput.disabled = item.properties.type == 'skill'? true : false;
+        quantityInput.max = item.properties.type == 'skill'? 1 : 100;
         quantityInput.min = 1;
 
         let priceInput = document.querySelectorAll('input')[2];
@@ -571,7 +574,7 @@ class Shop extends BaseScene {
         let priceText = this.add.text(
             buyingPrice.x - buyingPrice.displayWidth*0.65,
             buyingPrice.y - buyingPrice.displayHeight,
-            'Total Price',
+            `Total Price in ${item.priceCurrency}`,
             {fontFamily: 'Arial', fontSize: 14}
         ).setOrigin(0,1);
 
@@ -600,7 +603,13 @@ class Shop extends BaseScene {
             this.sound.play('clickEffect', {loop: false});
             buyOkButton.disableInteractive();
             try{
-                 console.log(quantity, price);
+                if(this.player.playerInfo[item.priceCurrency] >= price){                    
+                    await this.player.buyItemOnShop(quantity, price, item);
+                    this[`${item.priceCurrency}_value`].setText(this.player.playerInfo[item.priceCurrency]);
+                }
+                else{
+                    alert(`Not enough ${item.priceCurrency} to buy`)
+                }
             }
             catch(e){
                 alert(e.message);
@@ -609,7 +618,6 @@ class Shop extends BaseScene {
             buyOkButton.setInteractive();
             this.searchInput.setAlpha(1);
             this.formPopupContainer.destroy(true);
-            this.scene.restart();
         });
 
         buyOkButton.on("pointerup", () => {

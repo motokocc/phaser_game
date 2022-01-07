@@ -28,6 +28,7 @@ const config = {
         }
     },
     parent: "phaser-input",
+    resolution: 1.5,
     dom: {
         createContainer: true
     }, 
