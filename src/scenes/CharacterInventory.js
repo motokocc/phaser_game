@@ -154,10 +154,28 @@ class CharacterInventory extends BaseScene {
                 })
             }
             else if(index == 1){
-                this.sizerLeft.add(this.add.text(0,0, 'No items acquired', {fontFamily: 'Arial'}));
+                if(this.player.playerInfo.inventory.item.length >= 1){
+                    let itemsInInventory = this.player.getAllItems();
+
+                    itemsInInventory.forEach(item => {
+                        this.generateItemUI(item);
+                    })
+                }
+                else{
+                    this.sizerLeft.add(this.add.text(0,0, 'No items acquired', {fontFamily: 'Arial'}));
+                }
             }
             else{
-                this.sizerLeft.add(this.add.text(0,0, 'No available skills to learn', {fontFamily: 'Arial'}));
+                if(this.player.playerInfo.inventory.skill.length >= 1){
+                    let skillsInInventory = this.player.getAllSkills();
+
+                    skillsInInventory.forEach(skill => {
+                        this.generateItemUI(skill);
+                    })
+                }
+                else{
+                    this.sizerLeft.add(this.add.text(0,0, 'No available skills to learn', {fontFamily: 'Arial'}));
+                }
             }    
 
             this.panelBox.layout();
@@ -484,6 +502,46 @@ class CharacterInventory extends BaseScene {
             defence: 0 + level + (quantity * properties.rarity),
             health: 0 + level + (quantity * properties.rarity),
         }
+    }
+
+    generateItemUI(item){
+        const gameW = this.game.config.width;
+        const paddingX = gameW * 0.025;
+
+        let itemSizer = new OverlapSizer(this,0,0,this.panelBox.width - (paddingX*2.5), 121, {space:0}).setOrigin(0,0);
+        this.add.existing(itemSizer);
+
+        let itemName = this.add.rexTagText(0,0, `<style='fontStyle:bold'>${item.name}</style>`, {
+            fontFamily: 'Arial',
+            lineSpacing: 9
+        });
+
+        let itemDescription = this.add.text(0,0, `${item.description}${item.properties.type == 'item'? ` (Qty: ${item.quantity})` : ''}`, {
+            fontFamily: 'Arial',
+            align: 'justify',
+            fontSize: 14
+        }).setWordWrapWidth(this.panelBox.width * 0.52).setOrigin(0,1);
+
+        itemSizer                               
+        .add(this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*2.5),121, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
+        .add(this.add.sprite(0, 0, item.name).setScale(0.7).setOrigin(0), { expand:false, align: 'left-top', padding: { left: 15, top: 15 }})
+        .add(itemName, { expand:false, align: 'left-top', padding: { left: 120, top: 15 }})
+        .add(itemDescription, { expand:false, align: 'left-bottom', padding: { left: 120, bottom: 15}})
+        // .add(this.add.sprite(0,0,'buyButton').setScale(0.8).setInteractive()
+        //     .on('pointerdown', () => {
+        //     this.sound.play('clickEffect', {loop: false});    
+        // }), {expand:false, align: 'right-center', padding: { right: 20 }})
+        .layout();
+
+
+        if(item.properties.attribute){
+            let attribute  = this.add.sprite(0, 0, item.properties.attribute[0]).setScale(0.15).setOrigin(0.5);
+
+            itemSizer
+            .add( attribute, { expand:false, align: 'left-top', padding: { left: 125 + itemName.displayWidth, top: 15 }}).layout();
+        }
+
+        this.sizerLeft.add(itemSizer);         
     }
 
     sellItemPopUp = async(itemOnHand, itemId) => {

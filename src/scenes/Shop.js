@@ -606,17 +606,22 @@ class Shop extends BaseScene {
                 if(this.player.playerInfo[item.priceCurrency] >= price){                    
                     await this.player.buyItemOnShop(quantity, price, item);
                     this[`${item.priceCurrency}_value`].setText(this.player.playerInfo[item.priceCurrency]);
+                    this.searchInput.setAlpha(1);
                 }
                 else{
-                    alert(`Not enough ${item.priceCurrency} to buy`)
+                    this.popUpAlert(
+                        `Insufficient ${item.priceCurrency}`, 
+                        `You don't have enough ${item.priceCurrency} to buy ${item.name}. Please try again later.`,
+                        this.searchInput
+                    );
                 }
             }
             catch(e){
                 alert(e.message);
+                this.searchInput.setAlpha(1);
             }
 
             buyOkButton.setInteractive();
-            this.searchInput.setAlpha(1);
             this.formPopupContainer.destroy(true);
         });
 

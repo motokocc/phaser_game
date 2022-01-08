@@ -42,6 +42,8 @@ class BaseScene extends Phaser.Scene {
             {fontFamily: 'Arial', fontSize:14}
         ).setOrigin(0, 0.5);
 
+        player_gui_box.on("pointerdown", () => this.scene.start("inventory"));
+
         const player_role = this.add.text(
             player_gui_box.x* 3.6,
             player_gui_box.y + paddingX*0.33,
@@ -116,7 +118,7 @@ class BaseScene extends Phaser.Scene {
         });
     }
 
-    popUp(title, content, titleSize){
+    popUp(title, content, titleSize, inputParams){
         content.setDepth(25);
         this.popupContainer = this.add.group().setDepth(15);
 
@@ -146,8 +148,40 @@ class BaseScene extends Phaser.Scene {
         });
 
         popupBg.on('pointerdown', () => {
+            if(inputParams){
+                inputParams.setAlpha(1);
+            }
             this.popupContainer.destroy(true);
         });
+    }
+
+    popUpAlert(title, description, inputParams){
+        //Pop up for error messages and alerts
+        let alertGroup = this.add.group();
+
+        let descriptionText = this.add.text(
+            this.game.config.width/2, 
+            this.game.config.height/2 - 50,
+            description
+            ,{fontFamily: 'Arial', color: '#613e1e', align: 'justify'}
+        ).setOrigin(0.5,0).setWordWrapWidth(230).setScale(0,1.3);
+
+        let okButton = this.add.sprite(
+            descriptionText.x, 
+            descriptionText.y + 100,
+            'confirmButtonAlt'
+        ).setOrigin(0.5).setInteractive().setScale(0,1.3);
+
+        okButton.on("pointerdown", () => {
+            if(inputParams){
+                inputParams.setAlpha(1);
+            }
+            this.sound.play('clickEffect', {loop: false});
+            this.popupContainer.destroy(true);
+        });
+
+        alertGroup.addMultiple([descriptionText, okButton]);
+        this.popUp(title, alertGroup, null, inputParams);
     }
 
     settingsBox(x,y,width,height, bodyPaddingX, bodyPaddingY, goldDisplay, gemDisplay){

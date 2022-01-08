@@ -362,9 +362,28 @@ class Player extends Phaser.Plugins.BasePlugin {
             else{
                 Object.assign(item, { equipped: false, quantity, fromBlockchain: false });
                 this.playerInfo.inventory[properties.type].push(item);
-                //Save to firebase
+            }
+            
+            try{
+                let { inventory, gold, gems } = this.playerInfo;
+                await updateDoc(doc(this.users, accounts[0]), { inventory, gold, gems });
+            }
+            catch(e){
+                console.log(e.message);
             }
         }
+    }
+
+    getAllSkills = () => {
+        let skillsInGame = this.playerInfo.inventory.skill.filter(skill => skill.fromBlockchain == false);
+        //TODO: Fetch skills owned in the blockchain
+        return skillsInGame;
+    }
+
+    getAllItems = () => {
+        let itemsInGame = this.playerInfo.inventory.item.filter(item => item.fromBlockchain == false);
+        //TODO: Fetch items owned in the blockchain
+        return itemsInGame;
     }
 }
 
