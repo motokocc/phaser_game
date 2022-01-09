@@ -7,6 +7,7 @@ import { getFirestore, collection, doc, setDoc, getDoc, updateDoc } from "fireba
 import { firebaseConfig } from '../js/config/firebase-config';
 import card from "../js/card.json";
 import { skills, items } from '../js/shopItems';
+import { async } from '@firebase/util';
 
 class Player extends Phaser.Plugins.BasePlugin {
     constructor(pluginManager) {
@@ -360,13 +361,13 @@ class Player extends Phaser.Plugins.BasePlugin {
                 this.playerInfo.inventory[properties.type] = newItems;
             }
             else{
-                Object.assign(item, { equipped: false, quantity, fromBlockchain: false });
+                Object.assign(item, { equipped: [], quantity, fromBlockchain: false });
                 this.playerInfo.inventory[properties.type].push(item);
             }
             
             try{
-                let { inventory, gold, gems } = this.playerInfo;
-                await updateDoc(doc(this.users, accounts[0]), { inventory, gold, gems });
+                let { inventory, gold, gems, address } = this.playerInfo;
+                await updateDoc(doc(this.users, address), { inventory, gold, gems });
             }
             catch(e){
                 console.log(e.message);
@@ -386,7 +387,7 @@ class Player extends Phaser.Plugins.BasePlugin {
         return itemsInGame.sort((a, b) => (a.itemId - b.itemId));
     }
 
-    sellInGameItems = (itemId, quantity, price, currency, itemType) => {
+    sellInGameItems = async(itemId, quantity, price, currency, itemType) => {
         let itemToSell = this.playerInfo.inventory[itemType].filter(item => item.itemId == itemId)[0];
         let itemNotToSell = this.playerInfo.inventory[itemType].filter(item => item.itemId != itemId); 
 
@@ -400,6 +401,14 @@ class Player extends Phaser.Plugins.BasePlugin {
         }
 
         this.playerInfo.inventory[itemType] = itemNotToSell.sort((a, b) => (a.itemId - b.itemId));
+
+        try{
+            let { inventory, gold, gems, address } = this.playerInfo;
+            await updateDoc(doc(this.users, address), { inventory, gold, gems });
+        }
+        catch(e){
+            console.log(e.message);
+        }
     }
 }
 

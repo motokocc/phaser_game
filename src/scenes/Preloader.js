@@ -31,6 +31,8 @@ import cancelButton from '../images/buttons/cancel_button.png';
 import cancelButtonAlt from '../images/buttons/cancel_button_alt.png';
 import sellButton from '../images/buttons/sell_button.png';
 import buyButton from '../images/buttons/buy_button.png';
+import equipButton from '../images/buttons/equip_button.png';
+import unequipButton from '../images/buttons/unequip_button.png';
 
 //Lilith's animations
 import elf_idle_1 from '../images/Animations/elf-idle-2.png';
@@ -247,6 +249,8 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('cancelButtonAlt', cancelButtonAlt);
         this.load.image('sellButton', sellButton);
         this.load.image('buyButton', buyButton);
+        this.load.image('equipButton', equipButton);
+        this.load.image('unequipButton', unequipButton);
         this.load.image('connectBtn', connectBtn);
         this.load.image('soundOff', soundOff);
         this.load.image('soundOn', soundOn);

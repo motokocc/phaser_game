@@ -2,6 +2,7 @@ import 'regenerator-runtime/runtime';
 import BaseScene from '../plugins/BaseScene';
 import { Tabs, ScrollablePanel, FixWidthSizer, OverlapSizer } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { cardStats } from '../js/cardStats';
+import { doc, updateDoc } from "firebase/firestore";
 
 class CharacterInventory extends BaseScene {
 
@@ -59,7 +60,7 @@ class CharacterInventory extends BaseScene {
             detailsBox.x + detailsBox.displayWidth - paddingX,
             this.displayName.y,
             'fire'
-        ).setOrigin(1,0).setScale(0.35);
+        ).setOrigin(1,0).setScale(0.35).setName('fire');
 
         //Left Tab
         this.sizerLeft = new FixWidthSizer(this, {
@@ -536,9 +537,47 @@ class CharacterInventory extends BaseScene {
                 itemEquipButton.setAlpha(1);    
             });
 
-        let itemEquipButton = this.add.sprite(-50,-50,'sellButton').setScale(0.65).setInteractive().setAlpha(0)
-            .on('pointerdown', () => {
-                this.sound.play('clickEffect', {loop: false});    
+        let itemEquipped, skillRemaining, equipped;
+
+        if(item.properties.type == 'skill'){
+            itemEquipped = this.player.playerInfo.inventory.skill.filter(skill => skill.name == item.name)[0];
+            skillRemaining = this.player.playerInfo.inventory.skill.filter(skill => skill.name != item.name);
+            equipped = itemEquipped.equipped.some(data => data == this.displayName.name);
+        }
+
+        let itemEquipButton = this.add.sprite(-50,-50, equipped? 'unequipButton' : 'equipButton').setScale(0.65).setInteractive().setAlpha(0)
+            .on('pointerdown', async() => {
+                itemEquipButton.disableInteractive();
+                this.sound.play('clickEffect', {loop: false});
+                if(this.attribute.name == item.properties.attribute[0]){
+                    let itemToEquip = this.player.playerInfo.inventory.skill.filter(skill => skill.name == item.name)[0];
+                    let remainingSkill = this.player.playerInfo.inventory.skill.filter(skill => skill.name != item.name);
+                    let isEquipped = itemToEquip.equipped.some(data => data == this.displayName.name);
+
+                    if(isEquipped){
+                        let removeNameFromEquipped = itemToEquip.equipped.filter(name => name != this.displayName.name);                       
+                        itemToEquip.equipped = removeNameFromEquipped;
+                    }
+                    else{
+                        itemToEquip.equipped.push(this.displayName.name);
+                    } 
+
+                    remainingSkill.push(itemToEquip);
+                    this.player.playerInfo.inventory.skill = remainingSkill.sort((a, b) => (a.itemId - b.itemId));
+                    itemEquipButton.setTexture(isEquipped? 'equipButton' : 'unequipButton');
+
+                    //Save to Firebase
+                    try{
+                        await updateDoc(doc(this.player.users, this.player.playerInfo.address), { inventory : this.player.playerInfo.inventory });   
+                    }
+                    catch(e){
+                        console.log(e.message);
+                    }
+                    itemEquipButton.setInteractive();
+                }
+                else{
+                    this.popUpAlert('Skill Incompatible', `Unable to equip a ${item.properties.attribute[0]}-type skill to a ${this.attribute.name} attribute djinn.` )
+                }    
             })
             .on('pointerover', () => {
                 itemImage.setAlpha(0.5);
@@ -742,7 +781,7 @@ class CharacterInventory extends BaseScene {
                 }               
             }
             else{
-                this.player.sellInGameItems(itemId, quantity, price, itemCurrency, itemType);
+                await this.player.sellInGameItems(itemId, quantity, price, itemCurrency, itemType);
                 this[`${itemCurrency}_value`].setText(this.player.playerInfo[itemCurrency]);
             }
 
@@ -819,9 +858,9 @@ class CharacterInventory extends BaseScene {
     setImageData = (item) => {
         this.detailsText.setText(item.description); 
         this.detailsImage.setTexture(`${item.name}_alt`).setData(item);
-        this.displayName.setText(item.name);
+        this.displayName.setText(item.name).setName(item.name);
         this.rarity.setTexture(`rarity_${item.properties.rarity}`);
-        this.attribute.setTexture(item.properties.attribute);      
+        this.attribute.setTexture(item.properties.attribute).setName(item.properties.attribute);      
     }
 }
 
