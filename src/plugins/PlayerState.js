@@ -377,13 +377,29 @@ class Player extends Phaser.Plugins.BasePlugin {
     getAllSkills = () => {
         let skillsInGame = this.playerInfo.inventory.skill.filter(skill => skill.fromBlockchain == false);
         //TODO: Fetch skills owned in the blockchain
-        return skillsInGame;
+        return skillsInGame.sort((a, b) => (a.itemId - b.itemId));
     }
 
     getAllItems = () => {
         let itemsInGame = this.playerInfo.inventory.item.filter(item => item.fromBlockchain == false);
         //TODO: Fetch items owned in the blockchain
-        return itemsInGame;
+        return itemsInGame.sort((a, b) => (a.itemId - b.itemId));
+    }
+
+    sellInGameItems = (itemId, quantity, price, currency, itemType) => {
+        let itemToSell = this.playerInfo.inventory[itemType].filter(item => item.itemId == itemId)[0];
+        let itemNotToSell = this.playerInfo.inventory[itemType].filter(item => item.itemId != itemId); 
+
+        let quantityRemaining = itemToSell.quantity - quantity;
+
+        this.playerInfo[currency] = this.playerInfo[currency] + Number(price);
+
+        if(quantityRemaining >= 1){
+            itemToSell.quantity = quantityRemaining;
+            itemNotToSell.push(itemToSell);
+        }
+
+        this.playerInfo.inventory[itemType] = itemNotToSell.sort((a, b) => (a.itemId - b.itemId));
     }
 }
 

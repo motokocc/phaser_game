@@ -1,7 +1,6 @@
 import 'regenerator-runtime/runtime';
 import BaseScene from '../plugins/BaseScene';
 import { Tabs, ScrollablePanel, FixWidthSizer, OverlapSizer } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
-import { doc, updateDoc } from "firebase/firestore";
 import { cardStats } from '../js/cardStats';
 
 class CharacterInventory extends BaseScene {
@@ -102,7 +101,7 @@ class CharacterInventory extends BaseScene {
         this.add.existing(this.panelBox);
 
         //Inventory Tabs
-        let tabs = new Tabs(this, {
+        this.tabs = new Tabs(this, {
             x: paddingX,
             y: gameH * 0.22 - paddingX*2 + 10,
             width: gameW* 0.4,
@@ -115,7 +114,7 @@ class CharacterInventory extends BaseScene {
             ]
         }).setOrigin(0).layout();
 
-        tabs.getElement('topButtons').forEach((tab, index) => {
+        this.tabs.getElement('topButtons').forEach((tab, index) => {
             tab.setStrokeStyle(2, 0x000000, 1);
             if(index == 0){
                 this.cardIcon = this.add.sprite(tab.x, tab.y - tab.displayHeight/2 ,'cards_icon').setOrigin(0.5);
@@ -129,8 +128,8 @@ class CharacterInventory extends BaseScene {
 
         });
         
-        tabs.on('button.click', (button, groupName, index) => {
-            let tabButtons = tabs.getElement('topButtons');
+        this.tabs.on('button.click', (button, groupName, index) => {
+            let tabButtons = this.tabs.getElement('topButtons');
 
             tabButtons.forEach((button,indexButton) => {
                 if(indexButton == index){
@@ -181,7 +180,7 @@ class CharacterInventory extends BaseScene {
             this.panelBox.layout();
         });
 
-        this.add.existing(tabs);
+        this.add.existing(this.tabs);
         
 
         let itemsOnTab = this.sizerLeft.getElement('items');
@@ -396,7 +395,7 @@ class CharacterInventory extends BaseScene {
                                     this.popUp('Cancel Sale',cancelSaleGroup);
                                 }
                                 else{
-                                    this.sellItemPopUp(itemOnHand, this.detailsImage.data.list.id);
+                                    this.sellItemPopUp(itemOnHand, this.detailsImage.data.list.id, true, null, null, 'item');
                                 }
                             })
                         }
@@ -446,7 +445,7 @@ class CharacterInventory extends BaseScene {
         //Slide effect
         this.allUiGroup = this.add.container();
 
-        this.allUiGroup.add(tabs.getElement('topButtons'));
+        this.allUiGroup.add(this.tabs.getElement('topButtons'));
         this.allUiGroup.add([this.panelBox.getElement('background'), this.panelBox.getElement('slider.track'), this.panelBox.getElement('slider.thumb')]);
         this.allUiGroup.add([
             this.magicIcon, this.backpackIcon, this.cardIcon,
@@ -465,7 +464,7 @@ class CharacterInventory extends BaseScene {
             this.tabsRight.emitButtonClick('top', 0);
             
             if(this.detailsImage.data.list.properties.type == "card"){
-                this.slideEffect(-(tabs.width + paddingX));
+                this.slideEffect(-(this.tabs.width + paddingX));
             }
         });
 
@@ -522,33 +521,78 @@ class CharacterInventory extends BaseScene {
             fontSize: 14
         }).setWordWrapWidth(this.panelBox.width * 0.52).setOrigin(0,1);
 
+        let itemImage = this.add.sprite(0, 0, item.name).setScale(0.7).setOrigin(0);
+
+        let itemContainerBox = this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*2.5),121, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1).setInteractive();
+
+        let itemSellButton = this.add.sprite(0,0,'sellButton').setScale(0.65).setInteractive().setAlpha(0)
+            .on('pointerdown', () => {
+                this.sound.play('clickEffect', {loop: false}); 
+                this.sellItemPopUp(item.quantity, item.itemId, item.fromBlockchain, item.price, item.priceCurrency, item.properties.type);   
+            })
+            .on('pointerover', () => {
+                itemImage.setAlpha(0.5);
+                itemSellButton.setAlpha(1);
+                itemEquipButton.setAlpha(1);    
+            });
+
+        let itemEquipButton = this.add.sprite(-50,-50,'sellButton').setScale(0.65).setInteractive().setAlpha(0)
+            .on('pointerdown', () => {
+                this.sound.play('clickEffect', {loop: false});    
+            })
+            .on('pointerover', () => {
+                itemImage.setAlpha(0.5);
+                itemSellButton.setAlpha(1);
+                if(item.properties.type == 'skill'){
+                    itemEquipButton.setAlpha(1);
+                }  
+            });
+
+        itemContainerBox.on('pointerover', () => {
+            itemImage.setAlpha(0.5);
+            itemSellButton.setAlpha(1)
+            if(item.properties.type == 'skill'){
+                itemEquipButton.setAlpha(1);
+            } 
+        })
+
+        itemContainerBox.on('pointerout', () => {
+            itemImage.setAlpha(1);
+            itemSellButton.setAlpha(0);
+            if(item.properties.type == 'skill'){
+                itemEquipButton.setAlpha(0);
+            } 
+        })
+
         itemSizer                               
-        .add(this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*2.5),121, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
-        .add(this.add.sprite(0, 0, item.name).setScale(0.7).setOrigin(0), { expand:false, align: 'left-top', padding: { left: 15, top: 15 }})
+        .add(itemContainerBox, {expand: false})
+        .add(itemImage, { expand:false, align: 'left-top', padding: { left: 15, top: 15 }})
         .add(itemName, { expand:false, align: 'left-top', padding: { left: 120, top: 15 }})
         .add(itemDescription, { expand:false, align: 'left-bottom', padding: { left: 120, bottom: 15}})
-        // .add(this.add.sprite(0,0,'buyButton').setScale(0.8).setInteractive()
-        //     .on('pointerdown', () => {
-        //     this.sound.play('clickEffect', {loop: false});    
-        // }), {expand:false, align: 'right-center', padding: { right: 20 }})
+        .add(itemSellButton, {
+            expand:false, 
+            align: item.properties.type == 'skill' ? 'left-top' : 'left-center', 
+            padding: { left: 18, top: item.properties.type == 'skill' ? 30 : 0 }})
         .layout();
 
 
-        if(item.properties.attribute){
+
+        if(item.properties.type == 'skill'){
             let attribute  = this.add.sprite(0, 0, item.properties.attribute[0]).setScale(0.15).setOrigin(0.5);
 
             itemSizer
+            .add(itemEquipButton, {expand:false, align: 'left-bottom', padding: { left: 18, bottom:30 }})
             .add( attribute, { expand:false, align: 'left-top', padding: { left: 125 + itemName.displayWidth, top: 15 }}).layout();
         }
 
         this.sizerLeft.add(itemSizer);         
     }
 
-    sellItemPopUp = async(itemOnHand, itemId) => {
+    sellItemPopUp = async(itemOnHand, itemId, fromBlockchain, itemPrice, itemCurrency, itemType) => {
         const sellItemGroup = this.add.group();
 
         let quantity = 1;
-        let price = 0.00001;
+        let price = fromBlockchain? 0.00001 : (itemPrice*0.2).toFixed(0);
 
         //Quantity of item to be sold
         const sellquantity = this.add.rexInputText(
@@ -573,10 +617,18 @@ class CharacterInventory extends BaseScene {
 
             if(wholeNumbersOnly.test(inputValue) && inputValue <= itemOnHand ){
                 quantity = inputValue;
+                if(!fromBlockchain){
+                    price = (itemPrice*0.2) * quantity;
+                    sellingPrice.setText(price);
+                }
             }
             else{
                 sellquantity.setText("");
                 quantity = 1;
+                if(!fromBlockchain){
+                    price = (itemPrice*0.2);
+                    sellingPrice.setText(price);
+                }
             }
 
         });
@@ -602,24 +654,26 @@ class CharacterInventory extends BaseScene {
         ).setOrigin(0.5).setScale(1.3)
         .on('textchange', async(inputText) => {
 
-            let inputPrice = Number(inputText.text).toFixed(5);
+            let inputPrice = Number(inputText.text);
+            inputPrice = fromBlockchain? inputPrice.toFixed(5) : inputPrice.toFixed(0);
 
             price = inputPrice? inputPrice: 0.00001;
 
             //Get ETH current price in usd
-            try{
-                let response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum');
-                let ethData = await response.json();
-                let { current_price } = ethData[0];
+            if(fromBlockchain){
+                try{
+                    let response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum');
+                    let ethData = await response.json();
+                    let { current_price } = ethData[0];
 
-                let priceInUsd = price * current_price;
-    
-                priceText.setText(`Price per item - ETH ($${priceInUsd.toFixed(2)})`);
+                    let priceInUsd = price * current_price;
+        
+                    priceText.setText(`Price per item - ETH ($${priceInUsd.toFixed(2)})`);
+                }
+                catch(e){
+                    console.log(e.message);
+                }
             }
-            catch(e){
-                console.log(e.message);
-            }
-
         });
 
         sellingPrice.setText(price);
@@ -631,8 +685,9 @@ class CharacterInventory extends BaseScene {
         quantityInput.min = 1;
 
         let priceInput = document.querySelectorAll('input')[1];
-        priceInput.min = 0.00001;
-        priceInput.step = 0.00001;
+        priceInput.disabled = !fromBlockchain;
+        priceInput.min = fromBlockchain? 0.00001 : 1;
+        priceInput.step = fromBlockchain? 0.00001: 1;
         priceInput.onkeydown = function(e){
             if(e.key == '-' || e.key == 'e' ||  e.key == '+'){
                 return false;
@@ -650,7 +705,7 @@ class CharacterInventory extends BaseScene {
         let priceText = this.add.text(
             sellingPrice.x - sellingPrice.displayWidth*0.65,
             sellingPrice.y - sellingPrice.displayHeight,
-            'Price per item - ETH ($0.00)',
+            `${fromBlockchain? 'Price per item' : 'Total Price'} - ${fromBlockchain? 'ETH ($0.00)' : itemCurrency.toUpperCase()}`,
             {fontFamily: 'Arial', fontSize: 14}
         ).setOrigin(0,1);
 
@@ -677,16 +732,29 @@ class CharacterInventory extends BaseScene {
             sellingPrice.setText(price);
             this.sound.play('clickEffect', {loop: false});
             sellOkButton.disableInteractive();
-            try{
-                 await this.player.sellItem(itemId, price, quantity);
+
+            if(fromBlockchain){
+                 try{
+                     await this.player.sellItem(itemId, price, quantity);
+                }
+                catch(e){
+                    alert(e.message);
+                }               
             }
-            catch(e){
-                alert(e.message);
+            else{
+                this.player.sellInGameItems(itemId, quantity, price, itemCurrency, itemType);
+                this[`${itemCurrency}_value`].setText(this.player.playerInfo[itemCurrency]);
             }
 
             sellOkButton.setInteractive();
             this.formPopupContainer.destroy(true);
-            this.tabsRight.emitButtonClick('top', 2);
+
+            if(!itemCurrency){
+                this.tabsRight.emitButtonClick('top', 2);
+            }
+            else{
+                this.tabs.emitButtonClick('top', itemType == 'skill'? 2 : 1);
+            }
         });
 
         sellOkButton.on("pointerup", () => {
@@ -695,18 +763,20 @@ class CharacterInventory extends BaseScene {
         
         sellItemGroup.addMultiple([sellquantity, sellingPrice, quantityText, priceText, sellOkButton, sellcancelButton]);
 
-        this.formPopUp('Sell item',sellItemGroup);
+        this.formPopUp(`Sell ${itemType}`,sellItemGroup);
 
-        try{
-            let data = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum');
-            let ethData = await data.json();
-            let { current_price } = ethData[0];
-            let priceInUsd = price * current_price;
-    
-            priceText.setText(priceInUsd? `Price per item - ETH ($${priceInUsd.toFixed(2)})` : 'Price per item - ETH ($0.00)');
-        }
-        catch(e){
-            console.log(e.message);
+        if(fromBlockchain){
+            try{
+                let data = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum');
+                let ethData = await data.json();
+                let { current_price } = ethData[0];
+                let priceInUsd = price * current_price;
+        
+                priceText.setText(priceInUsd? `Price per item - ETH ($${priceInUsd.toFixed(2)})` : 'Price per item - ETH ($0.00)');
+            }
+            catch(e){
+                console.log(e.message);
+            }
         }
     }
 
