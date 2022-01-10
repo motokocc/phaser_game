@@ -15,7 +15,7 @@ class CharacterInventory extends BaseScene {
         const gameH = this.game.config.height;
         const paddingX = gameW * 0.025;
 
-        this.generateUpperUI();
+        this.generateUpperUI(false, true);
 
         //Details Box
         const detailsBox = this.add.rectangle(gameW/2 - paddingX*2, gameH * 0.22, gameW/2 + paddingX, gameH*0.745, 0x000000, 0.9).setOrigin(0);
@@ -30,7 +30,7 @@ class CharacterInventory extends BaseScene {
             detailsBox.x + detailsBox.displayWidth/2,
             detailsBox.y+ detailsBox.displayHeight - 1,
             `Alpha_alt`
-        ).setOrigin(0.5,1).setInteractive(); 
+        ).setOrigin(0.5,1).setInteractive().setData({ name: 'Alpha',fromBlockchain: false, properties: {type: 'card'}}); //TEST DATA TO REMOVE LATER
         
         const messageDetailsBox = this.add.rectangle(
             detailsBox.x  + paddingX/2,
@@ -111,20 +111,23 @@ class CharacterInventory extends BaseScene {
             topButtons: [
                 this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
                 this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
-                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8)
             ]
-        }).setOrigin(0).layout();
+        }).setOrigin(0).layout(); 
 
         this.tabs.getElement('topButtons').forEach((tab, index) => {
             tab.setStrokeStyle(2, 0x000000, 1);
             if(index == 0){
-                this.cardIcon = this.add.sprite(tab.x, tab.y - tab.displayHeight/2 ,'cards_icon').setOrigin(0.5);
+                this.cardIcon = this.add.sprite(tab.x, tab.y - tab.displayHeight/2 ,'cards_icon').setOrigin(0.5).setInteractive()
+                    .on('pointerdown', () => this.tabs.emitButtonClick('top', 0));
             }
             else if(index == 1){
-                this.backpackIcon = this.add.sprite(tab.x, tab.y - tab.displayHeight/2,'backpack_icon').setOrigin(0.5);
+                this.backpackIcon = this.add.sprite(tab.x, tab.y - tab.displayHeight/2,'backpack_icon').setInteractive()
+                    .on('pointerdown', () => this.tabs.emitButtonClick('top', 1));
             }
             else{
-                this.magicIcon = this.add.sprite(tab.x, tab.y - tab.displayHeight/2 ,'magic_icon').setOrigin(0.5);
+                this.magicIcon = this.add.sprite(tab.x, tab.y - tab.displayHeight/2 ,'magic_icon').setInteractive()
+                    .on('pointerdown', () => this.tabs.emitButtonClick('top', 2));
             }
 
         });
@@ -144,14 +147,7 @@ class CharacterInventory extends BaseScene {
             this.sizerLeft.clear(true);
 
             if(index == 0){
-                this.player.playerInfo.cards.forEach((item, index) => {
-                    this.sizerLeft.add(
-                        this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive().setData(item)
-                        .on('pointerdown', () => {
-                            this.setImageData(item);   
-                        })
-                    );
-                })
+                this.loadCards();
             }
             else if(index == 1){
                 if(this.player.playerInfo.inventory.item.length >= 1){
@@ -162,7 +158,7 @@ class CharacterInventory extends BaseScene {
                     })
                 }
                 else{
-                    this.sizerLeft.add(this.add.text(0,0, 'No items acquired', {fontFamily: 'Arial'}));
+                    this.sizerLeft.add(this.add.text(0,0, 'No items acquired', {fontFamily: 'Arial', padding:10 }));
                 }
             }
             else{
@@ -174,7 +170,7 @@ class CharacterInventory extends BaseScene {
                     })
                 }
                 else{
-                    this.sizerLeft.add(this.add.text(0,0, 'No available skills to learn', {fontFamily: 'Arial'}));
+                    this.sizerLeft.add(this.add.text(0,0, 'No available skills to learn', {fontFamily: 'Arial', padding:10 }));
                 }
             }    
 
@@ -187,13 +183,13 @@ class CharacterInventory extends BaseScene {
         let itemsOnTab = this.sizerLeft.getElement('items');
 
         //Stats Tabs
-        let sizerRight = new FixWidthSizer(this, {
+        this.sizerRight = new FixWidthSizer(this, {
             space: {
                 item: 10,
                 line: 10
             }
         }).layout();
-        this.add.existing(sizerRight);
+        this.add.existing(this.sizerRight);
 
         this.panelBoxRight = new ScrollablePanel(this, {
             x: 0,
@@ -203,7 +199,7 @@ class CharacterInventory extends BaseScene {
             scrollMode:0,
             background: this.add.rectangle(0,0, gameW* 0.4, gameH*0.745, 0x000000, 0.9),
             panel: {
-                child: sizerRight
+                child: this.sizerRight
             },
             space:{
                 left: paddingX,
@@ -222,7 +218,7 @@ class CharacterInventory extends BaseScene {
         
         let statsTitle = this.add.text(0,0, 'Stats', { fontFamily:'Arial', fontSize: 20, fontStyle: 'Bold Italic'} );
 
-        sizerRight.add(statsTitle);
+        this.sizerRight.add(statsTitle);
 
         this.tabsRight = new Tabs(this, {
             x: gameW,
@@ -233,9 +229,9 @@ class CharacterInventory extends BaseScene {
                 topButtonsOffset:  (gameW*0.4) - paddingX*9.6
             },
             topButtons: [
-                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x000000, 0.95 ).setOrigin(0,1).setScale(0.8),
-                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.95 ).setOrigin(0,1).setScale(0.8),
-                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.95 ).setOrigin(0,1).setScale(0.8),
+                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x000000, 0.95 ).setOrigin(0,1).setScale(0.8).setDepth(11),
+                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.95 ).setOrigin(0,1).setScale(0.8).setDepth(11),
+                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.95 ).setOrigin(0,1).setScale(0.8).setDepth(11),
             ]
         }).setOrigin(0).layout();
 
@@ -243,13 +239,13 @@ class CharacterInventory extends BaseScene {
         this.tabsRight.getElement('topButtons').forEach((tab, index) => {
             tab.setStrokeStyle(2, 0x000000, 0.9);
             if(index == 0){
-                this.statsIcon = this.add.sprite(tab.x + tab.displayWidth/2, tab.y - tab.displayHeight/2 ,'stats_icon').setOrigin(0.5);
+                this.statsIcon = this.add.sprite(tab.x + tab.displayWidth/2, tab.y - tab.displayHeight/2 ,'stats_icon').setOrigin(0.5).setDepth(11);
             }
             else if(index == 1){
-                this.skillIcon = this.add.sprite(tab.x + tab.displayWidth/2, tab.y - tab.displayHeight/2,'magic_icon').setOrigin(0.5);
+                this.skillIcon = this.add.sprite(tab.x + tab.displayWidth/2, tab.y - tab.displayHeight/2,'magic_icon').setOrigin(0.5).setDepth(11);
             }
             else{
-                this.cartIcon = this.add.sprite(tab.x + tab.displayWidth/2, tab.y - tab.displayHeight/2 ,'cart_icon').setOrigin(0.5);
+                this.cartIcon = this.add.sprite(tab.x + tab.displayWidth/2, tab.y - tab.displayHeight/2 ,'cart_icon').setOrigin(0.5).setDepth(11);
             }
 
         });
@@ -266,7 +262,7 @@ class CharacterInventory extends BaseScene {
                 }
             });
 
-            sizerRight.clear(true);
+            this.sizerRight.clear(true);
             this.panelBoxRight.layout();
 
             if(index == 0){
@@ -300,20 +296,63 @@ class CharacterInventory extends BaseScene {
     
                 let statsTitle = this.add.text(0,0, 'Stats', { fontFamily:'Arial', fontSize: 20, fontStyle: 'Bold Italic'} )
     
-                sizerRight.add(statsTitle, { padding : { right: gameW *0.2, bottom: 10 } });
-                sizerRight.add(statDetails);
+                this.sizerRight.add(statsTitle, { padding : { right: gameW *0.2, bottom: 10 } });
+                this.sizerRight.add(statDetails);
             }
             else if(index == 1){
-                sizerRight.add(this.add.text(0,0, 'No skills equipped', {fontFamily: 'Arial'}));
+                let { skill } = this.player.playerInfo.inventory;
+
+                if(skill.length >=1){
+                    let cardSkills = skill.filter(item => item.equipped.includes(this.detailsImage.data.list.name));
+                    if(cardSkills.length >= 1){
+                        cardSkills.forEach(item => {
+                            this[`skillSizer_${item.name}`] = new OverlapSizer(this,0,0,this.panelBox.width - (paddingX*2), 121, {space:0}).setOrigin(0,0);
+                            this.add.existing(this[`skillSizer_${item.name}`]);
+
+                            let itemName = this.add.rexTagText(0,0, `<style='fontStyle:bold'>${item.name}</style>`, {
+                                fontFamily: 'Arial',
+                                lineSpacing: 9
+                            });
+
+                            let itemDescription = this.add.text(0,0, `${item.description}${item.properties.type == 'item'? ` (Qty: ${item.quantity})` : ''}`, {
+                                fontFamily: 'Arial',
+                                align: 'justify',
+                                fontSize: 14
+                            }).setWordWrapWidth(this.panelBox.width * 0.52).setOrigin(0,1);
+
+                            let itemImage = this.add.sprite(0, 0, item.name).setScale(0.7).setOrigin(0);
+
+                            let itemContainerBox = this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*2),121, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1).setInteractive();
+                            let attribute  = this.add.sprite(0, 0, item.properties.attribute[0]).setScale(0.15).setOrigin(0.5);
+                        
+                            this[`skillSizer_${item.name}`]                               
+                            .add(itemContainerBox, {key: 'skillContainer', expand: false})
+                            .add(itemImage, { key: 'skillImage', expand:false, align: 'left-top', padding: { left: 15, top: 15 }})
+                            .add(itemName, {key: 'skillName', expand:false, align: 'left-top', padding: { left: 120, top: 15 }})
+                            .add(itemDescription, { key: 'skillDescription', expand:false, align: 'left-bottom', padding: { left: 120, bottom: 15}})
+                            .add( attribute, { key: 'skillAttribute',expand:false, align: 'left-top', padding: { left: 125 + itemName.displayWidth, top: 15 }})
+                            .layout();
+
+                            this.sizerRight.add(this[`skillSizer_${item.name}`])
+                        });
+                    }
+                    else{
+                        this.sizerRight.add(this.add.text(0,0, 'No skills equipped', {fontFamily: 'Arial'}));
+                    }
+                }
+                else{
+                    this.sizerRight.add(this.add.text(0,0, 'No skills equipped', {fontFamily: 'Arial'}));
+                }
+
             }
             else{
                 if(this.detailsImage.data.list.fromBlockchain){    
                     try{
                         let loading = this.add.text(0,0, 'Loading Data.. Please wait...', { fontFamily: 'Arial', padding:10 })
-                        sizerRight.add(loading).layout();
+                        this.sizerRight.add(loading).layout();
                         this.allUiGroup.add(loading);
                         let cartItems = await this.player.getCardSaleStatus(this.detailsImage.data.list.id);
-                        sizerRight.clear(true);
+                        this.sizerRight.clear(true);
     
                         let { orderId, price, quantityOnSale, itemOnHand } = cartItems;    
                         
@@ -334,7 +373,7 @@ class CharacterInventory extends BaseScene {
                                 .add(this.add.sprite(0,0,'sellButton').setScale(0.8).setInteractive(), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 20 }})
                                 .layout();
                             
-                            sizerRight.add(this.salesSizer);  
+                            this.sizerRight.add(this.salesSizer);  
         
                             let { sellButton } = this.salesSizer.getElement('items');
         
@@ -407,14 +446,14 @@ class CharacterInventory extends BaseScene {
                     }                    
                 }
                 else{
-                    sizerRight.add(this.add.text(0,0, 'This item cannot be sold in the marketplace', {fontFamily: 'Arial'}));
+                    this.sizerRight.add(this.add.text(0,0, 'This item cannot be sold in the marketplace', {fontFamily: 'Arial'}));
                 }           
             }
 
             this.panelBoxRight.layout();
 
             let sizerChildren = this.sizerLeft.getElement('items');
-            let sizerChildrenRight = sizerRight.getElement('items');
+            let sizerChildrenRight = this.sizerRight.getElement('items');
 
             this.allUiGroup.add(sizerChildren);
             this.allUiGroup.add(sizerChildrenRight);
@@ -425,6 +464,21 @@ class CharacterInventory extends BaseScene {
                     this.allUiGroup.add([saleItem.details, saleItem.salesBox, saleItem.sellButton]);
                 }                              
             }
+
+            this.player.playerInfo.inventory.skill.forEach(skill => {
+                if(this[`skillSizer_${skill.name}`]){              
+                    let skillItem = this[`skillSizer_${skill.name}`].getElement('items');
+                    if(skillItem){
+                        this.allUiGroup.add([
+                            skillItem.skillContainer, 
+                            skillItem.skillName, 
+                            skillItem.skillImage,
+                            skillItem.skillAttribute,
+                            skillItem.skillDescription,
+                        ]);
+                    }                              
+                }
+            })
 
         });
 
@@ -446,8 +500,8 @@ class CharacterInventory extends BaseScene {
         //Slide effect
         this.allUiGroup = this.add.container();
 
-        this.allUiGroup.add(this.tabs.getElement('topButtons'));
         this.allUiGroup.add([this.panelBox.getElement('background'), this.panelBox.getElement('slider.track'), this.panelBox.getElement('slider.thumb')]);
+        this.allUiGroup.add(this.tabs.getElement('topButtons'));
         this.allUiGroup.add([
             this.magicIcon, this.backpackIcon, this.cardIcon,
             detailsBox, summonCircle, this.displayName, this.rarity, this.attribute, this.detailsImage, messageDetailsBox, this.detailsText
@@ -504,7 +558,7 @@ class CharacterInventory extends BaseScene {
         }
     }
 
-    generateItemUI(item){
+    generateItemUI(item, isRight){
         const gameW = this.game.config.width;
         const paddingX = gameW * 0.025;
 
@@ -526,7 +580,7 @@ class CharacterInventory extends BaseScene {
 
         let itemContainerBox = this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*2.5),121, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1).setInteractive();
 
-        let itemSellButton = this.add.sprite(0,0,'sellButton').setScale(0.65).setInteractive().setAlpha(0)
+        let itemSellButton = this.add.sprite(0,0,'sellButton').setScale(0.65).setInteractive().setAlpha(0).setDepth(10)
             .on('pointerdown', () => {
                 this.sound.play('clickEffect', {loop: false}); 
                 this.sellItemPopUp(item.quantity, item.itemId, item.fromBlockchain, item.price, item.priceCurrency, item.properties.type);   
@@ -537,42 +591,34 @@ class CharacterInventory extends BaseScene {
                 itemEquipButton.setAlpha(1);    
             });
 
-        let itemEquipped, skillRemaining, equipped;
+        let itemEquipped, equipped;
 
         if(item.properties.type == 'skill'){
             itemEquipped = this.player.playerInfo.inventory.skill.filter(skill => skill.name == item.name)[0];
-            skillRemaining = this.player.playerInfo.inventory.skill.filter(skill => skill.name != item.name);
-            equipped = itemEquipped.equipped.some(data => data == this.displayName.name);
+            equipped = itemEquipped.equipped.some(data => data == this.detailsImage.data.list.name);
         }
 
-        let itemEquipButton = this.add.sprite(-50,-50, equipped? 'unequipButton' : 'equipButton').setScale(0.65).setInteractive().setAlpha(0)
+        let itemEquipButton = this.add.sprite(-50,-50, equipped? 'unequipButton' : 'equipButton').setScale(0.65).setInteractive().setAlpha(0).setDepth(10)
             .on('pointerdown', async() => {
                 itemEquipButton.disableInteractive();
                 this.sound.play('clickEffect', {loop: false});
                 if(this.attribute.name == item.properties.attribute[0]){
                     let itemToEquip = this.player.playerInfo.inventory.skill.filter(skill => skill.name == item.name)[0];
                     let remainingSkill = this.player.playerInfo.inventory.skill.filter(skill => skill.name != item.name);
-                    let isEquipped = itemToEquip.equipped.some(data => data == this.displayName.name);
+                    let isEquipped = itemToEquip.equipped.some(data => data == this.detailsImage.data.list.name);
 
                     if(isEquipped){
-                        let removeNameFromEquipped = itemToEquip.equipped.filter(name => name != this.displayName.name);                       
+                        let removeNameFromEquipped = itemToEquip.equipped.filter(name => name != this.detailsImage.data.list.name);                       
                         itemToEquip.equipped = removeNameFromEquipped;
                     }
                     else{
-                        itemToEquip.equipped.push(this.displayName.name);
+                        itemToEquip.equipped.push(this.detailsImage.data.list.name);
                     } 
 
                     remainingSkill.push(itemToEquip);
                     this.player.playerInfo.inventory.skill = remainingSkill.sort((a, b) => (a.itemId - b.itemId));
                     itemEquipButton.setTexture(isEquipped? 'equipButton' : 'unequipButton');
 
-                    //Save to Firebase
-                    try{
-                        await updateDoc(doc(this.player.users, this.player.playerInfo.address), { inventory : this.player.playerInfo.inventory });   
-                    }
-                    catch(e){
-                        console.log(e.message);
-                    }
                     itemEquipButton.setInteractive();
                 }
                 else{
@@ -585,6 +631,12 @@ class CharacterInventory extends BaseScene {
                 if(item.properties.type == 'skill'){
                     itemEquipButton.setAlpha(1);
                 }  
+            }).on('pointerout', () => {
+                itemImage.setAlpha(1);
+                itemSellButton.setAlpha(0);
+                if(item.properties.type == 'skill'){
+                    itemEquipButton.setAlpha(0);
+                } 
             });
 
         itemContainerBox.on('pointerover', () => {
@@ -604,7 +656,7 @@ class CharacterInventory extends BaseScene {
         })
 
         itemSizer                               
-        .add(itemContainerBox, {expand: false})
+        .add(itemContainerBox, {key : `container_${item.name}`, expand: false})
         .add(itemImage, { expand:false, align: 'left-top', padding: { left: 15, top: 15 }})
         .add(itemName, { expand:false, align: 'left-top', padding: { left: 120, top: 15 }})
         .add(itemDescription, { expand:false, align: 'left-bottom', padding: { left: 120, bottom: 15}})
@@ -615,6 +667,8 @@ class CharacterInventory extends BaseScene {
         .layout();
 
 
+        this.allUiGroup.add([ itemImage, itemName, itemDescription, itemSellButton]);
+        this.allUiGroup.addAt(itemContainerBox, 2);
 
         if(item.properties.type == 'skill'){
             let attribute  = this.add.sprite(0, 0, item.properties.attribute[0]).setScale(0.15).setOrigin(0.5);
@@ -622,9 +676,11 @@ class CharacterInventory extends BaseScene {
             itemSizer
             .add(itemEquipButton, {expand:false, align: 'left-bottom', padding: { left: 18, bottom:30 }})
             .add( attribute, { expand:false, align: 'left-top', padding: { left: 125 + itemName.displayWidth, top: 15 }}).layout();
+
+            this.allUiGroup.add([itemEquipButton, attribute]);
         }
 
-        this.sizerLeft.add(itemSizer);         
+        this.sizerLeft.add(itemSizer);
     }
 
     sellItemPopUp = async(itemOnHand, itemId, fromBlockchain, itemPrice, itemCurrency, itemType) => {
@@ -841,16 +897,24 @@ class CharacterInventory extends BaseScene {
             this.player.playerInfo.cards = cardsTotal;
         }
 
-        this.player.playerInfo.cards.forEach((item, index) => {
-            if(index == 0){
-                this.setImageData(item);                 
-            }
- 
+        if(this.player.playerInfo.cards.length >= 1){
+            this.player.playerInfo.cards.forEach((item, index) => {
+                if(index == 0){
+                    this.setImageData(item);                 
+                }
+     
+                this.sizerLeft.add(
+                    this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive().setData(item)
+                        .on('pointerdown', () => {this.setImageData(item);})
+                );
+            })
+        }
+        else{
             this.sizerLeft.add(
-                this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive().setData(item)
-                    .on('pointerdown', () => {this.setImageData(item);})
-            );
-        })
+                this.add.text(0,0, 'No cards available in your inventory', { fontFamily: 'Arial', padding:10 }).setDepth(10)
+            );            
+        }
+
 
         this.panelBox.layout();
     }

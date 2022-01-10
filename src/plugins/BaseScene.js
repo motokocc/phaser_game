@@ -12,7 +12,7 @@ class BaseScene extends Phaser.Scene {
         this.hoverSound = this.sound.add('hoverEffect', {loop: false});
     }
 
-    generateUpperUI(isWithRewards){
+    generateUpperUI(isWithRewards, saveToFirebase){
         const gameW = this.game.config.width;
         const gameH = this.game.config.height;
         const paddingX = gameW * 0.025;
@@ -59,7 +59,17 @@ class BaseScene extends Phaser.Scene {
         ).setOrigin(0.5);
 
         let backButton = this.add.sprite(gameW-paddingX, paddingX, 'exitIcon').setOrigin(1,0).setScale(0.6).setInteractive();
-        backButton.on('pointerdown', () => this.scene.start("game"));
+        backButton.on('pointerdown', async() => {
+            if(saveToFirebase){
+                try{
+                    await updateDoc(doc(this.player.users, this.player.playerInfo.address), { inventory : this.player.playerInfo.inventory });   
+                }
+                catch(e){
+                    console.log(e.message);
+                }
+            }
+            this.scene.start("game")
+        });
 
         //UI Containers/Groups
         gems.add([gem_box, gem_icon, this.gems_value]);
