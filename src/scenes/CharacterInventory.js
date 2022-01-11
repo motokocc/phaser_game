@@ -904,7 +904,7 @@ class CharacterInventory extends BaseScene {
                 }
      
                 this.sizerLeft.add(
-                    this.add.sprite(0, 0, item.name).setScale(0.35).setOrigin(0).setDepth(10).setInteractive().setData(item)
+                    this.add.image(0, 0, `${item.name}_mini`).setScale(0.7).setOrigin(0).setDepth(10).setInteractive().setData(item)
                         .on('pointerdown', () => {this.setImageData(item);})
                 );
             })

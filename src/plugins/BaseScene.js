@@ -42,7 +42,11 @@ class BaseScene extends Phaser.Scene {
             {fontFamily: 'Arial', fontSize:14}
         ).setOrigin(0, 0.5);
 
-        player_gui_box.on("pointerdown", () => this.scene.start("inventory"));
+        player_gui_box.on("pointerdown", () => {
+            if(!saveToFirebase){
+                this.scene.start("inventory");
+            }
+        });
 
         const player_role = this.add.text(
             player_gui_box.x* 3.6,

@@ -98,6 +98,8 @@ import forward_icon from '../images/icons/forward_arrow.png';
 //inventory
 import alphaAlt from '../images/image_alt/alpha_alt.png';
 import sayaAlt from '../images/image_alt/saya_alt.png';
+import alphaMini from '../images/image_alt/alpha_mini.png';
+import sayaMini from '../images/image_alt/saya_mini.png';
 import summoningCircle2 from '../images/summoning_circle_2.png';
 import rarity_1 from '../images/rarity/rarity-1.png';
 import rarity_2 from '../images/rarity/rarity-2.png';
@@ -139,6 +141,8 @@ class LoadingScreen extends Phaser.Scene {
         //Image Alt
         this.load.image('Alpha_alt', alphaAlt);
         this.load.image('Saya_alt', sayaAlt);
+        this.load.image('Alpha_mini', alphaMini);
+        this.load.image('Saya_mini', sayaMini);
         this.load.image('summoningCircle2', summoningCircle2);
         
         //Main Screen

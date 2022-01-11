@@ -261,7 +261,7 @@ class Marketplace extends BaseScene {
 
             itemOnSaleSizer                               
             .add(this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*3),190, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
-            .add(this.add.sprite(0, 0, item.name).setScale(0.35), { expand:false, align: 'left-center', padding: { left: 20}})
+            .add(this.add.sprite(0, 0, `${item.name}_mini`).setScale(0.7), { expand:false, align: 'left-center', padding: { left: 20}})
             .add(this.add.sprite(0, 0, item.properties.attribute).setScale(0.2), { expand:false, align: 'left-center', padding: { left: 225, bottom: 80 }})
             .add(this.add.sprite(0, 0, `rarity_${item.properties.rarity}`).setScale(0.2), { expand:false, align: 'left-center', padding: { left: 205, bottom: 25 }})
             .add(this.add.rexTagText(0,0, [
@@ -289,7 +289,7 @@ class Marketplace extends BaseScene {
             this.add.existing(itemOnSaleSizer);
 
            itemOnSaleSizer
-            .add(this.add.sprite(0, 0, item.name).setScale(0.35), { expand:false, align: 'center-top'})
+            .add(this.add.sprite(0, 0, `${item.name}_mini`).setScale(0.7), { expand:false, align: 'center-top'})
             .add(this.add.rexRoundRectangle(0,0, 105, 30, 5, 0x005500, 1).setInteractive()
                 .on('pointerdown', () => {
                     this.sound.play('clickEffect', {loop: false});    
