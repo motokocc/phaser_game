@@ -71,7 +71,7 @@ class Game extends BaseScene {
         let leftButtons = this.add.container(-250,0);
         const roullete_button = this.add.sprite(paddingX, gameH*0.23, 'roullete_button').setOrigin(0,0.5).setName('roullete');
         const black_market_button = this.add.sprite(paddingX, gameH*0.37, 'black_market_button').setOrigin(0,0.5).setName('marketplace');  
-        const missions_button = this.add.sprite(paddingX, gameH*0.51, 'missions_button').setOrigin(0,0.5);
+        const missions_button = this.add.sprite(paddingX, gameH*0.51, 'missions_button').setOrigin(0,0.5).setName('missions');
         const summon_button = this.add.sprite(paddingX, gameH*0.65, 'summon_button').setOrigin(0,0.5).setName('summoningArea');
 
         // Left Notifications
