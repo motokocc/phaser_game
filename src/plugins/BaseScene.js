@@ -9,7 +9,15 @@ class BaseScene extends Phaser.Scene {
         this.data = data;       
         this.dialogueCounter = 0;
         this.toggleSettings = false;
+        this.gameW = this.game.config.width;
+        this.gameH = this.game.config.height;
         this.hoverSound = this.sound.add('hoverEffect', {loop: false});
+    }
+
+    generateBg(){
+        this.gameBg = this.add.image(0,0,'background');
+        this.gameBg.setOrigin(0,0);
+        this.gameBg.setScale(1.1);
     }
 
     generateUpperUI(isWithRewards, saveToFirebase){
@@ -265,6 +273,10 @@ class BaseScene extends Phaser.Scene {
                         inventory:{
                             skill:[],
                             item:[]
+                        },
+                        missions:{
+                            finished: [],
+                            currentMission: null    
                         }
                     }
                     this.scene.start("titlescreen");
@@ -476,6 +488,13 @@ class BaseScene extends Phaser.Scene {
         {
             window.location.href = url;
         }
+    }
+
+    
+    proceedToMainPage(button){
+        button.on('pointerup', () => {
+            this.scene.start("game");
+        });
     }
 
 

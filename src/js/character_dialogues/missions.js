@@ -3,6 +3,10 @@ let missions = [
 		title: 'Goblin Extermination',
 		description: 'Exterminate 5 goblins',
 		requiredLevel: 5,
+		reward:{
+			amount: 500,
+			currency: 'gold'
+		},
 		condition: {
 			task: 'kill',
 			enemy: 'goblin',
@@ -13,6 +17,10 @@ let missions = [
 		title: 'Kill Goblin Lord',
 		description: 'Exterminate goblin lord',
 		requiredLevel: 10,
+		reward:{
+			amount: 250,
+			currency: 'gems'
+		},
 		condition: {
 			task: 'kill',
 			enemy: 'goblin lord',
@@ -23,6 +31,10 @@ let missions = [
 		title: 'Kill Slime King',
 		description: 'Exterminate Slime King',
 		requiredLevel: 20,
+		reward:{
+			amount: 500,
+			currency: 'gems'
+		},
 		condition: {
 			task: 'kill',
 			enemy: 'Slime king',

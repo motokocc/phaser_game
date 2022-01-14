@@ -41,6 +41,10 @@ class Player extends Phaser.Plugins.BasePlugin {
             inventory:{
                 skill:[],
                 item:[]
+            },
+            missions:{
+                finished: [],
+                currentMission: null    
             }
         }
 
