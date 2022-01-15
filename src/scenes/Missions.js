@@ -1,6 +1,7 @@
 import 'regenerator-runtime/runtime';
 import BaseScene from '../plugins/BaseScene';
 import { Mission } from '../js/character_dialogues/missions';
+import { doc, updateDoc } from "firebase/firestore";
 
 class Missions extends BaseScene {
 
@@ -144,8 +145,16 @@ class Missions extends BaseScene {
 
             quest.progress = 0;
             this.player.playerInfo.missions.currentMission = quest;
-            this.missionReply = true;
 
+            try{
+                let { users, playerInfo } = this.player;
+                await updateDoc(doc(users, playerInfo.address), { missions : playerInfo.missions});
+            }
+            catch(e){
+                console.log(e.message)
+            }
+
+            this.missionReply = true;
             this.messageText.setText('');
             this.typewriteTextWrapped(`Great! Comeback again later when its done`);
 
@@ -179,6 +188,23 @@ class Missions extends BaseScene {
         okButton.on("pointerdown", () => {
             this.player.playerInfo.missions.finished.push(title);
             this.player.playerInfo.missions.currentMission = null;
+            this.player.playerInfo[reward.currency] = this.player.playerInfo[reward.currency] + reward.amount;
+            this[`${reward.currency}_value`].setText = this.player.playerInfo[reward.currency];
+
+            try{
+                let { users, playerInfo } = this.player;
+                await updateDoc(doc(users, playerInfo.address),
+                    { 
+                        missions: playerInfo.missions, 
+                        gems: playerInfo.gems, 
+                        gold: playerInfo.gold 
+                    }
+                );
+            }
+            catch(e){
+                console.log(e.message)
+            }
+
             this.messageText.setText('');
             this.typewriteTextWrapped('Thank you for completing the mission. Comeback again later for more quest');
             this.missionReply = true;
