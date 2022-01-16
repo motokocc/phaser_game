@@ -11,6 +11,7 @@ class BaseScene extends Phaser.Scene {
         this.toggleSettings = false;
         this.gameW = this.game.config.width;
         this.gameH = this.game.config.height;
+        this.paddingX = this.gameW * 0.025;
         this.hoverSound = this.sound.add('hoverEffect', {loop: false});
     }
 
@@ -140,7 +141,7 @@ class BaseScene extends Phaser.Scene {
         });
     }
 
-    popUp(title, content, titleSize, inputParams){
+    popUp(title, content, titleSize, inputParams, notDestroyable){
         content.setDepth(25);
         this.popupContainer = this.add.group().setDepth(15);
 
@@ -173,7 +174,10 @@ class BaseScene extends Phaser.Scene {
             if(inputParams){
                 inputParams.setAlpha(1);
             }
-            this.popupContainer.destroy(true);
+
+            if(!notDestroyable){
+                this.popupContainer.destroy(true);
+            }
         });
     }
 

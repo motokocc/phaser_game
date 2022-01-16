@@ -6,7 +6,6 @@ import { doc, updateDoc } from "firebase/firestore";
 class Missions extends BaseScene {
 
     create(){
-        const paddingX = this.gameW * 0.025;
         const dialogPadding = 18;
         const dialogBoxH = this.game.config.height / 5;
 
@@ -30,26 +29,25 @@ class Missions extends BaseScene {
 
         this.nextText.on('pointerdown', () => {
             this.nextText.setScale(0.9);
-            this.nextText.setAlpha(0.7);
             this.sound.play('hoverEffect', {loop: false});
         })
 
-        let quest = new Mission(20);
+        let quest = new Mission(this.player.playerInfo.level);
         let missionsToTake = quest.generateMissions();
         this.missionReply = false;
 
         if(quest.playerLevel < 5){
-            this.typewriteTextWrapped('Come back when you are at least level 5');
+            this.typewriteTextWrapped(`Hi ${this.player.playerInfo.name || 'Adventurer'}. You and your djinn seems wea.... I mean not ready to take missions. Come back when you are stronger(level 5). Say hi to Lilith for me!`);
             this.proceedToMainPage(this.nextText);
         }
         else if(missionsToTake.length >= 1){
             let { currentMission, finished } = this.player.playerInfo.missions;
 
             if(this.player.playerInfo.missions.currentMission){
-                let { progress, condition, title } = currentMission;
+                let { progress, condition } = currentMission;
 
                 if(progress >= condition.amountNeed){
-                    this.typewriteTextWrapped('Mission Complete. Please take this.');
+                    this.typewriteTextWrapped(currentMission.dialogue.complete);
 
                     this.nextText.on('pointerdown', () => {
                         if(this.missionReply){
@@ -61,18 +59,25 @@ class Missions extends BaseScene {
                     })
                 }
                 else{
-                    this.typewriteTextWrapped(`You still haven't completed the mission yet`);
+                    this.typewriteTextWrapped(currentMission.dialogue.notComplete);
                     this.proceedToMainPage(this.nextText);
                 }
             }
             else{
                 if(finished.length <= 0){
                     let firstQuest = quest.takeMission();
-                    this.typewriteTextWrapped(`Your first mission is ${firstQuest.title}. Will you accept the mission?`);
+                    let { lines } = firstQuest.dialogue;
+                    this.typewriteTextWrapped(quest.getDialogue(lines));
 
                     this.nextText.on('pointerdown', () => {
                         if(this.missionReply){
                             this.scene.start("game");
+                        }
+                        else if(lines.length > 1 && quest.currentDialogue < lines.length - 1){
+                            quest.skip();
+                            this.textTimer.remove();
+                            this.messageText.setText('');
+                            this.typewriteTextWrapped(quest.getDialogue(lines));
                         }
                         else{
                             this.acceptMissionPopUp(firstQuest);  
@@ -81,13 +86,20 @@ class Missions extends BaseScene {
                 }
                 else{
                     let latestQuest = quest.takeMission(finished);
-
+            
                     if(latestQuest){
-                        this.typewriteTextWrapped(`Your latest mission is ${latestQuest.title}. Will you accept the mission?`);
+                        let { lines } = latestQuest.dialogue;
+                        this.typewriteTextWrapped(quest.getDialogue(lines));
 
                         this.nextText.on('pointerdown', () => {
                             if(this.missionReply){
                                 this.scene.start("game");
+                            }
+                            else if(lines.length > 1 && quest.currentDialogue < lines.length - 1){
+                                quest.skip();
+                                this.textTimer.remove();
+                                this.messageText.setText('');
+                                this.typewriteTextWrapped(quest.getDialogue(lines));
                             }
                             else{
                                 this.acceptMissionPopUp(latestQuest);  
@@ -95,19 +107,22 @@ class Missions extends BaseScene {
                         })           
                     }
                     else{
-                        this.typewriteTextWrapped('No missions available at the moment');
+                        this.typewriteTextWrapped('No missions available at the moment. Please come again later');
                         this.proceedToMainPage(this.nextText);
                     }
                 }
             }
         }
         else{
-            this.typewriteTextWrapped('No missions available at the moment');
+            this.typewriteTextWrapped('No missions available at the moment. Please come again later');
             this.proceedToMainPage(this.nextText);
         }
     }
 
     acceptMissionPopUp(quest){
+        this.nextText.disableInteractive();
+        let { dialogue } = quest;
+        let { accept, decline } = dialogue;
 
         let missionPopUpGroup = this.add.group();
 
@@ -132,11 +147,12 @@ class Missions extends BaseScene {
 
         missionCancelButton.on("pointerdown", () => {
             this.sound.play('clickEffect', {loop: false});
-
+            this.textTimer.remove();
             this.messageText.setText('');
-            this.typewriteTextWrapped(`Ok. I'll wait when you are ready.`);
+            this.typewriteTextWrapped(decline);
 
             this.missionReply = true;
+            this.nextText.setInteractive();
             this.popupContainer.destroy(true);
         });
 
@@ -155,15 +171,17 @@ class Missions extends BaseScene {
             }
 
             this.missionReply = true;
+            this.textTimer.remove();
             this.messageText.setText('');
-            this.typewriteTextWrapped(`Great! Comeback again later when its done`);
+            this.typewriteTextWrapped(accept);
+            this.nextText.setInteractive();
 
             this.popupContainer.destroy(true);
         });
 
         missionPopUpGroup.addMultiple([missionDescription, missionAcceptButton, missionCancelButton]);
 
-        this.popUp('Mission',missionPopUpGroup);        
+        this.popUp(quest.title ,missionPopUpGroup, null, null, true);        
     }
 
     rewardPopup(mission){
@@ -172,24 +190,29 @@ class Missions extends BaseScene {
 
         let rewardGroup = this.add.group();
 
+        let rewardIcon = this.add.sprite(this.gameW/2, this.gameH/2 - (this.paddingX*1.2), reward.currency).setOrigin(0.5).setScale(0,1.3);
+
         let rewardItem = this.add.text(
-            this.game.config.width/2, 
-            this.game.config.height/2 - 50,
-            `${reward.amount} ${reward.currency}`
-            ,{fontFamily: 'Arial', color: '#613e1e', align: 'justify'}
-        ).setOrigin(0.5,0).setWordWrapWidth(230).setScale(0,1.3);
+            rewardIcon.x, 
+            rewardIcon.y + rewardIcon.displayHeight/2,
+            `${reward.amount}`
+            ,{fontFamily: 'Arial', color: '#613e1e', align: 'justify', fontSize: 14, fontStyle: 'Bold' }
+        ).setOrigin(0.5,0).setWordWrapWidth(230).setScale(0,1.3);      
 
         let okButton = this.add.sprite(
             rewardItem.x, 
-            rewardItem.y + 100,
+            rewardItem.y + 50,
             'confirmButtonAlt'
         ).setOrigin(0.5).setInteractive().setScale(0,1.3);
 
-        okButton.on("pointerdown", () => {
+        okButton.on("pointerdown", async() => {
             this.player.playerInfo.missions.finished.push(title);
             this.player.playerInfo.missions.currentMission = null;
-            this.player.playerInfo[reward.currency] = this.player.playerInfo[reward.currency] + reward.amount;
-            this[`${reward.currency}_value`].setText = this.player.playerInfo[reward.currency];
+
+            let updatedAmount = this.player.playerInfo[reward.currency] + reward.amount;
+
+            this.player.playerInfo[reward.currency] = updatedAmount;
+            this[`${reward.currency}_value`].setText(updatedAmount);
 
             try{
                 let { users, playerInfo } = this.player;
@@ -203,18 +226,18 @@ class Missions extends BaseScene {
             }
             catch(e){
                 console.log(e.message)
-            }
-
+            }  
+            this.textTimer.remove();
             this.messageText.setText('');
-            this.typewriteTextWrapped('Thank you for completing the mission. Comeback again later for more quest');
+            this.typewriteTextWrapped(mission.dialogue.rewardTaken);
             this.missionReply = true;
 
             this.sound.play('clickEffect', {loop: false});
             this.popupContainer.destroy(true);
         });
 
-        rewardGroup.addMultiple([rewardItem, okButton]);
-        this.popUp('Mission Completed', rewardGroup);
+        rewardGroup.addMultiple([rewardIcon, rewardItem, okButton]);
+        this.popUp('Mission Completed', rewardGroup, null, null, true);
     }
 }
 

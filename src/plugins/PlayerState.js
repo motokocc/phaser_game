@@ -94,7 +94,7 @@ class Player extends Phaser.Plugins.BasePlugin {
 
                     if (user.exists()) {
                         //To add more data later for drops that can be exchanged to nfts
-                        const { gold, drawCount, isFirstTime, name, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes, role, level, rewards, inventory } = user.data();
+                        const { gold, drawCount, isFirstTime, name, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes, role, level, rewards, inventory, missions } = user.data();
 
                         cardData = user.data().cards? user.data().cards.filter(card => card.name === "Alpha") : [];
 
@@ -106,7 +106,7 @@ class Player extends Phaser.Plugins.BasePlugin {
                         }
                             
                         //Set Player Data
-                        this.setPlayerInfo(name, accounts[0], drawCount, gold, cards, isFirstTime, gems, lastLogin.toDate(), lastSpin? lastSpin.toDate() : null, dateJoined.toDate(), lastReward? lastReward.toDate():null, lastRead, couponCodes, role, level, rewards, inventory );
+                        this.setPlayerInfo(name, accounts[0], drawCount, gold, cards, isFirstTime, gems, lastLogin.toDate(), lastSpin? lastSpin.toDate() : null, dateJoined.toDate(), lastReward? lastReward.toDate():null, lastRead, couponCodes, role, level, rewards, inventory, missions );
                         
                         //Set mail
                         this.announcements = mail.data();
@@ -130,7 +130,7 @@ class Player extends Phaser.Plugins.BasePlugin {
         }
     }
 
-    setPlayerInfo(name, address, drawCount, gold, cards,isFirstTime, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes, role, level, rewards, inventory ){
+    setPlayerInfo(name, address, drawCount, gold, cards,isFirstTime, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes, role, level, rewards, inventory, missions ){
         this.playerInfo = {
             name,
             address,
@@ -148,7 +148,8 @@ class Player extends Phaser.Plugins.BasePlugin {
             role,
             level,
             rewards,
-            inventory
+            inventory,
+            missions
         }
         console.log('Player Info Set!',this.playerInfo);
     }
