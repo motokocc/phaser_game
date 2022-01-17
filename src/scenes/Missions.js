@@ -7,10 +7,47 @@ class Missions extends BaseScene {
 
     create(){
         const dialogPadding = 18;
-        const dialogBoxH = this.game.config.height / 5;
+        const dialogBoxH = this.gameH / 5;
 
         this.generateBg();
         this.generateUpperUI();
+
+        this.anims.create({
+            key: "idle",
+            frameRate: 8,
+            frames: this.anims.generateFrameNumbers("ninja", { start: 0, end: 1 }),
+            repeatDelay: 3500,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: "ninja_appear",
+            frameRate: 8,
+            frames: this.anims.generateFrameNumbers("ninja", { start: 4, end: 5 }),
+        });
+
+        this.anims.create({
+            key: "smoke_appear",
+            frameRate: 8,
+            frames: this.anims.generateFrameNumbers("smoke", { start: 0, end: 10 }),
+        });
+
+        this.npc_ninja = this.add.sprite(this.gameW/2, this.gameH * 0.85, 'ninja').setOrigin(0.5,1).setScale(0.000928 * this.gameW).setAlpha(0);
+
+        setTimeout(() => {
+            this.npc_ninja.setAlpha(1);
+            this.npc_ninja.playReverse("ninja_appear");
+
+            this.npc_ninja.on('animationcomplete', () => {
+                setTimeout(() => {
+                    this.npc_ninja.playReverse("idle");
+                },2000);
+            }); 
+        }, 500);
+
+
+        this.smoke = this.add.sprite(this.gameW/2, this.gameH * 0.85, 'smoke').setOrigin(0.5, 0.65).setScale(2.5);
+        this.smoke.play("smoke_appear"); 
 
         let box = this.add.sprite(0,this.gameH - dialogBoxH, 'dialogueBox').setOrigin(0);
         box.displayWidth = this.gameW;
@@ -20,11 +57,11 @@ class Missions extends BaseScene {
             dialogPadding, 
             (this.gameH - dialogBoxH) + dialogPadding,
             '',
-            {color: '#613e1e'}
+            {color: '#613e1e', fontFamily: 'Arial'}
         ).setWordWrapWidth(this.gameW * 0.9, true);
 
         //Next Button Function
-        this.nextText = this.add.text( this.gameW-dialogPadding, this.gameH - dialogPadding, 'Next >>>', {color: '#613e1e'}).setInteractive();
+        this.nextText = this.add.text( this.gameW-dialogPadding, this.gameH - dialogPadding, 'Next >>>', {color: '#613e1e', fontFamily: 'Arial'}).setInteractive();
         this.nextText.setOrigin(1,1);
 
         this.nextText.on('pointerdown', () => {

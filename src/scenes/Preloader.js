@@ -127,6 +127,10 @@ import war_cry from '../images/skills/war_cry.png';
 import iron_pickaxe from '../images/items/iron_pickaxe.png';
 import small_heal_potion from '../images/items/small_heal_potion.png';
 
+//Missions
+import ninja from '../images/spritesheets/ninja_spritesheet.png'
+import smoke from '../images/spritesheets/smoke_spritesheet.png'
+
 class LoadingScreen extends Phaser.Scene {
 
     init(data){
@@ -260,6 +264,10 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('soundOn', soundOn);
         this.load.image('light', light);
         this.load.image('inventory_bg', inventory_bg);
+
+        //Mission
+        this.load.spritesheet("ninja", ninja, { frameWidth: 297, frameHeight: 420 });
+        this.load.spritesheet("smoke", smoke, { frameWidth: 500, frameHeight: 500 });
 
         //Audio Files
         this.load.audio('clickEffect', [clickSound]);
