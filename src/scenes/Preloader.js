@@ -304,19 +304,19 @@ class LoadingScreen extends Phaser.Scene {
     }
 
     create(){
+        setTimeout(() => {
+            this.completeText.setText('Click here to continue');
 
-        this.completeText.setText('Click here to continue');
-
-        this.completeText.on('pointerdown', () => {
-            this.completeText.disableInteractive();
-            this.progressBar.destroy();
-            this.progressBox.destroy();
-            this.loaderText.destroy();
-            this.completeText.destroy();
-            this.sound.play('titleBgMusic', {loop: true, volume:0.2});
-            this.scene.start(this.data.nextPage);
-        })
-
+            this.completeText.on('pointerdown', () => {
+                this.completeText.disableInteractive();
+                this.progressBar.destroy();
+                this.progressBox.destroy();
+                this.loaderText.destroy();
+                this.completeText.destroy();
+                this.sound.play('titleBgMusic', {loop: true, volume:0.2});
+                this.scene.start(this.data.nextPage);
+            })
+        }, 2000);
     }
 }
 

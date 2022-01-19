@@ -222,7 +222,7 @@ class Missions extends BaseScene {
     }
 
     rewardPopup(mission){
-
+        this.nextText.disableInteractive();
         let { title, reward } = mission
 
         let rewardGroup = this.add.group();
@@ -270,6 +270,7 @@ class Missions extends BaseScene {
             this.missionReply = true;
 
             this.sound.play('clickEffect', {loop: false});
+            this.nextText.setInteractive();
             this.popupContainer.destroy(true);
         });
 

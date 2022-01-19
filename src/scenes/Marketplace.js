@@ -9,10 +9,6 @@ class Marketplace extends BaseScene {
         this.gameBg.setOrigin(0,0);
         this.gameBg.setScale(1.10);
 
-        const gameW = this.game.config.width;
-        const gameH = this.game.config.height;
-        const paddingX = gameW * 0.025;
-
         this.itemsOnSale=[];
         this.cardsOnSale=[];
         this.utilitiesOnSale=[];
@@ -44,10 +40,10 @@ class Marketplace extends BaseScene {
         this.panelBox = new ScrollablePanel(this, {
             x: 0,
             y: 0,
-            width: gameW - paddingX*2,
-            height: gameH*0.78,
+            width: this.gameW - this.paddingX*2,
+            height: this.gameH*0.78,
             scrollMode:0,
-            background: this.add.rectangle(0,0, gameW - paddingX*2, gameH*0.745, 0x000000, 0.9),
+            background: this.add.rectangle(0,0, this.gameW - this.paddingX*2, this.gameH*0.745, 0x000000, 0.9),
             panel: {
                 child: this.marketplaceSizer
             },
@@ -58,8 +54,8 @@ class Marketplace extends BaseScene {
                 bottom: 45,
             },
             slider: {
-                track: this.add.rexRoundRectangle(0, 0, 10, gameH*0.745, 4.5, 0x000000, 0.9).setStrokeStyle(0.5, 0xffffff, 0.8),
-                thumb: this.add.rexRoundRectangle(0, 0, 10, paddingX*4, 4.5, 0xffffff, 0.8).setAlpha(0.5),
+                track: this.add.rexRoundRectangle(0, 0, 10, this.gameH*0.745, 4.5, 0x000000, 0.9).setStrokeStyle(0.5, 0xffffff, 0.8),
+                thumb: this.add.rexRoundRectangle(0, 0, 10, this.paddingX*4, 4.5, 0xffffff, 0.8).setAlpha(0.5),
                 input: 'drag',
                 position: 'right',
             },
@@ -68,15 +64,15 @@ class Marketplace extends BaseScene {
 
         //Inventory Tabs
         this.tabs = new Tabs(this, {
-            x: paddingX,
-            y: gameH * 0.22 - paddingX*2 + 10,
-            width: gameW - paddingX*2,
-            height: gameH*0.78,
+            x: this.paddingX,
+            y: this.gameH * 0.22 - this.paddingX*2 + 10,
+            width: this.gameW - this.paddingX*2,
+            height: this.gameH*0.78,
             panel: this.panelBox,
             topButtons: [
-                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
-                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
-                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, this.paddingX*4, this.paddingX*2.1, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, this.paddingX*4, this.paddingX*2.1, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, this.paddingX*4, this.paddingX*2.1, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
             ]
         }).setOrigin(0).layout();
 
@@ -212,7 +208,7 @@ class Marketplace extends BaseScene {
 
     generatePaginationUI(){
         this.paginationSizer = new OverlapSizer(
-            this,this.game.config.width/2,this.game.config.height - (this.game.config.width * 0.025),225, 45, {space:0}
+            this, this.gameW/2, this.gameH - (this.gameW * 0.025),225, 45, {space:0}
         ).setOrigin(0.5);
         this.add.existing(this.paginationSizer); 
 
@@ -251,16 +247,13 @@ class Marketplace extends BaseScene {
         });
     }
 
-    generateItemUI(item){
-        const gameW = this.game.config.width;
-        const paddingX = gameW * 0.025;
-
+    generateItemUI(item){       
         if(this.toggleList){
-            let itemOnSaleSizer = new OverlapSizer(this,0,0,this.panelBox.width - (paddingX*3), 190, {space:0}).setOrigin(0,0);
+            let itemOnSaleSizer = new OverlapSizer(this,0,0,this.panelBox.width - (this.paddingX*3), 190, {space:0}).setOrigin(0,0);
             this.add.existing(itemOnSaleSizer);
 
             itemOnSaleSizer                               
-            .add(this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*3),190, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
+            .add(this.add.rexRoundRectangle(0,0,this.panelBox.width - (this.paddingX*3),190, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
             .add(this.add.sprite(0, 0, `${item.name}_mini`).setScale(0.7), { expand:false, align: 'left-center', padding: { left: 20}})
             .add(this.add.sprite(0, 0, item.properties.attribute).setScale(0.2), { expand:false, align: 'left-center', padding: { left: 225, bottom: 80 }})
             .add(this.add.sprite(0, 0, `rarity_${item.properties.rarity}`).setScale(0.2), { expand:false, align: 'left-center', padding: { left: 205, bottom: 25 }})
@@ -304,12 +297,10 @@ class Marketplace extends BaseScene {
         this.paginationPageNumber.setText(`${this.currentPage} of ${this.numberOfPages} ${this.numberOfPages >1? 'Pages' : 'Page'}`);      
     }
 
-    searchBox(){
-        const gameW = this.game.config.width;
-        const paddingX = gameW * 0.025;
+    searchBox(){            
         this.searchInput = this.add.rexInputText(
-            this.game.config.width - paddingX - 4,
-            this.game.config.height * 0.22 - paddingX,
+            this.gameW - this.paddingX - 4,
+            this.gameH * 0.22 - this.paddingX,
             340,
             35,
             {
@@ -468,8 +459,8 @@ class Marketplace extends BaseScene {
 
         //Quantity of item to be bought
         const buyQuantity = this.add.rexInputText(
-            this.game.config.width/2,
-            this.game.config.height/2 - 50,
+            this.gameW/2,
+            this.gameH/2 - 50,
             215,
             25,
             { 
@@ -520,8 +511,8 @@ class Marketplace extends BaseScene {
 
         //Price of item to be bought
         const buyingPrice = this.add.rexInputText(
-            this.game.config.width/2,
-            this.game.config.height/2 + 35,
+            this.gameW/2,
+            this.gameH/2 + 35,
             215,
             25,
             { 

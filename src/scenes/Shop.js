@@ -9,10 +9,6 @@ class Shop extends BaseScene {
         this.gameBg.setOrigin(0,0);
         this.gameBg.setScale(1.10);
 
-        const gameW = this.game.config.width;
-        const gameH = this.game.config.height;
-        const paddingX = gameW * 0.025;
-
         this.itemsOnSale=[];
         this.utilitiesOnSale=[];
         this.skillsOnSale=[];
@@ -42,10 +38,10 @@ class Shop extends BaseScene {
         this.panelBox = new ScrollablePanel(this, {
             x: 0,
             y: 0,
-            width: gameW - paddingX*4.5,
-            height: gameH*0.78,
+            width: this.gameW - this.paddingX*4.5,
+            height: this.gameH*0.78,
             scrollMode:0,
-            background: this.add.rectangle(0,0, gameW - paddingX*2, gameH*0.745, 0x000000, 0.9),
+            background: this.add.rectangle(0,0, this.gameW - this.paddingX*2, this.gameH*0.745, 0x000000, 0.9),
             panel: {
                 child: this.shopSizer
             },
@@ -56,8 +52,8 @@ class Shop extends BaseScene {
                 bottom: 45,
             },
             slider: {
-                track: this.add.rexRoundRectangle(0, 0, 10, gameH*0.745, 4.5, 0x000000, 0.9).setStrokeStyle(0.5, 0xffffff, 0.8),
-                thumb: this.add.rexRoundRectangle(0, 0, 10, paddingX*4, 4.5, 0xffffff, 0.8).setAlpha(0.5),
+                track: this.add.rexRoundRectangle(0, 0, 10, this.gameH*0.745, 4.5, 0x000000, 0.9).setStrokeStyle(0.5, 0xffffff, 0.8),
+                thumb: this.add.rexRoundRectangle(0, 0, 10, this.paddingX*4, 4.5, 0xffffff, 0.8).setAlpha(0.5),
                 input: 'drag',
                 position: 'right',
             },
@@ -66,20 +62,20 @@ class Shop extends BaseScene {
 
         //Inventory Tabs
         this.tabs = new Tabs(this, {
-            x: paddingX,
-            y: gameH * 0.22 - paddingX*2 + 10,
-            width: gameW - paddingX*4.5,
-            height: gameH*0.78,
+            x: this.paddingX,
+            y: this.gameH * 0.22 - this.paddingX*2 + 10,
+            width: this.gameW - this.paddingX*4.5,
+            height: this.gameH*0.78,
             panel: this.panelBox,
             topButtons: [
-                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
-                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, this.paddingX*4, this.paddingX*2.1, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, this.paddingX*4, this.paddingX*2.1, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
             ],
             leftButtons:[
-                this.add.rectangle(0, 0, paddingX*3, paddingX*3, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
-                this.add.rectangle(0, 0, paddingX*3, paddingX*3, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
-                this.add.rectangle(0, 0, paddingX*3, paddingX*3, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
-                this.add.rectangle(0, 0, paddingX*3, paddingX*3, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, this.paddingX*3, this.paddingX*3, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, this.paddingX*3, this.paddingX*3, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, this.paddingX*3, this.paddingX*3, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, this.paddingX*3, this.paddingX*3, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
             ]
         }).setOrigin(0).layout();
 
@@ -218,7 +214,7 @@ class Shop extends BaseScene {
 
     generatePaginationUI(){
         this.paginationSizer = new OverlapSizer(
-            this,this.game.config.width/2,this.game.config.height - (this.game.config.width * 0.025),225, 45, {space:0}
+            this, this.gameW/2, this.gameH - (this.gameW * 0.025),225, 45, {space:0}
         ).setOrigin(0.5);
         this.add.existing(this.paginationSizer); 
 
@@ -258,11 +254,8 @@ class Shop extends BaseScene {
     }
 
     generateItemUI(item){
-        const gameW = this.game.config.width;
-        const paddingX = gameW * 0.025;
-
         if(this.toggleList){
-            let itemOnSaleSizer = new OverlapSizer(this,0,0,this.panelBox.width - (paddingX*3), 170, {space:0}).setOrigin(0,0);
+            let itemOnSaleSizer = new OverlapSizer(this,0,0,this.panelBox.width - (this.paddingX*3), 170, {space:0}).setOrigin(0,0);
             this.add.existing(itemOnSaleSizer);
 
             let itemName = this.add.rexTagText(0,0, `<style='fontStyle:bold'>${item.name}</style>`, {
@@ -285,17 +278,17 @@ class Shop extends BaseScene {
             }).setWordWrapWidth(this.panelBox.width * 0.55);
 
             itemOnSaleSizer                               
-            .add(this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*3),170, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
+            .add(this.add.rexRoundRectangle(0,0,this.panelBox.width - (this.paddingX*3),170, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
             .add(this.add.sprite(0, 0, item.name), { expand:false, align: 'left-center', padding: { left: 20}})
-            .add(itemName, { expand:false, align: 'left-top', padding: { left: 170, top: paddingX*0.95 }})
+            .add(itemName, { expand:false, align: 'left-top', padding: { left: 170, top: this.paddingX*0.95 }})
             .add(itemDescription, { expand:false, align: 'left-center', padding: { left: 170}})
-            .add(itemPrice, { expand:false, align: 'left-bottom', padding: { left: 170, bottom:paddingX*0.95}})
+            .add(itemPrice, { expand:false, align: 'left-bottom', padding: { left: 170, bottom:this.paddingX*0.95}})
             .add(this.add.sprite(0,0,'buyButton').setScale(0.8).setInteractive()
                 .on('pointerdown', () => {
                 this.sound.play('clickEffect', {loop: false});    
                 this.buyItemPopUp(item)
             }), {expand:false, align: 'right-center', padding: { right: 20 }})
-            .add( itemCurrency, { expand:false, align: 'left-bottom', padding: { left: (item.priceCurrency =='gold'? 173: 165) + itemPrice.displayWidth, bottom: paddingX*0.85 }})
+            .add( itemCurrency, { expand:false, align: 'left-bottom', padding: { left: (item.priceCurrency =='gold'? 173: 165) + itemPrice.displayWidth, bottom: this.paddingX*0.85 }})
             .layout();
 
 
@@ -304,7 +297,7 @@ class Shop extends BaseScene {
                 let attribute  = this.add.sprite(0, 0, item.properties.attribute[0]).setScale(0.2).setOrigin(0.5);
 
                 itemOnSaleSizer
-                .add( attribute, { expand:false, align: 'left-top', padding: { left: 175 + itemName.displayWidth, top: paddingX*0.85 }}).layout();
+                .add( attribute, { expand:false, align: 'left-top', padding: { left: 175 + itemName.displayWidth, top: this.paddingX*0.85 }}).layout();
             }
 
             this.shopSizer.add(itemOnSaleSizer);         
@@ -341,12 +334,10 @@ class Shop extends BaseScene {
         this.paginationPageNumber.setText(`${this.currentPage} of ${this.numberOfPages} ${this.numberOfPages >1? 'Pages' : 'Page'}`);      
     }
 
-    searchBox(){
-        const gameW = this.game.config.width;
-        const paddingX = gameW * 0.025;
+    searchBox(){       
         this.searchInput = this.add.rexInputText(
-            this.game.config.width - paddingX - 4,
-            this.game.config.height * 0.22 - paddingX,
+            this.gameW - this.paddingX - 4,
+            this.gameH * 0.22 - this.paddingX,
             340,
             35,
             {
@@ -498,8 +489,8 @@ class Shop extends BaseScene {
 
         //Quantity of item to be bought
         const buyQuantity = this.add.rexInputText(
-            this.game.config.width/2,
-            this.game.config.height/2 - 50,
+            this.gameW/2,
+            this.gameH/2 - 50,
             215,
             25,
             { 
@@ -537,8 +528,8 @@ class Shop extends BaseScene {
 
         //Price of item to be bought
         const buyingPrice = this.add.rexInputText(
-            this.game.config.width/2,
-            this.game.config.height/2 + 35,
+            this.gameW/2,
+            this.gameH/2 + 35,
             215,
             25,
             { 

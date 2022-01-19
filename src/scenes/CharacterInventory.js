@@ -2,7 +2,6 @@ import 'regenerator-runtime/runtime';
 import BaseScene from '../plugins/BaseScene';
 import { Tabs, ScrollablePanel, FixWidthSizer, OverlapSizer } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { cardStats } from '../js/cardStats';
-import { doc, updateDoc } from "firebase/firestore";
 
 class CharacterInventory extends BaseScene {
 
@@ -11,18 +10,14 @@ class CharacterInventory extends BaseScene {
         this.gameBg.setOrigin(0,0);
         this.gameBg.setScale(1.10);
 
-        const gameW = this.game.config.width;
-        const gameH = this.game.config.height;
-        const paddingX = gameW * 0.025;
-
         this.generateUpperUI(false, true);
 
         //Details Box
-        const detailsBox = this.add.rectangle(gameW/2 - paddingX*2, gameH * 0.22, gameW/2 + paddingX, gameH*0.745, 0x000000, 0.9).setOrigin(0);
+        const detailsBox = this.add.rectangle(this.gameW/2 - this.paddingX*2, this.gameH * 0.22, this.gameW/2 + this.paddingX, this.gameH*0.745, 0x000000, 0.9).setOrigin(0);
 
         const summonCircle = this.add.sprite(
             detailsBox.x + detailsBox.displayWidth/2,
-            detailsBox.y+ detailsBox.displayHeight/2 - paddingX,  
+            detailsBox.y+ detailsBox.displayHeight/2 - this.paddingX,  
             'summoningCircle2'
         ).setOrigin(0.5).setScale(0.9).setAlpha(0.7);
 
@@ -33,9 +28,9 @@ class CharacterInventory extends BaseScene {
         ).setOrigin(0.5,1).setInteractive().setData({ name: 'Alpha',fromBlockchain: false, properties: {type: 'card'}}); //TEST DATA TO REMOVE LATER
         
         const messageDetailsBox = this.add.rectangle(
-            detailsBox.x  + paddingX/2,
-            detailsBox.y + detailsBox.displayHeight - paddingX/2 - 110 ,
-            detailsBox.displayWidth - paddingX,
+            detailsBox.x  + this.paddingX/2,
+            detailsBox.y + detailsBox.displayHeight - this.paddingX/2 - 110 ,
+            detailsBox.displayWidth - this.paddingX,
             110, 0x000000,1).setStrokeStyle(0.5, 0xffffff,1).setOrigin(0);
 
         this.detailsText = this.add.text(messageDetailsBox.x + 10, messageDetailsBox.y + 10,
@@ -45,19 +40,19 @@ class CharacterInventory extends BaseScene {
             .setWordWrapWidth(messageDetailsBox.displayWidth-20, true);
 
         this.displayName = this.add.text(
-            detailsBox.x + paddingX, detailsBox.y + paddingX, 
+            detailsBox.x + this.paddingX, detailsBox.y + this.paddingX, 
             'Alpha', 
             { fontFamily:'Arial', fontSize: 20, fontStyle: 'Bold Italic'} 
         ).setOrigin(0);
 
         this.rarity = this.add.sprite(
             this.displayName.x,
-            this.displayName.y + this.displayName.displayHeight + paddingX/4,
+            this.displayName.y + this.displayName.displayHeight + this.paddingX/4,
             'rarity_1'
         ).setOrigin(0).setScale(0.2);
 
         this.attribute = this.add.sprite(
-            detailsBox.x + detailsBox.displayWidth - paddingX,
+            detailsBox.x + detailsBox.displayWidth - this.paddingX,
             this.displayName.y,
             'fire'
         ).setOrigin(1,0).setScale(0.35).setName('fire');
@@ -79,10 +74,10 @@ class CharacterInventory extends BaseScene {
         this.panelBox = new ScrollablePanel(this, {
             x: 0,
             y: 0,
-            width: gameW* 0.4,
-            height: gameH*0.745,
+            width: this.gameW* 0.4,
+            height: this.gameH*0.745,
             scrollMode:0,
-            background: this.add.rectangle(0,0, gameW* 0.4, gameH*0.745, 0x000000, 0.9),
+            background: this.add.rectangle(0,0, this.gameW* 0.4, this.gameH*0.745, 0x000000, 0.9),
             panel: {
                 child: this.sizerLeft
             },
@@ -93,8 +88,8 @@ class CharacterInventory extends BaseScene {
                 bottom: 10,
             },
             slider: {
-                track: this.add.rexRoundRectangle(0, 0, 10, gameH*0.745, 4.5, 0x000000, 0.9).setStrokeStyle(0.5, 0xffffff, 0.8),
-                thumb: this.add.rexRoundRectangle(0, 0, 10, paddingX*4, 4.5, 0xffffff, 0.8).setAlpha(0.5),
+                track: this.add.rexRoundRectangle(0, 0, 10, this.gameH*0.745, 4.5, 0x000000, 0.9).setStrokeStyle(0.5, 0xffffff, 0.8),
+                thumb: this.add.rexRoundRectangle(0, 0, 10, this.paddingX*4, 4.5, 0xffffff, 0.8).setAlpha(0.5),
                 input: 'drag',
                 position: 'right',
             },
@@ -103,15 +98,15 @@ class CharacterInventory extends BaseScene {
 
         //Inventory Tabs
         this.tabs = new Tabs(this, {
-            x: paddingX,
-            y: gameH * 0.22 - paddingX*2 + 10,
-            width: gameW* 0.4,
-            height: gameH*0.745,
+            x: this.paddingX,
+            y: this.gameH * 0.22 - this.paddingX*2 + 10,
+            width: this.gameW* 0.4,
+            height: this.gameH*0.745,
             panel: this.panelBox,
             topButtons: [
-                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
-                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
-                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8)
+                this.add.rectangle(0, 0, this.paddingX*4, this.paddingX*2.1, 0x000000, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, this.paddingX*4, this.paddingX*2.1, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8),
+                this.add.rectangle(0, 0, this.paddingX*4, this.paddingX*2.1, 0x23140a, 0.9 ).setOrigin(0.5,1).setScale(0.8)
             ]
         }).setOrigin(0).layout(); 
 
@@ -178,9 +173,6 @@ class CharacterInventory extends BaseScene {
         });
 
         this.add.existing(this.tabs);
-        
-
-        let itemsOnTab = this.sizerLeft.getElement('items');
 
         //Stats Tabs
         this.sizerRight = new FixWidthSizer(this, {
@@ -194,22 +186,22 @@ class CharacterInventory extends BaseScene {
         this.panelBoxRight = new ScrollablePanel(this, {
             x: 0,
             y: 0,
-            width: gameW* 0.4,
-            height: gameH*0.745,
+            width: this.gameW* 0.4,
+            height: this.gameH*0.745,
             scrollMode:0,
-            background: this.add.rectangle(0,0, gameW* 0.4, gameH*0.745, 0x000000, 0.9),
+            background: this.add.rectangle(0,0, this.gameW* 0.4, this.gameH*0.745, 0x000000, 0.9),
             panel: {
                 child: this.sizerRight
             },
             space:{
-                left: paddingX,
-                right: paddingX-10,
-                top: paddingX,
+                left: this.paddingX,
+                right: this.paddingX-10,
+                top: this.paddingX,
                 bottom: 10,
             },
             slider: {
-                track: this.add.rexRoundRectangle(0, 0, 10, gameH*0.745, 4.5, 0x000000, 0),
-                thumb: this.add.rexRoundRectangle(0, 0, 10, paddingX*4, 4.5, 0xffffff, 0),
+                track: this.add.rexRoundRectangle(0, 0, 10, this.gameH*0.745, 4.5, 0x000000, 0),
+                thumb: this.add.rexRoundRectangle(0, 0, 10, this.paddingX*4, 4.5, 0xffffff, 0),
                 input: 'drag',
                 position: 'right',
             },
@@ -221,17 +213,17 @@ class CharacterInventory extends BaseScene {
         this.sizerRight.add(statsTitle);
 
         this.tabsRight = new Tabs(this, {
-            x: gameW,
-            y: gameH * 0.22 - paddingX*2 + 10,
-            width: gameW* 0.4,
+            x: this.gameW,
+            y: this.gameH * 0.22 - this.paddingX*2 + 10,
+            width: this.gameW* 0.4,
             panel: this.panelBoxRight,
             space:{
-                topButtonsOffset:  (gameW*0.4) - paddingX*9.6
+                topButtonsOffset:  (this.gameW*0.4) - this.paddingX*9.6
             },
             topButtons: [
-                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x000000, 0.95 ).setOrigin(0,1).setScale(0.8).setDepth(11),
-                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.95 ).setOrigin(0,1).setScale(0.8).setDepth(11),
-                this.add.rectangle(0, 0, paddingX*4, paddingX*2.1, 0x23140a, 0.95 ).setOrigin(0,1).setScale(0.8).setDepth(11),
+                this.add.rectangle(0, 0, this.paddingX*4, this.paddingX*2.1, 0x000000, 0.95 ).setOrigin(0,1).setScale(0.8).setDepth(11),
+                this.add.rectangle(0, 0, this.paddingX*4, this.paddingX*2.1, 0x23140a, 0.95 ).setOrigin(0,1).setScale(0.8).setDepth(11),
+                this.add.rectangle(0, 0, this.paddingX*4, this.paddingX*2.1, 0x23140a, 0.95 ).setOrigin(0,1).setScale(0.8).setDepth(11),
             ]
         }).setOrigin(0).layout();
 
@@ -296,7 +288,7 @@ class CharacterInventory extends BaseScene {
     
                 let statsTitle = this.add.text(0,0, 'Stats', { fontFamily:'Arial', fontSize: 20, fontStyle: 'Bold Italic'} )
     
-                this.sizerRight.add(statsTitle, { padding : { right: gameW *0.2, bottom: 10 } });
+                this.sizerRight.add(statsTitle, { padding : { right: this.gameW *0.2, bottom: 10 } });
                 this.sizerRight.add(statDetails);
             }
             else if(index == 1){
@@ -306,7 +298,7 @@ class CharacterInventory extends BaseScene {
                     let cardSkills = skill.filter(item => item.equipped.includes(this.detailsImage.data.list.name));
                     if(cardSkills.length >= 1){
                         cardSkills.forEach(item => {
-                            this[`skillSizer_${item.name}`] = new OverlapSizer(this,0,0,this.panelBox.width - (paddingX*2), 121, {space:0}).setOrigin(0,0);
+                            this[`skillSizer_${item.name}`] = new OverlapSizer(this,0,0,this.panelBox.width - (this.paddingX*2), 121, {space:0}).setOrigin(0,0);
                             this.add.existing(this[`skillSizer_${item.name}`]);
 
                             let itemName = this.add.rexTagText(0,0, `<style='fontStyle:bold'>${item.name}</style>`, {
@@ -322,7 +314,7 @@ class CharacterInventory extends BaseScene {
 
                             let itemImage = this.add.sprite(0, 0, item.name).setScale(0.7).setOrigin(0);
 
-                            let itemContainerBox = this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*2),121, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1).setInteractive();
+                            let itemContainerBox = this.add.rexRoundRectangle(0,0,this.panelBox.width - (this.paddingX*2),121, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1).setInteractive();
                             let attribute  = this.add.sprite(0, 0, item.properties.attribute[0]).setScale(0.15).setOrigin(0.5);
                         
                             this[`skillSizer_${item.name}`]                               
@@ -360,11 +352,11 @@ class CharacterInventory extends BaseScene {
                             this.scene.restart();
                         }
                         else{   
-                            this.salesSizer = new OverlapSizer(this,0,0,this.panelBoxRight.width - (paddingX*2),100, {space:0}).setOrigin(0,0);
+                            this.salesSizer = new OverlapSizer(this,0,0,this.panelBoxRight.width - (this.paddingX*2),100, {space:0}).setOrigin(0,0);
                             this.add.existing(this.salesSizer);
         
                             this.salesSizer                                
-                                .add(this.add.rexRoundRectangle(0,0,this.panelBoxRight.width - (paddingX*2),100, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
+                                .add(this.add.rexRoundRectangle(0,0,this.panelBoxRight.width - (this.paddingX*2),100, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1), {key: 'salesBox',expand: false})
                                 .add(this.add.text(0,0, [
                                     `Item on hand : ${itemOnHand}`,
                                     `Item on sale : ${quantityOnSale}`,
@@ -385,8 +377,8 @@ class CharacterInventory extends BaseScene {
                                     const cancelSaleGroup = this.add.group();
         
                                     const cancelMessage = this.add.text(
-                                        gameW/2,
-                                        gameH/2 -25,
+                                        this.gameW/2,
+                                        this.gameH/2 -25,
                                         "Are you sure you want to cancel this item's on-going sale?",
                                         {fontFamily: 'Arial', color:'#613e1e', align: 'center'}
                                     ).setOrigin(0.5).setWordWrapWidth(200).setScale(0,1.3);
@@ -519,7 +511,7 @@ class CharacterInventory extends BaseScene {
             this.tabsRight.emitButtonClick('top', 0);
             
             if(this.detailsImage.data.list.properties.type == "card"){
-                this.slideEffect(-(this.tabs.width + paddingX));
+                this.slideEffect(-(this.tabs.width + this.paddingX));
             }
         });
 
@@ -558,11 +550,8 @@ class CharacterInventory extends BaseScene {
         }
     }
 
-    generateItemUI(item, isRight){
-        const gameW = this.game.config.width;
-        const paddingX = gameW * 0.025;
-
-        let itemSizer = new OverlapSizer(this,0,0,this.panelBox.width - (paddingX*2.5), 121, {space:0}).setOrigin(0,0);
+    generateItemUI(item){
+        let itemSizer = new OverlapSizer(this,0,0,this.panelBox.width - (this.paddingX*2.5), 121, {space:0}).setOrigin(0,0);
         this.add.existing(itemSizer);
 
         let itemName = this.add.rexTagText(0,0, `<style='fontStyle:bold'>${item.name}</style>`, {
@@ -578,7 +567,7 @@ class CharacterInventory extends BaseScene {
 
         let itemImage = this.add.sprite(0, 0, item.name).setScale(0.7).setOrigin(0);
 
-        let itemContainerBox = this.add.rexRoundRectangle(0,0,this.panelBox.width - (paddingX*2.5),121, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1).setInteractive();
+        let itemContainerBox = this.add.rexRoundRectangle(0,0,this.panelBox.width - (this.paddingX*2.5),121, 5, 0x000000, 0).setStrokeStyle(1,0xffffff,1).setInteractive();
 
         let itemSellButton = this.add.sprite(0,0,'sellButton').setScale(0.65).setInteractive().setAlpha(0).setDepth(10)
             .on('pointerdown', () => {
@@ -691,8 +680,8 @@ class CharacterInventory extends BaseScene {
 
         //Quantity of item to be sold
         const sellquantity = this.add.rexInputText(
-            this.game.config.width/2,
-            this.game.config.height/2 - 50,
+            this.gameW/2,
+            this.gameH/2 - 50,
             215,
             25,
             { 
@@ -734,8 +723,8 @@ class CharacterInventory extends BaseScene {
 
         //Price of item to be sold
         const sellingPrice = this.add.rexInputText(
-            this.game.config.width/2,
-            this.game.config.height/2 + 35,
+            this.gameW/2,
+            this.gameH/2 + 35,
             215,
             25,
             { 

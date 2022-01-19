@@ -22,31 +22,28 @@ class BaseScene extends Phaser.Scene {
     }
 
     generateUpperUI(isWithRewards, saveToFirebase){
-        const gameW = this.game.config.width;
-        const gameH = this.game.config.height;
-        const paddingX = gameW * 0.025;
-        const buttonScale = gameW * 0.00078;
+        const buttonScale = this.gameW * 0.00078;
 
-        const containerOffset = isWithRewards? -paddingX*3 : 0;
+        const containerOffset = isWithRewards? -this.paddingX*3 : 0;
         
         //Gems
         let gems = this.add.container(containerOffset,-200);
-        const gem_icon = this.add.sprite(gameW/2 - paddingX*3, gameH*0.07,'gems').setOrigin(0.5).setDepth(2);
-        const gem_box = this.add.rexRoundRectangle(gem_icon.x, gem_icon.y, paddingX*4, paddingX, paddingX/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
+        const gem_icon = this.add.sprite(this.gameW/2 - this.paddingX*3, this.gameH*0.07,'gems').setOrigin(0.5).setDepth(2);
+        const gem_box = this.add.rexRoundRectangle(gem_icon.x, gem_icon.y, this.paddingX*4, this.paddingX, this.paddingX/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
         this.gems_value = this.add.text(gem_box.x + gem_box.width/2, gem_box.y, this.player.playerInfo.gems || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
 
         //Gold
         let gold = this.add.container(containerOffset,-200);
-        const gold_icon = this.add.sprite(gameW/2 + paddingX*3, gameH*0.07,'gold').setOrigin(0.5).setDepth(2);
-        const gold_box = this.add.rexRoundRectangle(gold_icon.x, gem_icon.y, paddingX*4, paddingX, paddingX/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
+        const gold_icon = this.add.sprite(this.gameW/2 + this.paddingX*3, this.gameH*0.07,'gold').setOrigin(0.5).setDepth(2);
+        const gold_box = this.add.rexRoundRectangle(gold_icon.x, gem_icon.y, this.paddingX*4, this.paddingX, this.paddingX/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
         this.gold_value = this.add.text(gold_box.x + gold_box.width/2, gold_box.y, this.player.playerInfo.gold || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
 
         //Player Stat GUI
         let playerUI = this.add.container(0,-200);
-        const player_gui_box = this.add.sprite(paddingX, gameH*0.07,'player_gui_box').setOrigin(0, 0.5).setScale(buttonScale).setInteractive();
+        const player_gui_box = this.add.sprite(this.paddingX, this.gameH*0.07,'player_gui_box').setOrigin(0, 0.5).setScale(buttonScale).setInteractive();
         const player_name = this.add.text(
             player_gui_box.x* 3.6,
-            player_gui_box.y - paddingX*0.33,
+            player_gui_box.y - this.paddingX*0.33,
             this.player.playerInfo.name || 'Player',
             {fontFamily: 'Arial', fontSize:14}
         ).setOrigin(0, 0.5);
@@ -59,19 +56,19 @@ class BaseScene extends Phaser.Scene {
 
         const player_role = this.add.text(
             player_gui_box.x* 3.6,
-            player_gui_box.y + paddingX*0.33,
+            player_gui_box.y + this.paddingX*0.33,
             this.player.playerInfo.role || 'Adventurer',
             {fontFamily: 'Arial', fontSize:13, color: '#00ff00'}
         ).setOrigin(0, 0.5);
 
         const player_level = this.add.text(
             player_gui_box.x* 2.2,
-            player_gui_box.y + paddingX*0.1,
+            player_gui_box.y + this.paddingX*0.1,
             ['Lvl', this.player.playerInfo.level] || ['Lvl', 1],
             {fontFamily: 'Arial', fontSize:13, align: 'center'}
         ).setOrigin(0.5);
 
-        let backButton = this.add.sprite(gameW-paddingX, paddingX, 'exitIcon').setOrigin(1,0).setScale(0.6).setInteractive();
+        let backButton = this.add.sprite(this.gameW-this.paddingX, this.paddingX, 'exitIcon').setOrigin(1,0).setScale(0.6).setInteractive();
         backButton.on('pointerdown', async() => {
             if(saveToFirebase){
                 try{
@@ -92,8 +89,8 @@ class BaseScene extends Phaser.Scene {
         let rewards = this.add.container(containerOffset,-200);
         //If it has rewards
         if(isWithRewards){
-            const rewards_icon = this.add.sprite(gold_box.x + gold_box.displayWidth/2 + paddingX*4, gameH*0.07,'gift_button').setOrigin(0.5).setDepth(2).setScale(0.8);
-            const rewards_box = this.add.rexRoundRectangle(rewards_icon.x, gem_icon.y, paddingX*4, paddingX, paddingX/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
+            const rewards_icon = this.add.sprite(gold_box.x + gold_box.displayWidth/2 + this.paddingX*4, this.gameH*0.07,'gift_button').setOrigin(0.5).setDepth(2).setScale(0.8);
+            const rewards_box = this.add.rexRoundRectangle(rewards_icon.x, gem_icon.y, this.paddingX*4, this.paddingX, this.paddingX/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
             this.rewards_value = this.add.text(rewards_box.x + rewards_box.width/2, rewards_box.y, this.player.playerInfo.rewardPoints || 0, {fontFamily: 'Arial'}).setOrigin(0.5);         
         
             rewards.add([rewards_box, rewards_icon, this.rewards_value])
@@ -111,14 +108,14 @@ class BaseScene extends Phaser.Scene {
         content.setDepth(25);
         this.formPopupContainer = this.add.group().setDepth(15);
 
-        let popupBg = this.add.rectangle(0,0, this.game.config.width, this.game.config.height, 0x000000, 0.7)
+        let popupBg = this.add.rectangle(0,0, this.gameW, this.gameH, 0x000000, 0.7)
             .setOrigin(0)
             .setDepth(12)
             .setInteractive();
 
         let popupBody = this.add.rexRoundRectangle(
-            this.game.config.width/2,
-            this.game.config.height/2,
+            this.gameW/2,
+            this.gameH/2,
             width || 260,
             height || 250,
             5,
@@ -145,13 +142,13 @@ class BaseScene extends Phaser.Scene {
         content.setDepth(25);
         this.popupContainer = this.add.group().setDepth(15);
 
-        let popupBg = this.add.rectangle(0,0, this.game.config.width, this.game.config.height, 0x000000, 0.7)
+        let popupBg = this.add.rectangle(0,0, this.gameW, this.gameH, 0x000000, 0.7)
             .setOrigin(0)
             .setInteractive();
 
         let popupBody = this.add.sprite(
-            this.game.config.width/2,
-            this.game.config.height/2,
+            this.gameW/2,
+            this.gameH/2,
             'scroll'
         ).setScale(0,1.3);
 
@@ -186,8 +183,8 @@ class BaseScene extends Phaser.Scene {
         let alertGroup = this.add.group();
 
         let descriptionText = this.add.text(
-            this.game.config.width/2, 
-            this.game.config.height/2 - 50,
+            this.gameW/2, 
+            this.gameH/2 - 50,
             description
             ,{fontFamily: 'Arial', color: '#613e1e', align: 'justify'}
         ).setOrigin(0.5,0).setWordWrapWidth(230).setScale(0,1.3);
@@ -212,7 +209,7 @@ class BaseScene extends Phaser.Scene {
 
     settingsBox(x,y,width,height, bodyPaddingX, bodyPaddingY, goldDisplay, gemDisplay){
 
-        this.settingsContainer = this.add.container(this.game.config.width, 0);
+        this.settingsContainer = this.add.container(this.gameW, 0);
 
         let settingsBody = this.add.rectangle(x-bodyPaddingX ,y + bodyPaddingY,width,height,0x000000, 1).setOrigin(1,0).setInteractive();       
         let exitIcon = this.add.sprite(settingsBody.x - 25, settingsBody.y + 25, 'exitIcon').setOrigin(1,0).setScale(0.5).setInteractive();
@@ -292,8 +289,8 @@ class BaseScene extends Phaser.Scene {
 
                     const couponGroup = this.add.group();
                     const couponInput = this.add.rexInputText(
-                        this.game.config.width/2,
-                        this.game.config.height/2 - 30,
+                        this.gameW/2,
+                        this.gameH/2 - 30,
                         200,
                         30,
                         { 
@@ -310,7 +307,7 @@ class BaseScene extends Phaser.Scene {
                         couponCode = inputText.text;
                     });
 
-                    const confirmButton = this.add.sprite(this.game.config.width/2,this.game.config.height/2 + 35,'confirmButton')
+                    const confirmButton = this.add.sprite(this.gameW/2,this.gameH/2 + 35,'confirmButton')
                         .setOrigin(0.5).setInteractive().setScale(0,1.3);
 
 
@@ -331,7 +328,7 @@ class BaseScene extends Phaser.Scene {
 
                             let rewardToClaim = codeFromFirebase.filter(data => data.code === couponCode);                        
                    
-                            let content = this.add.text( this.game.config.width/2, this.game.config.height/2, '',{fontFamily: 'Arial', color:'#613e1e', fontSize:12, align: 'justify' })
+                            let content = this.add.text( this.gameW/2, this.gameH/2, '',{fontFamily: 'Arial', color:'#613e1e', fontSize:12, align: 'justify' })
                                 .setOrigin(0.5,0.75).setWordWrapWidth(250).setScale(0,1.3);
 
                             if(this.player.playerInfo.couponCodes.includes(couponCode)){
@@ -345,16 +342,16 @@ class BaseScene extends Phaser.Scene {
                                 let rewardCouponGroup = this.add.group();
 
                                 let rewardBox = this.add.rectangle(
-                                    this.game.config.width/2,
-                                    this.game.config.height/2 - 10,
+                                    this.gameW/2,
+                                    this.gameH/2 - 10,
                                     60,
                                     60,
                                     0x9b6330
                                 ).setOrigin(0.5).setScale(0,1.3);
 
                                 let rewardIcon = this.add.sprite(
-                                    this.game.config.width/2,
-                                    this.game.config.height/2 - 10,
+                                    this.gameW/2,
+                                    this.gameH/2 - 10,
                                     rewardToClaim[0].reward.item
                                 ).setOrigin(0.5).setScale(0,1.3);
 
@@ -426,7 +423,6 @@ class BaseScene extends Phaser.Scene {
             iconTextData[index] = this.add.text(sprite.x, sprite.y + 6, iconText[index], {fontFamily: 'Arial', fontSize: '12px'}).setOrigin(0.5);
         })
 
-
         let audioIcon = this.add.sprite(settingsTitle.x, (exitIcon.y + gridTable[0].y)/2, 'volumeIcon').setOrigin(0,0.5).setScale(0.8);
 
         let bgSound = this.sound.get('titleBgMusic');
@@ -475,7 +471,7 @@ class BaseScene extends Phaser.Scene {
         else {
              this.tweens.add({
                 targets: this.settingsContainer,
-                x: { value: this.game.config.width, duration: 600, ease: 'Power1'},
+                x: { value: this.gameW, duration: 600, ease: 'Power1'},
                 yoyo: false, 
             });          
         }
@@ -504,26 +500,23 @@ class BaseScene extends Phaser.Scene {
 
     dialogBox(dialogue, uiParams, animParams){
         this.dialogue = dialogue;
-
-        const gameW = this.game.config.width;
-        const gameH = this.game.config.height;
         const dialogPadding = 18;
-        const dialogBoxH = this.game.config.height / 5;
+        const dialogBoxH = this.gameH / 5;
 
-        let box = this.add.sprite(0,gameH - dialogBoxH, 'dialogueBox').setOrigin(0);
-        box.displayWidth = gameW;
+        let box = this.add.sprite(0,this.gameH - dialogBoxH, 'dialogueBox').setOrigin(0);
+        box.displayWidth = this.gameW;
         box.displayHeight = dialogBoxH;
 
         this.messageText = this.add.text(
             dialogPadding, 
-            (gameH - dialogBoxH) + dialogPadding,
+            (this.gameH - dialogBoxH) + dialogPadding,
             '',
-            {color: '#613e1e'}
-        ).setWordWrapWidth(gameW * 0.9, true);
+            {color: '#613e1e', fontFamily: 'Arial'}
+        ).setWordWrapWidth(this.gameW * 0.9, true);
         this.typewriteTextWrapped(this.dialogue[this.dialogueCounter].message)
 
         //Next Button Function
-        this.nextText = this.add.text( gameW-dialogPadding, gameH - dialogPadding, 'Next >>>', {color: '#613e1e'}).setInteractive();
+        this.nextText = this.add.text( this.gameW-dialogPadding, this.gameH - dialogPadding, 'Next >>>', {color: '#613e1e', fontFamily:'Arial'}).setInteractive();
         this.nextText.setOrigin(1,1);
 
         
@@ -589,26 +582,27 @@ class BaseScene extends Phaser.Scene {
 
         let inputName = '';
         let inputContainer = this.add.sprite(
-            this.game.config.width/2,
-            this.game.config.height/2,
+            this.gameW/2,
+            this.gameH/2,
             'scroll'
         ).setDepth(1)
         .setScale(1.4);
 
         let inputTitle = this.add.text(
-            this.game.config.width/2,
-            this.game.config.height/2 - 80,
+            this.gameW/2,
+            this.gameH/2 - 80,
             'Please enter your name',
             {
-                fontSize: "21px",
-                color: '#613e1e'
+                fontSize: "25px",
+                color: '#613e1e',
+                fontFamily: 'Arial'
             }
         ).setOrigin(0.5)
         .setDepth(2);
 
         let inputText = this.add.rexInputText(
-            this.game.config.width/2,
-            this.game.config.height/2 - 20,
+            this.gameW/2,
+            this.gameH/2 - 20,
             300,
             40,
             { 
@@ -622,38 +616,52 @@ class BaseScene extends Phaser.Scene {
         ).setOrigin(0.5)
         .setDepth(2)
         .on('textchange', inputText => {
-            inputName = inputText.text;
+            inputName = inputText.text.trim();
         });
+
+        let nameInput = document.querySelectorAll('input')[0];
+        nameInput.onkeydown = function(e){
+            let allowedKey = /[^a-z0-9]/gi;
+            let onlyAlphanumeric = new RegExp(allowedKey);
+
+            if(e.key == 'Backspace' || e.key == '_' || e.key == '-'){
+                return true;
+            }
+            else if(onlyAlphanumeric.test(e.key))
+            {
+                return false;
+            }
+        }
 
         inputText.setStyle("border-radius", "10px");
         inputText.setStyle("text-align", "center");
 
         let inputButton = this.add.sprite(
-            this.game.config.width/2,
-            this.game.config.height/2 + 50,
-            'okButton',
+            this.gameW/2,
+            this.gameH/2 + 50,
+            'confirmButton',
         ).setOrigin(0.5)
-        .setScale(0.07)
+        .setScale(1.1)
         .setDepth(2)
         .setInteractive();
 
         inputButton.on('pointerover', () => {
-            inputButton.setScale(0.08);
+            inputButton.setScale(1.2);
             this.hoverSound.play();
         });
 
         inputButton.on('pointerout', () => {
-            inputButton.setScale(0.07);
+            inputButton.setScale(1.1);
         });
 
         inputButton.on('pointerup', () => {
-            inputButton.setAlpha(1);
+            inputButton.setAlpha(1.1);
         });
 
         inputButton.on('pointerdown', () => {
-            inputButton.setAlpha(0.7);
+            inputButton.setAlpha(1);
             this.sound.play('clickEffect', {loop: false});
-            this.player.playerInfo.name = inputName;
+            this.player.playerInfo.name = inputName? inputName : 'Player';
             this.dialogue = tutorialDialogue(this.player.playerInfo.name);
 
             //Typewriter effect and proceed to next dialogue

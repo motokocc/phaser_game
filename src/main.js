@@ -59,7 +59,7 @@ game.scene.add("shop", Shop);
 game.scene.add("missions", Missions);
 game.scene.add("game", Game);
 
-//game.scene.start("loading", {nextPage: "titlescreen"});
+game.scene.start("loading", {nextPage: "titlescreen"});
 //game.scene.start("loading", {nextPage: "summoningArea"});
 //game.scene.start("loading", {nextPage: "tutorial"});
 //game.scene.start("loading", {nextPage: "game"});
@@ -68,4 +68,4 @@ game.scene.add("game", Game);
 //game.scene.start("loading", {nextPage: "inventory"});
 //game.scene.start("loading", {nextPage: "marketplace"});
 //game.scene.start("loading", {nextPage: "shop"});
-game.scene.start("loading", {nextPage: "missions"});
+//game.scene.start("loading", {nextPage: "missions"});

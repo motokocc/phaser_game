@@ -7,7 +7,6 @@ import { getFirestore, collection, doc, setDoc, getDoc, updateDoc } from "fireba
 import { firebaseConfig } from '../js/config/firebase-config';
 import card from "../js/card.json";
 import { skills, items } from '../js/shopItems';
-import { async } from '@firebase/util';
 
 class Player extends Phaser.Plugins.BasePlugin {
     constructor(pluginManager) {
@@ -106,7 +105,28 @@ class Player extends Phaser.Plugins.BasePlugin {
                         }
                             
                         //Set Player Data
-                        this.setPlayerInfo(name, accounts[0], drawCount, gold, cards, isFirstTime, gems, lastLogin.toDate(), lastSpin? lastSpin.toDate() : null, dateJoined.toDate(), lastReward? lastReward.toDate():null, lastRead, couponCodes, role, level, rewards, inventory, missions );
+                        let data = { 
+                            name,
+                            address: accounts[0],
+                            drawCount, 
+                            gold, 
+                            cards, 
+                            isFirstTime, 
+                            gems,
+                            lastLogin: lastLogin.toDate(),
+                            lastSpin : lastSpin? lastSpin.toDate() : null, 
+                            dateJoined: dateJoined.toDate(),
+                            lastReward: lastReward? lastReward.toDate():null,
+                            lastRead,
+                            couponCodes,
+                            role,
+                            level,
+                            rewards,
+                            inventory,
+                            missions
+                        };
+
+                        this.setPlayerInfo(data);
                         
                         //Set mail
                         this.announcements = mail.data();
@@ -130,27 +150,8 @@ class Player extends Phaser.Plugins.BasePlugin {
         }
     }
 
-    setPlayerInfo(name, address, drawCount, gold, cards,isFirstTime, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes, role, level, rewards, inventory, missions ){
-        this.playerInfo = {
-            name,
-            address,
-            drawCount,
-            gold,
-            cards,
-            isFirstTime,
-            gems,
-            lastLogin,
-            lastSpin,
-            dateJoined,
-            lastReward,
-            lastRead,
-            couponCodes,
-            role,
-            level,
-            rewards,
-            inventory,
-            missions
-        }
+    setPlayerInfo(playerData){
+        this.playerInfo = playerData;
         console.log('Player Info Set!',this.playerInfo);
     }
 
