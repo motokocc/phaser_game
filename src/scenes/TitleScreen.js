@@ -1,6 +1,7 @@
 import 'regenerator-runtime/runtime';
 import Phaser from 'phaser';
 import { doc, updateDoc } from "firebase/firestore";
+import { getSoundSettings } from '../js/utils';
 
 class TitleScreen extends Phaser.Scene {
 
@@ -44,7 +45,8 @@ class TitleScreen extends Phaser.Scene {
         this.versionText = this.add.text(
             this.game.config.width * 0.02 , 
             this.game.config.height *0.95, 
-            `Version: ${process.env.npm_package_version || '1.0.0'}`
+            `Version: ${process.env.npm_package_version || '1.0.0'}`,
+            {fontFamily: 'Arial'}
         );
 
         const buttons = [
@@ -56,7 +58,7 @@ class TitleScreen extends Phaser.Scene {
             button.setScale(0.11);
             button.on('pointerover', () => {
                 button.setScale(0.14);
-                this.sound.play('hoverEffect', {loop: false});
+                this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
             });
 
             button.on('pointerout', () => {
@@ -71,7 +73,7 @@ class TitleScreen extends Phaser.Scene {
         //Sound Button
         this.soundButton.on('pointerover', () => {
             this.soundButton.setAlpha(0.7)
-            this.sound.play('hoverEffect', {loop: false});
+            this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
         });
         this.soundButton.on('pointerout', () => {
             this.soundButton.setAlpha(1)
@@ -89,13 +91,13 @@ class TitleScreen extends Phaser.Scene {
 
         //Exit Button
         this.exitButton.on('pointerdown', () => {
-            this.sound.play('clickEffect', {loop: false});
+            this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
             window.close();
         });
 
         //Start Button
         this.connectButton.on('pointerdown', async() => {
-            this.sound.play('clickEffect', {loop: false});
+            this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
             if(!this.player.playerInfo.address){
                 this.loadData();
             }

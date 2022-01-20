@@ -2,6 +2,7 @@ import 'regenerator-runtime/runtime';
 import BaseScene from '../plugins/BaseScene';
 import { Tabs, ScrollablePanel, FixWidthSizer, OverlapSizer } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { cardStats } from '../js/cardStats';
+import { getSoundSettings, shortenLargeNumber } from '../js/utils';
 
 class CharacterInventory extends BaseScene {
 
@@ -146,7 +147,7 @@ class CharacterInventory extends BaseScene {
             }
             else if(index == 1){
                 if(this.player.playerInfo.inventory.item.length >= 1){
-                    let itemsInInventory = this.player.getAllItems();
+                    let itemsInInventory = this.player.getAllItemsByCategory('item');
 
                     itemsInInventory.forEach(item => {
                         this.generateItemUI(item);
@@ -158,7 +159,7 @@ class CharacterInventory extends BaseScene {
             }
             else{
                 if(this.player.playerInfo.inventory.skill.length >= 1){
-                    let skillsInInventory = this.player.getAllSkills();
+                    let skillsInInventory = this.player.getAllItemsByCategory('skill');
 
                     skillsInInventory.forEach(skill => {
                         this.generateItemUI(skill);
@@ -372,7 +373,7 @@ class CharacterInventory extends BaseScene {
                             sellButton.setTexture(quantityOnSale?'cancelButton': 'sellButton');
         
                             sellButton.on('pointerdown',() => {
-                                this.sound.play('clickEffect', {loop: false});
+                                this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
                                 if(quantityOnSale >= 1){
                                     const cancelSaleGroup = this.add.group();
         
@@ -396,13 +397,13 @@ class CharacterInventory extends BaseScene {
                                     ).setOrigin(0).setInteractive().setScale(0,1.3);
         
                                     cancelButton.on("pointerdown", () => {
-                                        this.sound.play('clickEffect', {loop: false});
+                                        this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
                                         this.popupContainer.destroy(true);
                                     });
         
                                     cancelConfirmButton.on('pointerdown', async () => {
                                         cancelConfirmButton.setAlpha(0.6);
-                                        this.sound.play('clickEffect', {loop: false});
+                                        this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
                                         cancelConfirmButton.disableInteractive();
                                         try{
                                             await this.player.cancelSale(orderId);
@@ -571,7 +572,7 @@ class CharacterInventory extends BaseScene {
 
         let itemSellButton = this.add.sprite(0,0,'sellButton').setScale(0.65).setInteractive().setAlpha(0).setDepth(10)
             .on('pointerdown', () => {
-                this.sound.play('clickEffect', {loop: false}); 
+                this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')}); 
                 this.sellItemPopUp(item.quantity, item.itemId, item.fromBlockchain, item.price, item.priceCurrency, item.properties.type);   
             })
             .on('pointerover', () => {
@@ -590,7 +591,7 @@ class CharacterInventory extends BaseScene {
         let itemEquipButton = this.add.sprite(-50,-50, equipped? 'unequipButton' : 'equipButton').setScale(0.65).setInteractive().setAlpha(0).setDepth(10)
             .on('pointerdown', async() => {
                 itemEquipButton.disableInteractive();
-                this.sound.play('clickEffect', {loop: false});
+                this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
                 if(this.attribute.name == item.properties.attribute[0]){
                     let itemToEquip = this.player.playerInfo.inventory.skill.filter(skill => skill.name == item.name)[0];
                     let remainingSkill = this.player.playerInfo.inventory.skill.filter(skill => skill.name != item.name);
@@ -806,7 +807,7 @@ class CharacterInventory extends BaseScene {
         ).setOrigin(1,0).setInteractive();
 
         sellcancelButton.on('pointerdown', () => {
-            this.sound.play('clickEffect', {loop: false});
+            this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
             this.formPopupContainer.destroy(true);
         })
 
@@ -814,7 +815,7 @@ class CharacterInventory extends BaseScene {
             sellOkButton.setAlpha(0.6);
             sellquantity.setText(quantity);
             sellingPrice.setText(price);
-            this.sound.play('clickEffect', {loop: false});
+            this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
             sellOkButton.disableInteractive();
 
             if(fromBlockchain){
@@ -827,7 +828,7 @@ class CharacterInventory extends BaseScene {
             }
             else{
                 await this.player.sellInGameItems(itemId, quantity, price, itemCurrency, itemType);
-                this[`${itemCurrency}_value`].setText(this.player.playerInfo[itemCurrency]);
+                this[`${itemCurrency}_value`].setText(shortenLargeNumber(this.player.playerInfo[itemCurrency],2));
             }
 
             sellOkButton.setInteractive();

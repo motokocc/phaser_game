@@ -1,6 +1,7 @@
 import 'regenerator-runtime/runtime';
 import BaseScene from '../plugins/BaseScene';
 import {  Tabs, ScrollablePanel, FixWidthSizer, OverlapSizer } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
+import { getSoundSettings } from '../js/utils';
 
 class Marketplace extends BaseScene {
 
@@ -105,20 +106,18 @@ class Marketplace extends BaseScene {
             this.marketplaceSizer.clear(true);
 
             if(index == 0){
-                this.scene.restart();
+                this.currentTab = 'card';
             }
-            else if(index == 1){
-                this.marketplaceSizer.removeAll(true);
-                this.currentPage = 1;
+            else if(index == 1){                            
                 this.currentTab = 'item';
-                this.loadNFTMarketplace(this.currentTab);
             }
             else{
-                this.marketplaceSizer.removeAll(true);
-                this.currentPage = 1;
-                this.currentTab = 'skill';
-                this.loadNFTMarketplace(this.currentTab);
-            }    
+                this.currentTab = 'skill';                
+            }
+
+            this.marketplaceSizer.removeAll(true); 
+            this.currentPage = 1;
+            this.loadNFTMarketplace(this.currentTab);   
 
             this.panelBox.layout();
         });
@@ -230,19 +229,19 @@ class Marketplace extends BaseScene {
             .layout();
 
         paginationFirstPage.on('pointerdown', () => {
-            this.sound.play('hoverEffect', {loop: false});
+            this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
             this.firstPage();
         });
         paginationLastPage.on('pointerdown', () => {
-            this.sound.play('hoverEffect', {loop: false});
+            this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
             this.lastPage();
         });
         paginationNextPage.on('pointerdown', () => {
-            this.sound.play('hoverEffect', {loop: false});
+            this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
             this.nextPage();
         });
         paginationPreviousPage.on('pointerdown', () => {
-            this.sound.play('hoverEffect', {loop: false});
+            this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
             this.prevPage();
         });
     }
@@ -270,7 +269,7 @@ class Marketplace extends BaseScene {
             }), { expand:false, align: 'left-center', padding: { left: 145}})
             .add(this.add.sprite(0,0,'buyButton').setScale(0.8).setInteractive()
                 .on('pointerdown', () => {
-                this.sound.play('clickEffect', {loop: false});    
+                this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});    
                 this.buyItemPopUp(item)
             }), {expand:false, align: 'right-center', padding: { right: 20 }})
             .layout(); 
@@ -285,7 +284,7 @@ class Marketplace extends BaseScene {
             .add(this.add.sprite(0, 0, `${item.name}_mini`).setScale(0.7), { expand:false, align: 'center-top'})
             .add(this.add.rexRoundRectangle(0,0, 105, 30, 5, 0x005500, 1).setInteractive()
                 .on('pointerdown', () => {
-                    this.sound.play('clickEffect', {loop: false});    
+                    this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});    
                     this.buyItemPopUp(item)
                 }), { expand:false, align: 'center-bottom'})
             .add(this.add.text(0,0, `${item.price} ETH`, {fontFamily: 'Arial', fontSize: 12}).setOrigin(0.5), { expand:false, align: 'center-bottom', padding:{bottom: 7.5}})
@@ -377,7 +376,7 @@ class Marketplace extends BaseScene {
 
         thumbnail_icon_filter.on('pointerdown', () => {
             this.toggleList = false;
-            this.sound.play('hoverEffect', {loop: false});
+            this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
             this.currentPage = 1;
             this.paginateOnTabs();
         })
@@ -385,7 +384,7 @@ class Marketplace extends BaseScene {
         list_icon_filter.on('pointerdown', () => {
             this.toggleList = true;
             this.currentPage = 1;
-            this.sound.play('hoverEffect', {loop: false});
+            this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
             this.paginateOnTabs();         
         })
 
@@ -564,7 +563,7 @@ class Marketplace extends BaseScene {
         ).setOrigin(1,0).setInteractive();
 
         buycancelButton.on('pointerdown', () => {
-            this.sound.play('clickEffect', {loop: false});
+            this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
             this.searchInput.setAlpha(1);
             this.formPopupContainer.destroy(true);
         })
@@ -573,7 +572,7 @@ class Marketplace extends BaseScene {
             buyOkButton.setAlpha(0.6);
             buyQuantity.setText(quantity);
             buyingPrice.setText(price);
-            this.sound.play('clickEffect', {loop: false});
+            this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
             buyOkButton.disableInteractive();
             try{
                  await this.player.buyItem(item.saleId, quantity, price);

@@ -1,6 +1,7 @@
 import 'regenerator-runtime/runtime';
 import BaseScene from '../plugins/BaseScene';
 import {  Tabs, ScrollablePanel, FixWidthSizer, OverlapSizer } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
+import { getSoundSettings, shortenLargeNumber } from '../js/utils';
 
 class Shop extends BaseScene {
 
@@ -236,19 +237,19 @@ class Shop extends BaseScene {
             .layout();
 
         paginationFirstPage.on('pointerdown', () => {
-            this.sound.play('hoverEffect', {loop: false});
+            this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
             this.firstPage();
         });
         paginationLastPage.on('pointerdown', () => {
-            this.sound.play('hoverEffect', {loop: false});
+            this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
             this.lastPage();
         });
         paginationNextPage.on('pointerdown', () => {
-            this.sound.play('hoverEffect', {loop: false});
+            this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
             this.nextPage();
         });
         paginationPreviousPage.on('pointerdown', () => {
-            this.sound.play('hoverEffect', {loop: false});
+            this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
             this.prevPage();
         });
     }
@@ -285,7 +286,7 @@ class Shop extends BaseScene {
             .add(itemPrice, { expand:false, align: 'left-bottom', padding: { left: 170, bottom:this.paddingX*0.95}})
             .add(this.add.sprite(0,0,'buyButton').setScale(0.8).setInteractive()
                 .on('pointerdown', () => {
-                this.sound.play('clickEffect', {loop: false});    
+                this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});    
                 this.buyItemPopUp(item)
             }), {expand:false, align: 'right-center', padding: { right: 20 }})
             .add( itemCurrency, { expand:false, align: 'left-bottom', padding: { left: (item.priceCurrency =='gold'? 173: 165) + itemPrice.displayWidth, bottom: this.paddingX*0.85 }})
@@ -306,17 +307,20 @@ class Shop extends BaseScene {
             let itemOnSaleSizer = new OverlapSizer(this,0,0, 140, 170, {space:0}).setOrigin(0,0);
             this.add.existing(itemOnSaleSizer);
 
-            let itemPrice = this.add.text(0,0, `${item.price}    `, {fontFamily: 'Arial', fontSize: 12}).setOrigin(0.5).setDepth(10)
+
+            let priceButton = this.add.rexRoundRectangle(0,0, 110, 30, 5, 0x005500, 1).setInteractive()
+                .on('pointerdown', () => {
+                    this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});    
+                    this.buyItemPopUp(item)
+            });
+
+            let itemPrice = this.add.text(0,0, `${item.price}    `, {fontFamily: 'Arial', fontSize: 12}).setOrigin(0.5)
             let itemCurrency  = this.add.sprite(0, 0, item.priceCurrency)
-                .setScale(item.priceCurrency =='gold'? 0.3: 0.4).setOrigin(0, 0.5).setDepth(10);
+                .setScale(item.priceCurrency =='gold'? 0.3: 0.4).setOrigin(0, 0.5);
 
            itemOnSaleSizer
             .add(this.add.sprite(0, 0, item.name).setScale(1.1), { expand:false, align: 'center-top'})
-            .add(this.add.rexRoundRectangle(0,0, 110, 30, 5, 0x005500, 1).setInteractive()
-                .on('pointerdown', () => {
-                    this.sound.play('clickEffect', {loop: false});    
-                    this.buyItemPopUp(item)
-                }), { expand:{ width: true }, align: 'center-bottom'})
+            .add(priceButton, { expand:{ width: true }, align: 'center-bottom'})
             .add(itemPrice, { expand:false , align: 'center-bottom', padding:{bottom: 7.5}})
             .add( itemCurrency, { 
                 expand:false, 
@@ -410,7 +414,7 @@ class Shop extends BaseScene {
 
         thumbnail_icon_filter.on('pointerdown', () => {
             this.toggleList = false;
-            this.sound.play('hoverEffect', {loop: false});
+            this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
             this.currentPage = 1;
             this.paginateOnTabs();
         })
@@ -418,7 +422,7 @@ class Shop extends BaseScene {
         this.list_icon_filter.on('pointerdown', () => {
             this.toggleList = true;
             this.currentPage = 1;
-            this.sound.play('hoverEffect', {loop: false});
+            this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
             this.paginateOnTabs();         
         })
 
@@ -582,7 +586,7 @@ class Shop extends BaseScene {
         ).setOrigin(1,0).setInteractive();
 
         buycancelButton.on('pointerdown', () => {
-            this.sound.play('clickEffect', {loop: false});
+            this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
             this.searchInput.setAlpha(1);
             this.formPopupContainer.destroy(true);
         })
@@ -591,12 +595,12 @@ class Shop extends BaseScene {
             buyOkButton.setAlpha(0.6);
             buyQuantity.setText(quantity);
             buyingPrice.setText(price);
-            this.sound.play('clickEffect', {loop: false});
+            this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
             buyOkButton.disableInteractive();
             try{
                 if(this.player.playerInfo[item.priceCurrency] >= price){                    
                     await this.player.buyItemOnShop(quantity, price, item);
-                    this[`${item.priceCurrency}_value`].setText(this.player.playerInfo[item.priceCurrency]);
+                    this[`${item.priceCurrency}_value`].setText(shortenLargeNumber(this.player.playerInfo[item.priceCurrency],2));
                     this.searchInput.setAlpha(1);
                 }
                 else{

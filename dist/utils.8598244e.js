@@ -123,42 +123,38 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.drawCard = drawCard;
-//Used for drawing random Character
-var stats;
+exports.shortenLargeNumber = exports.getSoundSettings = void 0;
 
-function generateCharacterStats(rank) {
-  var skinColor = ["red", "green", "blue", "yellow", "pink", "black", "grey"];
-  var randColor = Math.floor(Math.random() * skinColor.length);
-  var randomHp = rank + Math.floor(Math.random() * rank);
-  var randomAttack = Math.floor(Math.random() * (rank + 1));
-  stats = {
-    rank: rank,
-    hp: 5 * rank + randomHp,
-    attack: rank + randomAttack,
-    speed: rank,
-    skinColor: skinColor[randColor]
+var getSoundSettings = function getSoundSettings(sound) {
+  var soundVolume = localStorage.getItem(sound);
+  var defaultVolume = {
+    hoverEffect: 1,
+    spinWheelSound: 0.4,
+    clickEffect: 1,
+    optionSound: 0.2,
+    titleBgMusic: 0.2
   };
-}
+  return soundVolume ? soundVolume : defaultVolume[sound];
+};
 
-function generateCharacterRank(minRank, maxRank) {
-  var rank = Math.floor(Math.random() * (maxRank - minRank + 1)) + minRank;
-  generateCharacterStats(rank);
-}
+exports.getSoundSettings = getSoundSettings;
 
-function drawCard(drawType) {
-  if (drawType == "free") {
-    generateCharacterRank(1, 2);
-  } else if (drawType == "rare") {
-    generateCharacterRank(2, 4);
-  } else if (drawType == "premium") {
-    generateCharacterRank(4, 5);
-  } else {
-    generateCharacterRank(1, 2);
+var shortenLargeNumber = function shortenLargeNumber(num, digits) {
+  var units = ['k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'],
+      decimal;
+
+  for (var i = units.length - 1; i >= 0; i--) {
+    decimal = Math.pow(1000, i + 1);
+
+    if (num <= -decimal || num >= decimal) {
+      return +(num / decimal).toFixed(digits) + units[i];
+    }
   }
 
-  return stats;
-}
+  return num;
+};
+
+exports.shortenLargeNumber = shortenLargeNumber;
 },{}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -187,7 +183,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64811" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55022" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

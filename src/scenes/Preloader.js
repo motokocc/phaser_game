@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { getSoundSettings } from '../js/utils';
 import bg from '../images/bg.PNG';
 import inventory_bg from '../images/bg/inventory_bg.png';
 import gameTitle from '../images/title.png';
@@ -285,8 +286,8 @@ class LoadingScreen extends Phaser.Scene {
         let loaderPosX = this.game.config.width/2 - barWidth/2;
         let loaderPosY = this.game.config.height/2 - barHeight/2;
 
-        this.loaderText = this.add.text(this.game.config.width/2, this.game.config.height/2, "Loading...");
-        this.completeText = this.add.text(this.game.config.width/2, this.game.config.height - barHeight, '').setInteractive();
+        this.loaderText = this.add.text(this.game.config.width/2, this.game.config.height/2, "Loading...", {fontFamily: 'Arial'});
+        this.completeText = this.add.text(this.game.config.width/2, this.game.config.height - barHeight, '', {fontFamily: 'Arial'}).setInteractive();
         this.loaderText.setFontSize(20);
         this.loaderText.setOrigin(0.5,0.5);
         this.completeText.setFontSize(20);
@@ -313,7 +314,7 @@ class LoadingScreen extends Phaser.Scene {
                 this.progressBox.destroy();
                 this.loaderText.destroy();
                 this.completeText.destroy();
-                this.sound.play('titleBgMusic', {loop: true, volume:0.2});
+                this.sound.play('titleBgMusic', {loop: true, volume: getSoundSettings('titleBgMusic')});
                 this.scene.start(this.data.nextPage);
             })
         }, 2000);

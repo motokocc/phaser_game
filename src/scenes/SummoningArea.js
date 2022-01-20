@@ -1,4 +1,5 @@
 import BaseScene from '../plugins/BaseScene';
+import { getSoundSettings } from '../js/utils';
 
 class SummoningArea extends BaseScene {
     create(){
@@ -80,7 +81,7 @@ class SummoningArea extends BaseScene {
 
         if(!this.player.playerInfo.isFirstTime){
             backButton.on('pointerdown', () => {
-                this.sound.play('clickEffect', {loop: false});
+                this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
                 this.scene.start("game");
             });
         }
@@ -91,7 +92,7 @@ class SummoningArea extends BaseScene {
 
         proceedButton.on('pointerover', () => {
             proceedButton.setScale(0.65);
-            this.sound.play('hoverEffect', {loop: false});
+            this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
         });
 
         proceedButton.on('pointerout', () => {
@@ -99,7 +100,7 @@ class SummoningArea extends BaseScene {
         });
 
         proceedButton.on('pointerdown', () => {
-            this.sound.play('clickEffect', {loop: false});
+            this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
             this.scene.start("game");
         });
 
@@ -124,7 +125,7 @@ class SummoningArea extends BaseScene {
 
             button.on('pointerover', () => {
                 button.setScale(1.1);
-                this.sound.play('hoverEffect', {loop: false});
+                this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
             });
 
             button.on('pointerout', () => {
@@ -137,7 +138,7 @@ class SummoningArea extends BaseScene {
 
             button.on('pointerdown', async() => {
                 button.setAlpha(0.7);
-                this.sound.play('clickEffect', {loop: false});
+                this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
              
                 //Card effect
                 this.tweens.add({

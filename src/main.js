@@ -6,7 +6,6 @@ import LoadingScreen from './scenes/Preloader';
 import TutorialScreen from './scenes/Tutorial';
 import FlipPlugin from 'phaser3-rex-plugins/plugins/flip-plugin.js';
 import InputTextPlugin from 'phaser3-rex-plugins/plugins/inputtext-plugin.js';
-import TextTypingPlugin from 'phaser3-rex-plugins/plugins/texttyping-plugin.js';
 import TagTextPlugin from 'phaser3-rex-plugins/plugins/tagtext-plugin.js';
 import RoundRectanglePlugin from 'phaser3-rex-plugins/plugins/roundrectangle-plugin.js';
 import SummoningArea from './scenes/SummoningArea';
@@ -38,7 +37,6 @@ const config = {
             { key: 'Player', plugin: Player, start: false, mapping: 'player'},
             { key: 'rexFlip', plugin: FlipPlugin, start: true },
             { key: 'rexInputTextPlugin', plugin: InputTextPlugin, start: true },
-            { key: 'rexTextTyping', plugin: TextTypingPlugin, start: true },
             { key: 'rexTagTextPlugin', plugin: TagTextPlugin, start: true },
             { key: 'rexRoundRectanglePlugin',plugin: RoundRectanglePlugin,start: true }
         ]

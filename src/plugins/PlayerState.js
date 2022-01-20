@@ -7,6 +7,7 @@ import { getFirestore, collection, doc, setDoc, getDoc, updateDoc } from "fireba
 import { firebaseConfig } from '../js/config/firebase-config';
 import card from "../js/card.json";
 import { skills, items } from '../js/shopItems';
+import { playerInitData } from '../js/playerInitData';
 
 class Player extends Phaser.Plugins.BasePlugin {
     constructor(pluginManager) {
@@ -20,32 +21,7 @@ class Player extends Phaser.Plugins.BasePlugin {
        this.firebaseChatMessages = collection(this.db, 'chat');
 
         //Global States
-        this.playerInfo = {
-            name: '',
-            address: null,
-            drawCount: 0,
-            gold: 0,
-            gems: 0,
-            level: 1,
-            role: "Adventurer",
-            dateJoined: null,
-            lastLogin: new Date(),
-            lastSpin: null,
-            lastReward: null,
-            isFirstTime: true,
-            lastRead: 0,
-            cards:[],
-            couponCodes:[],
-            rewards: 0,
-            inventory:{
-                skill:[],
-                item:[]
-            },
-            missions:{
-                finished: [],
-                currentMission: null    
-            }
-        }
+        this.playerInfo = { ... playerInitData };
 
         this.announcements = {
             id: null,
@@ -106,24 +82,10 @@ class Player extends Phaser.Plugins.BasePlugin {
                             
                         //Set Player Data
                         let data = { 
-                            name,
-                            address: accounts[0],
-                            drawCount, 
-                            gold, 
-                            cards, 
-                            isFirstTime, 
-                            gems,
-                            lastLogin: lastLogin.toDate(),
-                            lastSpin : lastSpin? lastSpin.toDate() : null, 
-                            dateJoined: dateJoined.toDate(),
-                            lastReward: lastReward? lastReward.toDate():null,
-                            lastRead,
-                            couponCodes,
-                            role,
-                            level,
-                            rewards,
-                            inventory,
-                            missions
+                            name, address: accounts[0], drawCount, gold, cards, isFirstTime, gems,
+                            lastLogin: lastLogin.toDate(), lastSpin : lastSpin? lastSpin.toDate() : null, 
+                            dateJoined: dateJoined.toDate(), lastReward: lastReward? lastReward.toDate():null,
+                            lastRead, couponCodes, role, level, rewards, inventory, missions
                         };
 
                         this.setPlayerInfo(data);
@@ -381,14 +343,8 @@ class Player extends Phaser.Plugins.BasePlugin {
         }
     }
 
-    getAllSkills = () => {
-        let skillsInGame = this.playerInfo.inventory.skill.filter(skill => skill.fromBlockchain == false);
-        //TODO: Fetch skills owned in the blockchain
-        return skillsInGame.sort((a, b) => (a.itemId - b.itemId));
-    }
-
-    getAllItems = () => {
-        let itemsInGame = this.playerInfo.inventory.item.filter(item => item.fromBlockchain == false);
+    getAllItemsByCategory = (category) => {
+        let itemsInGame = this.playerInfo.inventory[category].filter(item => item.fromBlockchain == false);
         //TODO: Fetch items owned in the blockchain
         return itemsInGame.sort((a, b) => (a.itemId - b.itemId));
     }

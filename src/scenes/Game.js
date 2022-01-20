@@ -3,6 +3,7 @@ import { lilithDialogue } from '../js/character_dialogues/lilith_mainscreen_dial
 import { doc, setDoc, onSnapshot, getDoc, updateDoc } from "firebase/firestore";
 import BaseScene from '../plugins/BaseScene';
 import { TextArea } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
+import { getSoundSettings, shortenLargeNumber } from '../js/utils';
 
 class Game extends BaseScene {
     preload(){
@@ -110,13 +111,13 @@ class Game extends BaseScene {
         let gems = this.add.container();
         const gem_icon = this.add.sprite(this.gameW/2 - this.paddingX*3, this.gameH*0.07,'gems').setOrigin(0.5).setDepth(2);
         const gem_box = this.add.rexRoundRectangle(gem_icon.x, gem_icon.y, this.paddingX*4, this.paddingX, this.paddingX/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
-        const gem_value = this.add.text(gem_box.x + gem_box.width/2, gem_box.y, this.player.playerInfo.gems || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
+        const gem_value = this.add.text(gem_box.x + gem_box.width/2, gem_box.y, shortenLargeNumber(this.player.playerInfo.gems,2) || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
 
         //Gold
         let gold = this.add.container();
         const gold_icon = this.add.sprite(this.gameW/2 + this.paddingX*3, this.gameH*0.07,'gold').setOrigin(0.5).setDepth(2);
         const gold_box = this.add.rexRoundRectangle(gold_icon.x, gem_icon.y, this.paddingX*4, this.paddingX, this.paddingX/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
-        const gold_value = this.add.text(gold_box.x + gold_box.width/2, gold_box.y, this.player.playerInfo.gold || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
+        const gold_value = this.add.text(gold_box.x + gold_box.width/2, gold_box.y, shortenLargeNumber(this.player.playerInfo.gold,2) || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
 
         let currencyUI = this.add.container(0,-200);
 
@@ -163,7 +164,7 @@ class Game extends BaseScene {
             delay:1200
         });
 
-        player_gui_box.on('pointerdown', () => {this.sound.play('clickEffect', {loop: false}); this.scene.start("inventory")});
+        player_gui_box.on('pointerdown', () => {this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')}); this.scene.start("inventory")});
 
         const buttons = [
             shop_button, pvp_button, mining_button, explore_button,
@@ -193,7 +194,7 @@ class Game extends BaseScene {
 
             button.on('pointerdown', async() => {
                 //Daily Reward
-                this.sound.play('clickEffect', {loop: false});
+                this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
                 if(button.name == 'gift'){
                     if(this.getDifferenceInDays(new Date(), this.player.playerInfo.lastReward)> 1 && this.player.playerInfo.address){                       
                         try{
@@ -218,8 +219,8 @@ class Game extends BaseScene {
                             try{
                                 this.player.playerInfo.gold = this.player.playerInfo.gold + goldValue;
                                 this.player.playerInfo.gems = this.player.playerInfo.gems+ gemValue;
-                                gold_value.setText(this.player.playerInfo.gold);
-                                gem_value.setText(this.player.playerInfo.gems);
+                                gold_value.setText(shortenLargeNumber(this.player.playerInfo.gold,2));
+                                gem_value.setText(shortenLargeNumber(this.player.playerInfo.gems,2));
 
                                 this.popUp('Reward Claimed', content);
                                 this.player.playerInfo.lastReward = new Date();

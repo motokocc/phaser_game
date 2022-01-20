@@ -2,6 +2,7 @@ import 'regenerator-runtime/runtime';
 import BaseScene from '../plugins/BaseScene';
 import { Mission } from '../js/character_dialogues/missions';
 import { doc, updateDoc } from "firebase/firestore";
+import { getSoundSettings, shortenLargeNumber } from '../js/utils';
 
 class Missions extends BaseScene {
 
@@ -66,7 +67,7 @@ class Missions extends BaseScene {
 
         this.nextText.on('pointerdown', () => {
             this.nextText.setScale(0.9);
-            this.sound.play('hoverEffect', {loop: false});
+            this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
         })
 
         let quest = new Mission(this.player.playerInfo.level);
@@ -183,7 +184,7 @@ class Missions extends BaseScene {
         ).setOrigin(0).setInteractive().setScale(0,1.3);
 
         missionCancelButton.on("pointerdown", () => {
-            this.sound.play('clickEffect', {loop: false});
+            this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
             this.textTimer.remove();
             this.messageText.setText('');
             this.typewriteTextWrapped(decline);
@@ -194,7 +195,7 @@ class Missions extends BaseScene {
         });
 
         missionAcceptButton.on('pointerdown', async () => {
-            this.sound.play('clickEffect', {loop: false});
+            this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
 
             quest.progress = 0;
             this.player.playerInfo.missions.currentMission = quest;
@@ -249,7 +250,7 @@ class Missions extends BaseScene {
             let updatedAmount = this.player.playerInfo[reward.currency] + reward.amount;
 
             this.player.playerInfo[reward.currency] = updatedAmount;
-            this[`${reward.currency}_value`].setText(updatedAmount);
+            this[`${reward.currency}_value`].setText(shortenLargeNumber(updatedAmount,2));
 
             try{
                 let { users, playerInfo } = this.player;
@@ -269,7 +270,7 @@ class Missions extends BaseScene {
             this.typewriteTextWrapped(mission.dialogue.rewardTaken);
             this.missionReply = true;
 
-            this.sound.play('clickEffect', {loop: false});
+            this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
             this.nextText.setInteractive();
             this.popupContainer.destroy(true);
         });
