@@ -27,19 +27,17 @@ class TitleScreen extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers("loading", { start: 0, end: 7 }),
             repeat: -1
         });
-
-        this.loadingIndicator = this.add.sprite(this.game.config.width/2, this.game.config.height/2, 'loading').setDepth(20).setScale(0.3).setAlpha(0);
-
-        this.gameBg = this.add.image(0,0,'background');
-        this.gameBg.setOrigin(0,0);
-        this.gameBg.setScale(1.1);
-
         let buttonPosY = this.game.config.height/6;
 
-        this.titleLogo = this.add.sprite(this.game.config.width/2, buttonPosY * 2,'gameTitle');
-        this.soundButton = this.add.sprite(this.game.config.width*0.95, buttonPosY*0.5,'soundOn').setInteractive();
-        this.connectButton = this.add.sprite(this.game.config.width/2, buttonPosY * 4,'connectBtn').setInteractive();
-        this.exitButton = this.add.sprite(this.game.config.width/2, buttonPosY * 5,'exitBtn').setInteractive();
+        this.loadingIndicator = this.add.sprite(this.game.config.width/2, buttonPosY *3.15, 'loading').setDepth(20).setScale(0.25).setAlpha(0);
+
+        let gameBg = this.add.image(0,0,'background');
+        gameBg.setOrigin(0,0);
+        gameBg.setScale(1.1);
+
+        let titleLogo = this.add.sprite(this.game.config.width/2, buttonPosY * 2.1,'gameTitle');
+        let soundButton = this.add.sprite(this.game.config.width*0.95, buttonPosY*0.5,'soundOn').setInteractive();
+        this.connectButton = this.add.sprite(this.game.config.width/2, buttonPosY * 4.2,'connectBtn').setInteractive();
 
         //Game version
         this.versionText = this.add.text(
@@ -49,50 +47,41 @@ class TitleScreen extends Phaser.Scene {
             {fontFamily: 'Arial'}
         );
 
-        const buttons = [
-            this.connectButton,
-            this.exitButton,
-        ];
+        const buttons = [ this.connectButton ];
 
         buttons.forEach(button => {
-            button.setScale(0.11);
+            button.setScale(1.2);
             button.on('pointerover', () => {
-                button.setScale(0.14);
+                button.setScale(1.3);
                 this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
             });
 
             button.on('pointerout', () => {
-                button.setScale(0.11);
+                button.setScale(1.2);
             });
 
             button.on('pointerup', () => {
-                button.setAlpha(1);
+                button.setAlpha(1.2);
             });
         });
 
         //Sound Button
-        this.soundButton.on('pointerover', () => {
-            this.soundButton.setAlpha(0.7)
+        soundButton.on('pointerover', () => {
+            soundButton.setAlpha(0.7)
             this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
         });
-        this.soundButton.on('pointerout', () => {
-            this.soundButton.setAlpha(1)
+        soundButton.on('pointerout', () => {
+            soundButton.setAlpha(1)
         });
-        this.soundButton.on('pointerdown', () => {
+        soundButton.on('pointerdown', () => {
             if(this.sound.mute){
-                this.soundButton.setTexture('soundOn')
+                soundButton.setTexture('soundOn')
             }
             else{
-                this.soundButton.setTexture('soundOff')
+                soundButton.setTexture('soundOff')
             }
 
             this.sound.mute = !this.sound.mute;
-        });
-
-        //Exit Button
-        this.exitButton.on('pointerdown', () => {
-            this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
-            window.close();
         });
 
         //Start Button
@@ -114,21 +103,20 @@ class TitleScreen extends Phaser.Scene {
 
 
         //Animations
-        this.titleLogo.setAlpha(0);
-        this.soundButton.setAlpha(0);
+        titleLogo.setAlpha(0);
+        soundButton.setAlpha(0);
         this.connectButton.setAlpha(0);
-        this.exitButton.setAlpha(0);
         this.cameras.main.fadeIn(1000);
 
         this.tweens.add({
-            targets: this.titleLogo,
+            targets: titleLogo,
             alpha: { value: 1, duration: 4000, ease: 'Power1'},
             yoyo: false,
             delay: 1000
         });
 
         this.tweens.add({
-            targets: [this.connectButton, this.exitButton, this.soundButton],
+            targets: [this.connectButton, soundButton],
             alpha: { value: 1, duration: 3000, ease: 'Power1'},
             yoyo: false,
             delay: 3000
