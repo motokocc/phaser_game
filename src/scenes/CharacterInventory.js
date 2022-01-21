@@ -128,7 +128,7 @@ class CharacterInventory extends BaseScene {
 
         });
         
-        this.tabs.on('button.click', (button, groupName, index) => {
+        this.tabs.on('button.click', async(button, groupName, index) => {
             let tabButtons = this.tabs.getElement('topButtons');
 
             tabButtons.forEach((button,indexButton) => {
@@ -142,12 +142,13 @@ class CharacterInventory extends BaseScene {
 
             this.sizerLeft.clear(true);
 
+
             if(index == 0){
                 this.loadCards();
             }
             else if(index == 1){
                 if(this.player.playerInfo.inventory.item.length >= 1){
-                    let itemsInInventory = this.player.getAllItemsByCategory('item');
+                    let itemsInInventory = await this.player.getAllItemsByCategory('item');
 
                     itemsInInventory.forEach(item => {
                         this.generateItemUI(item);
@@ -159,7 +160,7 @@ class CharacterInventory extends BaseScene {
             }
             else{
                 if(this.player.playerInfo.inventory.skill.length >= 1){
-                    let skillsInInventory = this.player.getAllItemsByCategory('skill');
+                    let skillsInInventory = await this.player.getAllItemsByCategory('skill');
 
                     skillsInInventory.forEach(skill => {
                         this.generateItemUI(skill);
@@ -168,7 +169,7 @@ class CharacterInventory extends BaseScene {
                 else{
                     this.sizerLeft.add(this.add.text(0,0, 'No available skills to learn', {fontFamily: 'Arial', padding:10 }));
                 }
-            }    
+            }
 
             this.panelBox.layout();
         });
@@ -866,29 +867,18 @@ class CharacterInventory extends BaseScene {
     }
 
     async loadCards(){
-        let cardData = [];
-        let { cards, address } = this.player.playerInfo;
-
         this.sizerLeft.add(
             this.add.text(0,0, 'Loading Data.. Please wait...', { fontFamily: 'Arial', padding:10 }).setDepth(10)
         );
         
-        cardData = cards? cards.filter(card => card.name === "Alpha") : [];
-        let cardsTotal = [...cardData];
-
-        let blockchainCards = await this.player.getCards(address);
+        let cardsTotal = await this.player.getAllItemsByCategory('card');
 
         this.sizerLeft.removeAll(true);
 
-        if(blockchainCards){
-            cardsTotal = [...cardData].concat(blockchainCards);           
-            cardsTotal.sort((a, b) => (b.properties.rarity - a.properties.rarity));
+        this.player.playerInfo.inventory.card = cardsTotal;
 
-            this.player.playerInfo.cards = cardsTotal;
-        }
-
-        if(this.player.playerInfo.cards.length >= 1){
-            this.player.playerInfo.cards.forEach((item, index) => {
+        if(this.player.playerInfo.inventory.card.length >= 1){
+            this.player.playerInfo.inventory.card.forEach((item, index) => {
                 if(index == 0){
                     this.setImageData(item);                 
                 }

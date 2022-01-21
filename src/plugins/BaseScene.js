@@ -512,11 +512,8 @@ class BaseScene extends Phaser.Scene {
         let inputContainer = this.add.sprite( this.gameW/2, this.gameH/2, 'scroll').setDepth(1).setScale(1.4);
 
         let inputTitle = this.add.text( this.gameW/2, this.gameH/2 - 80, 'Please enter your name',
-            {
-                fontSize: "25px",
-                color: '#613e1e',
-                fontFamily: 'Arial'
-            }).setOrigin(0.5).setDepth(2);
+            { fontSize: "25px", color: '#613e1e', fontFamily: 'Arial'}
+        ).setOrigin(0.5).setDepth(2);
 
         let inputText = this.add.rexInputText( this.gameW/2, this.gameH/2 - 20, 300, 40,
             { 

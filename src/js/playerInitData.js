@@ -12,12 +12,12 @@ export const playerInitData = {
     lastReward: null,
     isFirstTime: true,
     lastRead: 0,
-    cards:[],
     couponCodes:[],
     rewards: 0,
     inventory:{
         skill:[],
-        item:[]
+        item:[],
+        card:[]
     },
     missions:{
         finished: [],

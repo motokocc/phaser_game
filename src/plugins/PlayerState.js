@@ -71,18 +71,19 @@ class Player extends Phaser.Plugins.BasePlugin {
                         //To add more data later for drops that can be exchanged to nfts
                         const { gold, drawCount, isFirstTime, name, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes, role, level, rewards, inventory, missions } = user.data();
 
-                        cardData = user.data().cards? user.data().cards.filter(card => card.name === "Alpha") : [];
+                        cardData = inventory.card? inventory.card.filter(card => card.fromBlockchain == false) : [];
 
                         let cards = [...cardData];
 
                         if(cardsFromBlockchain){
                             cards = [...cardData].concat(cardsFromBlockchain);
-                            await updateDoc(doc(this.users, accounts[0]), { cards });
+                            inventory.card = cards;
+                            await updateDoc(doc(this.users, accounts[0]), { inventory });
                         }
                             
                         //Set Player Data
                         let data = { 
-                            name, address: accounts[0], drawCount, gold, cards, isFirstTime, gems,
+                            name, address: accounts[0], drawCount, gold, isFirstTime, gems,
                             lastLogin: lastLogin.toDate(), lastSpin : lastSpin? lastSpin.toDate() : null, 
                             dateJoined: dateJoined.toDate(), lastReward: lastReward? lastReward.toDate():null,
                             lastRead, couponCodes, role, level, rewards, inventory, missions
@@ -129,7 +130,7 @@ class Player extends Phaser.Plugins.BasePlugin {
             newCard.name = "Alpha",
             newCard.description = "Alpha is a beast djinn ready to give a helping hand to any adventurer who summons him. He uses his arm-like tail to deal massive damage to his enemies. It is rummored that his eyes can locate hidden treasures and dungeons.",
             newCard.image = "https://ipfs.infura.io/ipfs/QmXwhouX6z9DLtBmpGiGwpDu9W8NCyMhtzHW4Bqfct3Rfd",
-            this.playerInfo.cards = [...this.playerInfo.cards, newCard];
+            this.playerInfo.inventory.card = [...this.playerInfo.inventory.card, newCard];
 
             await setDoc(doc(this.users, this.playerInfo.address), this.playerInfo);
         }
@@ -159,15 +160,15 @@ class Player extends Phaser.Plugins.BasePlugin {
 
                 newCard = {...data};
 
-                let cardCombined = [data].concat(this.playerInfo.cards);
+                let cardCombined = [data].concat(this.playerInfo.inventory.card);
                 let cards = cardCombined.reduce((arr, item)=> { 
                     let exists = !!arr.find(x => x.name === item.name && x.quantity >= item.quantity); 
                     if(!exists){arr.push(item)}; 
                     return arr 
                 },[])
 
-                this.playerInfo.cards = cards;
-                await updateDoc(doc(this.users, this.playerInfo.address), { cards });
+                this.playerInfo.inventory.card = cards;
+                await updateDoc(doc(this.users, this.playerInfo.address), { inventory: this.playerInfo.inventory.card });
             }
             catch(e){
                 console.log(e.message);
@@ -343,9 +344,23 @@ class Player extends Phaser.Plugins.BasePlugin {
         }
     }
 
-    getAllItemsByCategory = (category) => {
+    getAllItemsByCategory = async(category) => {
         let itemsInGame = this.playerInfo.inventory[category].filter(item => item.fromBlockchain == false);
         //TODO: Fetch items owned in the blockchain
+
+        if(category == 'card'){
+            try{
+                let blockchainCards = await this.getCards(this.playerInfo.address);
+
+                 if(blockchainCards){
+                    itemsInGame = itemsInGame.concat(blockchainCards);
+                 }
+            }
+            catch(e){
+                console.log(e.message);
+            }
+        }
+
         return itemsInGame.sort((a, b) => (a.itemId - b.itemId));
     }
 
