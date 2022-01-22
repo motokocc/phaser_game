@@ -123,7 +123,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.shortenLargeNumber = exports.getSoundSettings = void 0;
+exports.openExternalLink = exports.getDifferenceInMinutes = exports.getDifferenceInDays = exports.shortenLargeNumber = exports.getSoundSettings = void 0;
 
 var getSoundSettings = function getSoundSettings(sound) {
   var soundVolume = localStorage.getItem(sound);
@@ -155,6 +155,32 @@ var shortenLargeNumber = function shortenLargeNumber(num, digits) {
 };
 
 exports.shortenLargeNumber = shortenLargeNumber;
+
+var getDifferenceInDays = function getDifferenceInDays(date1, date2) {
+  var diffInMs = Math.abs(date2 - date1);
+  return diffInMs / (1000 * 60 * 60 * 24);
+};
+
+exports.getDifferenceInDays = getDifferenceInDays;
+
+var getDifferenceInMinutes = function getDifferenceInMinutes(date1, date2) {
+  var diffInMs = Math.abs(date2 - date1);
+  return diffInMs / (1000 * 60);
+};
+
+exports.getDifferenceInMinutes = getDifferenceInMinutes;
+
+var openExternalLink = function openExternalLink(url) {
+  var s = window.open(url, '_blank');
+
+  if (s && s.focus) {
+    s.focus();
+  } else if (!s) {
+    window.location.href = url;
+  }
+};
+
+exports.openExternalLink = openExternalLink;
 },{}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -183,7 +209,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59406" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58951" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

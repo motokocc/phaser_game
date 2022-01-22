@@ -1,7 +1,7 @@
 import 'regenerator-runtime/runtime';
 import BaseScene from '../plugins/BaseScene';
 import { doc, updateDoc } from "firebase/firestore";
-import { getSoundSettings, shortenLargeNumber } from '../js/utils';
+import { getSoundSettings, shortenLargeNumber, getDifferenceInDays } from '../js/utils';
 
 class DailyRoullete extends BaseScene {
 
@@ -20,7 +20,7 @@ class DailyRoullete extends BaseScene {
             frameRate: 8,
         });
         
-        this.returnHome = this.getDifferenceInDays(new Date(), this.player.playerInfo.lastSpin) < 1? true : false; //Check if button should spin the roullete or return to main screen
+        this.returnHome = getDifferenceInDays(new Date(), this.player.playerInfo.lastSpin) < 1? true : false; //Check if button should spin the roullete or return to main screen
 
         this.gameOptions = {
             slices: 10,
@@ -35,7 +35,7 @@ class DailyRoullete extends BaseScene {
                 "Spin the wheel adventurer and I'll give you some of my treasures!",
                 "You can only spin one time per day. Come back again later",
             ];
-        let messageIndex = !this.player.playerInfo.lastSpin || this.getDifferenceInDays(new Date(), this.player.playerInfo.lastSpin) > 1 ? 0 : 1;
+        let messageIndex = !this.player.playerInfo.lastSpin || getDifferenceInDays(new Date(), this.player.playerInfo.lastSpin) > 1 ? 0 : 1;
         this.pirateTalk('elf_pirate_talk', messages[messageIndex]);
 
         //Gems

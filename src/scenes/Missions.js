@@ -3,6 +3,7 @@ import BaseScene from '../plugins/BaseScene';
 import { Mission } from '../js/character_dialogues/missions';
 import { doc, updateDoc } from "firebase/firestore";
 import { getSoundSettings, shortenLargeNumber } from '../js/utils';
+import UpperUi from '../components/upperUI';
 
 class Missions extends BaseScene {
 
@@ -11,7 +12,10 @@ class Missions extends BaseScene {
         const dialogBoxH = this.gameH / 5;
 
         this.generateBg();
-        this.generateUpperUI();
+
+        this.upper = new UpperUi(this);
+        this.add.existing(this.upper);
+        this.upper.generate();
 
         this.anims.create({
             key: "idle",
@@ -250,7 +254,7 @@ class Missions extends BaseScene {
             let updatedAmount = this.player.playerInfo[reward.currency] + reward.amount;
 
             this.player.playerInfo[reward.currency] = updatedAmount;
-            this[`${reward.currency}_value`].setText(shortenLargeNumber(updatedAmount,2));
+            this.upper[`${reward.currency}_value`].setText(shortenLargeNumber(updatedAmount,2));
 
             try{
                 let { users, playerInfo } = this.player;

@@ -2,6 +2,7 @@ import 'regenerator-runtime/runtime';
 import BaseScene from '../plugins/BaseScene';
 import {  Tabs, ScrollablePanel, FixWidthSizer, OverlapSizer } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { getSoundSettings, shortenLargeNumber } from '../js/utils';
+import UpperUi from '../components/upperUI';
 
 class Shop extends BaseScene {
 
@@ -17,7 +18,11 @@ class Shop extends BaseScene {
         this.currencySelected = 'gold';
         this.toggleList = true;
         this.currentPage = 1;
-        this.generateUpperUI(true);
+
+        this.upper = new UpperUi(this);
+        this.add.existing(this.upper);
+        this.upper.generate(true);
+
         this.generatePaginationUI();
 
         //Market UI
@@ -600,7 +605,7 @@ class Shop extends BaseScene {
             try{
                 if(this.player.playerInfo[item.priceCurrency] >= price){                    
                     await this.player.buyItemOnShop(quantity, price, item);
-                    this[`${item.priceCurrency}_value`].setText(shortenLargeNumber(this.player.playerInfo[item.priceCurrency],2));
+                    this.upper[`${item.priceCurrency}_value`].setText(shortenLargeNumber(this.player.playerInfo[item.priceCurrency],2));
                     this.searchInput.setAlpha(1);
                 }
                 else{

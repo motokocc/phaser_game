@@ -126,8 +126,11 @@ import iron_pickaxe from '../images/items/iron_pickaxe.png';
 import small_heal_potion from '../images/items/small_heal_potion.png';
 
 //Missions
-import ninja from '../images/spritesheets/ninja_spritesheet.png'
-import smoke from '../images/spritesheets/smoke_spritesheet.png'
+import ninja from '../images/spritesheets/ninja_spritesheet.png';
+import smoke from '../images/spritesheets/smoke_spritesheet.png';
+
+//Adventure
+import wolf from '../images/spritesheets/wolf_spritesheet.png';
 
 class LoadingScreen extends Phaser.Scene {
 
@@ -264,6 +267,7 @@ class LoadingScreen extends Phaser.Scene {
         //Mission
         this.load.spritesheet("ninja", ninja, { frameWidth: 297, frameHeight: 420 });
         this.load.spritesheet("smoke", smoke, { frameWidth: 500, frameHeight: 500 });
+        this.load.spritesheet("wolf", wolf, { frameWidth: 325, frameHeight: 216.67 });
 
         //Audio Files
         this.load.audio('clickEffect', [clickSound]);

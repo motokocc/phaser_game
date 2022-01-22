@@ -26,3 +26,26 @@ export const shortenLargeNumber = (num, digits) => {
 
     return num;
 }
+
+export const getDifferenceInDays = (date1, date2) => {
+    const diffInMs = Math.abs(date2 - date1);
+    return diffInMs / (1000 * 60 * 60 * 24);
+}
+
+export const getDifferenceInMinutes = (date1, date2) => {
+    const diffInMs = Math.abs(date2 - date1);
+    return diffInMs / (1000 * 60);
+}
+
+export const openExternalLink = (url) => {
+    var s = window.open(url, '_blank');
+
+    if (s && s.focus)
+    {
+        s.focus();
+    }
+    else if (!s)
+    {
+        window.location.href = url;
+    }
+}

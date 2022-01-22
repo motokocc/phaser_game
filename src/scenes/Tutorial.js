@@ -1,7 +1,8 @@
 import { tutorialDialogue } from '../js/character_dialogues/tutorial';
-import BaseScene from '../plugins/BaseScene';
+import DialogBox from '../components/dialogBox';
+import Phaser from 'phaser';
 
-class TutorialScreen extends BaseScene {
+class TutorialScreen extends Phaser.Scene {
 
     create(){
         let gameBg = this.add.image(0,0,'background');
@@ -64,7 +65,11 @@ class TutorialScreen extends BaseScene {
         this.npc = this.add.sprite(this.game.config.width/2, this.game.config.height * 0.85, 'elf_idle_1').setOrigin(0.5,1);
         this.npc.play('elf_idle');
 
-        this.dialogBox(
+
+        let dialog = new DialogBox(this);
+        this.add.existing(dialog);
+
+        dialog.generate(
             tutorialDialogue(this.player.playerInfo.name || 'Drake'),
             { sceneNumber: 0, type: 'inputBox', nextPage : "summoningArea" },
             [

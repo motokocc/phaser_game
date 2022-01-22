@@ -3,7 +3,8 @@ import { lilithDialogue } from '../js/character_dialogues/lilith_mainscreen_dial
 import { doc, setDoc, onSnapshot, getDoc, updateDoc } from "firebase/firestore";
 import BaseScene from '../plugins/BaseScene';
 import { TextArea } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
-import { getSoundSettings, shortenLargeNumber } from '../js/utils';
+import { getSoundSettings, shortenLargeNumber, getDifferenceInDays } from '../js/utils';
+import Settings from '../components/settingBox';
 
 class Game extends BaseScene {
     preload(){
@@ -122,7 +123,9 @@ class Game extends BaseScene {
         let currencyUI = this.add.container(0,-200);
 
         //Settings Box
-        this.settingsBox(this.gameW, 0, 300, this.gameH/2 + this.paddingX , this.paddingX*0.95, this.paddingX*3, gold_value, gem_value);
+        this.settings = new Settings(this);
+        this.add.existing(this.settings);
+        this.settings.generate(this.gameW, 0, 300, this.gameH/2 + this.paddingX , this.paddingX*0.95, this.paddingX*3, gold_value, gem_value);
 
         //UI Containers/Groups
         gems.add([gem_box, gem_icon, gem_value]);
@@ -196,7 +199,7 @@ class Game extends BaseScene {
                 //Daily Reward
                 this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
                 if(button.name == 'gift'){
-                    if(this.getDifferenceInDays(new Date(), this.player.playerInfo.lastReward)> 1 && this.player.playerInfo.address){                       
+                    if(getDifferenceInDays(new Date(), this.player.playerInfo.lastReward)> 1 && this.player.playerInfo.address){                       
                         try{
                             button.disableInteractive();
                             const rewardRef = doc(this.player.db, "rewards", 'daily');
@@ -247,7 +250,7 @@ class Game extends BaseScene {
                 }
                 //Settings
                 else if(button.name == 'settings'){
-                    this.toggleSettingsBox();
+                    this.settings.toggleSettingsBox();
                 }
                 //Announcements
                 else if(button.name == 'mail'){
@@ -406,14 +409,14 @@ class Game extends BaseScene {
     }
 
     update(){
-        if(this.getDifferenceInDays(new Date(), this.player.playerInfo.lastSpin) > 1 && this.roullete_notif.alpha == 0){
+        if(getDifferenceInDays(new Date(), this.player.playerInfo.lastSpin) > 1 && this.roullete_notif.alpha == 0){
             this.roullete_notif.setAlpha(1);
         }
-        else if(this.getDifferenceInDays(new Date(), this.player.playerInfo.lastSpin) <= 1 && this.roullete_notif.alpha == 1){
+        else if(getDifferenceInDays(new Date(), this.player.playerInfo.lastSpin) <= 1 && this.roullete_notif.alpha == 1){
            this.roullete_notif.setAlpha(0); 
         }
 
-        if(this.getDifferenceInDays(new Date(), this.player.playerInfo.lastReward) > 1 && this.gift_notif.alpha == 0){
+        if(getDifferenceInDays(new Date(), this.player.playerInfo.lastReward) > 1 && this.gift_notif.alpha == 0){
             this.tweens.add({
                 targets: [this.gift_notif],
                 alpha: { value: 1, duration: 600, ease: 'Power1'},
@@ -421,7 +424,7 @@ class Game extends BaseScene {
                 delay:1000
             });
         }
-        else if(this.getDifferenceInDays(new Date(), this.player.playerInfo.lastReward) <= 1 && this.gift_notif.alpha == 1){
+        else if(getDifferenceInDays(new Date(), this.player.playerInfo.lastReward) <= 1 && this.gift_notif.alpha == 1){
             this.gift_notif.setAlpha(0);
         }
 

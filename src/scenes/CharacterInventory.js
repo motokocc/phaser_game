@@ -3,6 +3,7 @@ import BaseScene from '../plugins/BaseScene';
 import { Tabs, ScrollablePanel, FixWidthSizer, OverlapSizer } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { cardStats } from '../js/cardStats';
 import { getSoundSettings, shortenLargeNumber } from '../js/utils';
+import UpperUi from '../components/upperUI';
 
 class CharacterInventory extends BaseScene {
 
@@ -11,7 +12,9 @@ class CharacterInventory extends BaseScene {
         this.gameBg.setOrigin(0,0);
         this.gameBg.setScale(1.10);
 
-        this.generateUpperUI(false, true);
+        this.upper = new UpperUi(this);
+        this.add.existing(this.upper);
+        this.upper.generate(false,true);
 
         //Details Box
         const detailsBox = this.add.rectangle(this.gameW/2 - this.paddingX*2, this.gameH * 0.22, this.gameW/2 + this.paddingX, this.gameH*0.745, 0x000000, 0.9).setOrigin(0);
@@ -829,7 +832,7 @@ class CharacterInventory extends BaseScene {
             }
             else{
                 await this.player.sellInGameItems(itemId, quantity, price, itemCurrency, itemType);
-                this[`${itemCurrency}_value`].setText(shortenLargeNumber(this.player.playerInfo[itemCurrency],2));
+                this.upper[`${itemCurrency}_value`].setText(shortenLargeNumber(this.player.playerInfo[itemCurrency],2));
             }
 
             sellOkButton.setInteractive();

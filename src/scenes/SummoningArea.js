@@ -6,16 +6,9 @@ class SummoningArea extends BaseScene {
         this.anims.create({
             key: 'elf_talk',
             frames: [
-                { key: 'elf_talk_2' },
-                { key: 'elf_talk_1' },
-                { key: 'elf_talk_2' },
-                { key: 'elf_talk_1' },
-                { key: 'elf_talk_2' },
-                { key: 'elf_talk_1' },
-                { key: 'elf_talk_2' },
-                { key: 'elf_talk_1' },
-                { key: 'elf_talk_2' },
-                { key: 'elf_talk_1' }
+                { key: 'elf_talk_2' }, { key: 'elf_talk_1' }, { key: 'elf_talk_2' }, { key: 'elf_talk_1' },
+                { key: 'elf_talk_2' }, { key: 'elf_talk_1' }, { key: 'elf_talk_2' }, { key: 'elf_talk_1' },
+                { key: 'elf_talk_2' }, { key: 'elf_talk_1' }
             ],
             frameRate: 8,
             repeatDelay: 1500,
@@ -24,13 +17,9 @@ class SummoningArea extends BaseScene {
 
         this.lights.enable().setAmbientColor(0x000ff);
 
-        let summoningCircle = this.add.sprite(
-            this.game.config.width/2,
-            this.game.config.height/2,
-            'summoningCircle'
-        ).setScale(1.5);
+        let summoningCircle = this.add.sprite(this.gameW/2, this.gameH/2, 'summoningCircle').setScale(1.5);
 
-        let lightEffect = this.lights.addPointLight(this.game.config.width/2, this.game.config.height/2, 0xb29700, 400,0.3);
+        let lightEffect = this.lights.addPointLight(this.gameW/2, this.gameH/2, 0xb29700, 400,0.3);
         lightEffect.setAlpha(0);
 
         this.tweens.add({
@@ -42,11 +31,7 @@ class SummoningArea extends BaseScene {
         //Right side NPC
         let rightUi = this.add.container();
 
-        let summoningNpc = this.add.sprite(0, this.game.config.height, 'elf-0')
-        .setOrigin(0,1)
-        .setScale(0.7)
-        .setInteractive();
-
+        let summoningNpc = this.add.sprite(0, this.gameH, 'elf-0').setOrigin(0,1).setScale(0.7).setInteractive();
         summoningNpc.play('elf_talk');
 
         this.createSpeechBubble (summoningNpc.width/2, summoningNpc.y/2, 220, 100, "I wonder what kind of Djinn you're going to summon...");
@@ -57,27 +42,20 @@ class SummoningArea extends BaseScene {
         const paddingY = 30;
         let summoningUiContainer = this.add.container(300,0);
 
-        let uibox = this.add.rectangle(this.game.config.width,0, 300, this.game.config.height, 0x000000)
-            .setOrigin(1,0)
-            .setAlpha(0.8);
+        let uibox = this.add.rectangle(this.gameW,0, 300, this.gameH, 0x000000).setOrigin(1,0).setAlpha(0.8);        
+        let uiText = this.add.text(this.gameW - 150, paddingY, 'Select Draw Type', {fontFamily: 'Arial', fontSize: 20}).setOrigin(0.5);
         
-        let uiText = this.add.text(this.game.config.width - 150, paddingY, 'Select Draw Type', {fontFamily: 'Arial', fontSize: 20}).setOrigin(0.5);
-        
-        let freeButton = this.add.sprite(this.game.config.width - 150, paddingY*3.1, 'freeBtn').setName('free').setAlpha(this.player.playerInfo.isFirstTime? 1:0);
-        let normalButton = this.add.sprite(this.game.config.width - 150, paddingY*3.1, 'normalBtn').setName('normal').setAlpha(this.player.playerInfo.isFirstTime? 0:1);
-        let rareButton = this.add.sprite(this.game.config.width - 150, paddingY*6.2, 'rareBtn').setName('rare')
-        let premiumButton = this.add.sprite(this.game.config.width - 150, paddingY*9.3, 'premiumBtn').setName('premium')
-        let proceedButton = this.add.sprite(this.game.config.width - paddingY, this.game.config.height-paddingY,'proceedBtn')
+        let freeButton = this.add.sprite(this.gameW - 150, paddingY*3.1, 'freeBtn').setName('free').setAlpha(this.player.playerInfo.isFirstTime? 1:0);
+        let normalButton = this.add.sprite(this.gameW - 150, paddingY*3.1, 'normalBtn').setName('normal').setAlpha(this.player.playerInfo.isFirstTime? 0:1);
+        let rareButton = this.add.sprite(this.gameW - 150, paddingY*6.2, 'rareBtn').setName('rare')
+        let premiumButton = this.add.sprite(this.gameW - 150, paddingY*9.3, 'premiumBtn').setName('premium')
+        let proceedButton = this.add.sprite(this.gameW - paddingY, this.gameH-paddingY,'proceedBtn')
             .setInteractive()
             .setOrigin(1)
             .setScale(0.6)
             .setAlpha(0);
 
-        let backButton = this.add.text(
-            this.game.config.width - paddingY,
-             this.game.config.height-paddingY,
-              'Back >>',
-        {fontFamily: 'Arial', fontSize: 20}).setOrigin(1).setInteractive();
+        let backButton = this.add.text(this.gameW - paddingY,this.gameH-paddingY,'Back >>',{fontFamily: 'Arial', fontSize: 20}).setOrigin(1).setInteractive();
 
         if(!this.player.playerInfo.isFirstTime){
             backButton.on('pointerdown', () => {
@@ -106,9 +84,7 @@ class SummoningArea extends BaseScene {
 
         
         //Card summon
-        let cardBack = this.add.sprite(this.game.config.width/2, this.game.config.height/2, 'cardBack');
-        cardBack.setAlpha(0);
-        cardBack.setScale(0);
+        let cardBack = this.add.sprite(this.gameW/2, this.gameH/2, 'cardBack').setAlpha(0).setScale(0);
 
         var cardFlip = this.plugins.get('rexFlip').add(cardBack, {
             face: 'back',

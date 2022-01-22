@@ -2,6 +2,7 @@ import 'regenerator-runtime/runtime';
 import BaseScene from '../plugins/BaseScene';
 import {  Tabs, ScrollablePanel, FixWidthSizer, OverlapSizer } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { getSoundSettings } from '../js/utils';
+import UpperUi from '../components/upperUI';
 
 class Marketplace extends BaseScene {
 
@@ -17,18 +18,16 @@ class Marketplace extends BaseScene {
         this.currentTab = "card";
         this.toggleList = true;
         this.currentPage = 1;
-        this.generateUpperUI();
+    
+        this.upper = new UpperUi(this);
+        this.add.existing(this.upper);
+        this.upper.generate();
+
         this.generatePaginationUI();
 
         //Market UI
         this.marketplaceSizer = new FixWidthSizer(this, {
-            space: {
-                left: 10,
-                right: 10,
-                bottom: 10,
-                item: 10,
-                line: 10
-            }
+            space: { left: 10, right: 10, bottom: 10, item: 10, line: 10 }
         });
         this.add.existing(this.marketplaceSizer);
 
@@ -48,12 +47,7 @@ class Marketplace extends BaseScene {
             panel: {
                 child: this.marketplaceSizer
             },
-            space:{
-                left: 10,
-                right: 20,
-                top: 20,
-                bottom: 45,
-            },
+            space:{ left: 10, right: 20, top: 20, bottom: 45 },
             slider: {
                 track: this.add.rexRoundRectangle(0, 0, 10, this.gameH*0.745, 4.5, 0x000000, 0.9).setStrokeStyle(0.5, 0xffffff, 0.8),
                 thumb: this.add.rexRoundRectangle(0, 0, 10, this.paddingX*4, 4.5, 0xffffff, 0.8).setAlpha(0.5),
@@ -135,13 +129,7 @@ class Marketplace extends BaseScene {
         //Data test
         for(let i=0; i<=60; i++){
             let testData = {
-                name: 'Saya',
-                saleId: 20,
-                itemId: 500,
-                itemAvailable: 1,
-                itemSold:1,
-                seller: '0x0000000',
-                price: 0.555,
+                name: 'Saya', saleId: 20, itemId: 500, itemAvailable: 1, itemSold:1, seller: '0x0000000', price: 0.555,
                 properties:{
                     rarity: 5,
                     type: "card",
@@ -462,14 +450,7 @@ class Marketplace extends BaseScene {
             this.gameH/2 - 50,
             215,
             25,
-            { 
-                type: "number",
-                maxLength: 2,
-                fontSize : "17px",
-                fontFamily: 'Arial',
-                backgroundColor : "white",
-                color: "black",
-            }
+            { type: "number", maxLength: 2, fontSize : "17px", fontFamily: 'Arial', backgroundColor : "white", color: "black" }
         ).setOrigin(0.5).setScale(1.3)
         .on('textchange', async(inputText) => {
             let allowedKey = /^[1-9]\d*$/g;
@@ -514,14 +495,7 @@ class Marketplace extends BaseScene {
             this.gameH/2 + 35,
             215,
             25,
-            { 
-                type: "number",
-                maxLength: 2,
-                fontSize : "17px",
-                fontFamily: 'Arial',
-                backgroundColor : "white",
-                color: "black",
-            }
+            { type: "number", maxLength: 2, fontSize : "17px", fontFamily: 'Arial', backgroundColor : "white", color: "black" }
         ).setOrigin(0.5).setScale(1.3);
 
         buyingPrice.setText(price);
