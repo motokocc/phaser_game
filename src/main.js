@@ -59,10 +59,10 @@ game.scene.add("missions", Missions);
 game.scene.add("game", Game);
 game.scene.add("explore", Explore);
 
-//game.scene.start("loading", {nextPage: "titlescreen"});
+game.scene.start("loading", {nextPage: "titlescreen"});
 //game.scene.start("loading", {nextPage: "summoningArea"});
 //game.scene.start("loading", {nextPage: "tutorial"});
-game.scene.start("loading", {nextPage: "game"});
+//game.scene.start("loading", {nextPage: "game"});
 //game.scene.start("loading", {nextPage: "roullete"});
 //game.scene.start("credits");
 //game.scene.start("loading", {nextPage: "inventory"});

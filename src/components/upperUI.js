@@ -8,7 +8,7 @@ export default class UpperUI extends Phaser.Scene{
         this.scene = scene;
     }
 
-    generate(isWithRewards, saveToFirebase){
+    generate(isWithRewards, saveToFirebase, removeExitButton){
         const width = this.scene.game.config.width;
         const height = this.scene.game.config.height;
         const padding = width * 0.025;
@@ -23,8 +23,8 @@ export default class UpperUI extends Phaser.Scene{
 
         //Gold
         let gold = this.scene.add.container(containerOffset,-200);
-        const gold_icon = this.scene.add.sprite(width/2 + padding*3, height*0.07,'gold').setOrigin(0.5).setDepth(2);
-        const gold_box = this.scene.add.rexRoundRectangle(gold_icon.x, gem_icon.y, padding*4, padding, padding/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
+        this.gold_icon = this.scene.add.sprite(width/2 + padding*3, height*0.07,'gold').setOrigin(0.5).setDepth(2);
+        const gold_box = this.scene.add.rexRoundRectangle(this.gold_icon.x, gem_icon.y, padding*4, padding, padding/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
         this.gold_value = this.scene.add.text(gold_box.x + gold_box.width/2, gold_box.y, this.scene.player.playerInfo.gold || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
 
         //Player Stat GUI
@@ -57,23 +57,27 @@ export default class UpperUI extends Phaser.Scene{
             {fontFamily: 'Arial', fontSize:13, align: 'center'}
         ).setOrigin(0.5);
 
-        let backButton = this.scene.add.sprite(width-padding, padding, 'exitIcon').setOrigin(1,0).setScale(0.6).setInteractive();
-        backButton.on('pointerdown', async() => {
-            if(saveToFirebase){
-                try{
-                    await updateDoc(doc(this.scene.player.users, this.scene.player.playerInfo.address), { inventory : this.scene.player.playerInfo.inventory });   
+        if(!removeExitButton){
+            let backButton = this.scene.add.sprite(width-padding, padding, 'exitIcon').setOrigin(1,0).setScale(0.6).setInteractive();
+            backButton.on('pointerdown', async() => {
+                if(saveToFirebase){
+                    try{
+                        await updateDoc(doc(this.scene.player.users, this.scene.player.playerInfo.address), { inventory : this.scene.player.playerInfo.inventory });   
+                    }
+                    catch(e){
+                        console.log(e.message);
+                    }
                 }
-                catch(e){
-                    console.log(e.message);
-                }
-            }
-            this.scene.scene.start("game")
-        });
+                this.scene.scene.start("game")
+            });
+
+            playerUI.add([backButton]);
+        }
 
         //UI Containers/Groups
         gems.add([gem_box, gem_icon, this.gems_value]);
-        gold.add([gold_box, gold_icon, this.gold_value]);
-        playerUI.add([player_gui_box, player_name, player_role, player_level, backButton]);
+        gold.add([gold_box, this.gold_icon, this.gold_value]);
+        playerUI.add([player_gui_box, player_name, player_role, player_level]);
 
         let rewards = this.scene.add.container(containerOffset,-200);
 

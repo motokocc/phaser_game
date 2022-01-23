@@ -5,6 +5,7 @@ import BaseScene from '../plugins/BaseScene';
 import { TextArea } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { getSoundSettings, shortenLargeNumber, getDifferenceInDays } from '../js/utils';
 import Settings from '../components/settingBox';
+import UpperUI from '../components/upperUI';
 
 class Game extends BaseScene {
     preload(){
@@ -38,6 +39,11 @@ class Game extends BaseScene {
         this.gameBg.setScale(1.1);
         const paddingY = this.gameH * 0.033;
         const buttonScale = this.gameW * 0.00078;
+
+        //Player GUI & Currency
+        this.upper = new UpperUI(this);
+        this.add.existing(this.upper);
+        this.upper.generate(false,false,true);
 
         //NPC - Lilith
         let npc_lilith = this.add.sprite(this.gameW/2, this.gameH + 3, 'elf-0')
@@ -84,60 +90,17 @@ class Game extends BaseScene {
         gift_button.setScale(0.1).setAlpha(0);
         mail_button.setScale(0.1).setAlpha(0);
 
-        //Player Stat GUI
-        let playerUI = this.add.container(0,-200);
-        const player_gui_box = this.add.sprite(this.paddingX, this.gameH*0.07,'player_gui_box').setOrigin(0, 0.5).setScale(buttonScale).setInteractive();
-        const player_name = this.add.text(
-            player_gui_box.x* 3.6,
-            player_gui_box.y - this.paddingX*0.33,
-            this.player.playerInfo.name || 'Player',
-            {fontFamily: 'Arial', fontSize:14}
-        ).setOrigin(0, 0.5);
-
-        const player_role = this.add.text(
-            player_gui_box.x* 3.6,
-            player_gui_box.y + this.paddingX*0.33,
-            this.player.playerInfo.role || 'Adventurer',
-            {fontFamily: 'Arial', fontSize:13, color: '#00ff00'}
-        ).setOrigin(0, 0.5);
-
-        const player_level = this.add.text(
-            player_gui_box.x* 2.2,
-            player_gui_box.y + this.paddingX*0.1,
-            ['Lvl', this.player.playerInfo.level] || ['Lvl', 1],
-            {fontFamily: 'Arial', fontSize:13, align: 'center'}
-        ).setOrigin(0.5);
-
-        //Gems
-        let gems = this.add.container();
-        const gem_icon = this.add.sprite(this.gameW/2 - this.paddingX*3, this.gameH*0.07,'gems').setOrigin(0.5).setDepth(2);
-        const gem_box = this.add.rexRoundRectangle(gem_icon.x, gem_icon.y, this.paddingX*4, this.paddingX, this.paddingX/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
-        const gem_value = this.add.text(gem_box.x + gem_box.width/2, gem_box.y, shortenLargeNumber(this.player.playerInfo.gems,2) || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
-
-        //Gold
-        let gold = this.add.container();
-        const gold_icon = this.add.sprite(this.gameW/2 + this.paddingX*3, this.gameH*0.07,'gold').setOrigin(0.5).setDepth(2);
-        const gold_box = this.add.rexRoundRectangle(gold_icon.x, gem_icon.y, this.paddingX*4, this.paddingX, this.paddingX/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
-        const gold_value = this.add.text(gold_box.x + gold_box.width/2, gold_box.y, shortenLargeNumber(this.player.playerInfo.gold,2) || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
-
-        let currencyUI = this.add.container(0,-200);
-
         //Settings Box
         this.settings = new Settings(this);
         this.add.existing(this.settings);
-        this.settings.generate(this.gameW, 0, 300, this.gameH/2 + this.paddingX , this.paddingX*0.95, this.paddingX*3, gold_value, gem_value);
+        this.settings.generate(this.gameW, 0, 300, this.gameH/2 + this.paddingX , this.paddingX*0.95, this.paddingX*3, this.upper.gold_value, this.upper.gems_value);
 
-        //UI Containers/Groups
-        gems.add([gem_box, gem_icon, gem_value]);
-        gold.add([gold_box, gold_icon, gold_value]);
-        currencyUI.add([gold, gems]);
-        playerUI.add([player_gui_box, player_name, player_role, player_level]);
         rightButtons.add([shop_button, pvp_button, mining_button, explore_button]);
         leftButtons.add([roullete_button, black_market_button, missions_button, summon_button, this.roullete_notif]);
 
         //UI Animations
         this.tweens.add({
-            targets: [leftButtons, rightButtons, playerUI, currencyUI],
+            targets: [leftButtons, rightButtons],
             x: { value: 0, duration: 600, ease: 'Power1'},
             y: { value: 0, duration: 600, ease: 'Power1'},
             yoyo: false,
@@ -166,8 +129,6 @@ class Game extends BaseScene {
             yoyo: false,
             delay:1200
         });
-
-        player_gui_box.on('pointerdown', () => {this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')}); this.scene.start("inventory")});
 
         const buttons = [
             shop_button, pvp_button, mining_button, explore_button,
@@ -208,9 +169,9 @@ class Game extends BaseScene {
                             let gemValue = rewards.data().gems || 0;
 
                             let content = this.add.group();                   
-                            const goldBox = this.add.rectangle(this.gameW/2 - 17.5, this.gameH/2-this.paddingX/2, gold_icon.width + this.paddingX/2, gold_icon.width + this.paddingX/2, 0x9b6330).setScale(0,1.3).setOrigin(1,0.5);
+                            const goldBox = this.add.rectangle(this.gameW/2 - 17.5, this.gameH/2-this.paddingX/2, this.upper.gold_icon.width + this.paddingX/2, this.upper.gold_icon.width + this.paddingX/2, 0x9b6330).setScale(0,1.3).setOrigin(1,0.5);
                             goldBox.setStrokeStyle(5, 0x613e1e, 1);
-                            const gemsBox = this.add.rectangle(this.gameW/2 + 17.5, this.gameH/2-this.paddingX/2, gold_icon.width + this.paddingX/2, gold_icon.width + this.paddingX/2, 0x9b6330).setScale(0,1.3).setOrigin(0,0.5);
+                            const gemsBox = this.add.rectangle(this.gameW/2 + 17.5, this.gameH/2-this.paddingX/2, this.upper.gold_icon.width + this.paddingX/2, this.upper.gold_icon.width + this.paddingX/2, 0x9b6330).setScale(0,1.3).setOrigin(0,0.5);
                             gemsBox.setStrokeStyle(5, 0x613e1e, 1);
                             const goldReward = this.add.sprite(this.gameW/2 - 25, this.gameH/2-this.paddingX/2,'gold').setScale(0,1.3).setOrigin(1,0.5); 
                             const gemsReward = this.add.sprite(this.gameW/2 + 25, this.gameH/2-this.paddingX/2,'gems').setScale(0,1.3).setOrigin(0,0.5); 
@@ -222,8 +183,8 @@ class Game extends BaseScene {
                             try{
                                 this.player.playerInfo.gold = this.player.playerInfo.gold + goldValue;
                                 this.player.playerInfo.gems = this.player.playerInfo.gems+ gemValue;
-                                gold_value.setText(shortenLargeNumber(this.player.playerInfo.gold,2));
-                                gem_value.setText(shortenLargeNumber(this.player.playerInfo.gems,2));
+                                this.upper.gold_value.setText(shortenLargeNumber(this.player.playerInfo.gold,2));
+                                this.upper.gems_value.setText(shortenLargeNumber(this.player.playerInfo.gems,2));
 
                                 this.popUp('Reward Claimed', content);
                                 this.player.playerInfo.lastReward = new Date();
