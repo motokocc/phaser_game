@@ -130,7 +130,7 @@ import ninja from '../images/spritesheets/ninja_spritesheet.png';
 import smoke from '../images/spritesheets/smoke_spritesheet.png';
 
 //Adventure
-import wolf from '../images/spritesheets/wolf_spritesheet.png';
+import alpha_idle from '../images/spritesheets/alpha_idle_anim_spritesheet.png';
 
 class LoadingScreen extends Phaser.Scene {
 
@@ -267,7 +267,7 @@ class LoadingScreen extends Phaser.Scene {
         //Mission
         this.load.spritesheet("ninja", ninja, { frameWidth: 297, frameHeight: 420 });
         this.load.spritesheet("smoke", smoke, { frameWidth: 500, frameHeight: 500 });
-        this.load.spritesheet("wolf", wolf, { frameWidth: 325, frameHeight: 216.67 });
+        this.load.spritesheet("alpha_idle", alpha_idle, { frameWidth: 342.1, frameHeight: 250 });
 
         //Audio Files
         this.load.audio('clickEffect', [clickSound]);
