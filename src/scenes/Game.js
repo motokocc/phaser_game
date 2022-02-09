@@ -34,9 +34,8 @@ class Game extends BaseScene {
             frameRate: 8,
         });
 
-        this.gameBg = this.add.image(0,0,'background');
-        this.gameBg.setOrigin(0,0);
-        this.gameBg.setScale(1.1);
+        this.generateBg();
+        
         const paddingY = this.gameH * 0.033;
         const buttonScale = this.gameW * 0.00078;
 
@@ -271,7 +270,7 @@ class Game extends BaseScene {
         .on('textchange', inputText => {
             this.message = inputText.text;
         });
-        const chatBody = this.add.rectangle(0,this.gameH, this.gameW*0.37, this.gameW*0.17, 0x000000).setOrigin(0,1).setAlpha(0.5);
+        const chatBody = this.add.rectangle(0,this.gameH, this.gameW*0.37, this.gameW*0.17, 0x000000).setOrigin(0,1).setAlpha(0.7);
         let chatMessages = this.add.rexTagText(
                 chatBody.x + this.paddingX/2,
                  chatBody.y - chatBody.height + this.paddingX/2,

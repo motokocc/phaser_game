@@ -1,9 +1,9 @@
 import 'regenerator-runtime/runtime';
-import Phaser from 'phaser';
+import BaseScene from '../plugins/BaseScene';
 import { doc, updateDoc } from "firebase/firestore";
 import { getSoundSettings } from '../js/utils';
 
-class TitleScreen extends Phaser.Scene {
+class TitleScreen extends BaseScene {
 
     loadData = async() => {
         // Load Data from blockchain
@@ -29,15 +29,13 @@ class TitleScreen extends Phaser.Scene {
         });
         let buttonPosY = this.game.config.height/6;
 
-        this.loadingIndicator = this.add.sprite(this.game.config.width/2, buttonPosY *3.15, 'loading').setDepth(20).setScale(0.25).setAlpha(0);
+        this.loadingIndicator = this.add.sprite(this.game.config.width/2, buttonPosY *3.3, 'loading').setDepth(20).setScale(0.25).setAlpha(0);
 
-        let gameBg = this.add.image(0,0,'background');
-        gameBg.setOrigin(0,0);
-        gameBg.setScale(1.1);
+        this.generateBg(true);
 
-        let titleLogo = this.add.sprite(this.game.config.width/2, buttonPosY * 2.1,'gameTitle');
+        let titleLogo = this.add.sprite(this.game.config.width/2, buttonPosY * 2.2,'gameTitle');
         let soundButton = this.add.sprite(this.game.config.width*0.95, buttonPosY*0.5,'soundOn').setInteractive();
-        this.connectButton = this.add.sprite(this.game.config.width/2, buttonPosY * 4.2,'connectBtn').setInteractive();
+        this.connectButton = this.add.sprite(this.game.config.width/2, buttonPosY * 4.4,'connectBtn').setInteractive();
 
         //Game version
         this.versionText = this.add.text(

@@ -10,10 +10,16 @@ class BaseScene extends Phaser.Scene {
         this.hoverSound = this.sound.add('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
     }
 
-    generateBg(){
-        this.gameBg = this.add.image(0,0,'background');
-        this.gameBg.setOrigin(0,0);
-        this.gameBg.setScale(1.1);
+    generateBg(withBushes){
+        this.add.tileSprite(-100,0,2133, this.game.config.height,'forest_layer_0').setOrigin(0).setScrollFactor(0, 1).setFlipX(true).setScale(1.1);
+        this.add.tileSprite(-100,0,2133, this.game.config.height,'forest_layer_1').setOrigin(0).setScrollFactor(0, 1).setFlipX(true).setScale(1.1);
+        this.add.tileSprite(-100,0,2133, this.game.config.height,'forest_layer_2').setOrigin(0).setScrollFactor(0, 1).setFlipX(true).setScale(1.1);
+        this.add.tileSprite(-50,0,2133, this.game.config.height,'forest_layer_3').setOrigin(0).setScrollFactor(0, 1).setFlipX(true).setScale(1.1);
+        this.add.tileSprite(-100,0,2133, this.game.config.height,'forest_layer_4').setOrigin(0).setScrollFactor(0, 1).setFlipX(true);
+            
+        if(withBushes){
+            this.add.tileSprite(-100,0,2133, this.game.config.height,'forest_layer_5').setOrigin(0).setScrollFactor(0, 1).setFlipX(true);
+        }
     }
 
     formPopUp(title, content, titleSize, width, height, inputParams){

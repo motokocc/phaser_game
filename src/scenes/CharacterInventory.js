@@ -8,9 +8,7 @@ import UpperUi from '../components/upperUI';
 class CharacterInventory extends BaseScene {
 
     create(){
-        this.gameBg = this.add.image(-2,-7.5,'inventory_bg');
-        this.gameBg.setOrigin(0,0);
-        this.gameBg.setScale(1.10);
+        this.generateBg();
 
         this.upper = new UpperUi(this);
         this.add.existing(this.upper);

@@ -133,6 +133,16 @@ import smoke from '../images/spritesheets/smoke_spritesheet.png';
 import alpha_idle from '../images/spritesheets/alpha_idle.png';
 import alpha_run from '../images/spritesheets/alpha_run.png';
 
+//Parallax BG
+import forest_layer_0 from '../images/bg/parallax_bg/Forest/layer_0.png';
+import forest_layer_1 from '../images/bg/parallax_bg/Forest/layer_1.png';
+import forest_layer_2 from '../images/bg/parallax_bg/Forest/layer_2.png';
+import forest_layer_3 from '../images/bg/parallax_bg/Forest/layer_3.png';
+import forest_layer_4 from '../images/bg/parallax_bg/Forest/layer_4.png';
+import forest_layer_5 from '../images/bg/parallax_bg/Forest/layer_5.png';
+
+
+
 class LoadingScreen extends Phaser.Scene {
 
     init(data){
@@ -143,6 +153,15 @@ class LoadingScreen extends Phaser.Scene {
         //From IPFS
         this.load.image('Alpha', "https://ipfs.infura.io/ipfs/QmXwhouX6z9DLtBmpGiGwpDu9W8NCyMhtzHW4Bqfct3Rfd");
         this.load.image('Saya', "https://ipfs.infura.io/ipfs/QmUDQdkK6DVm6r281TMgskRDdU7WK6x2dkw2TMCiJ9mzYF");
+
+        //Parallax BG
+        //Forest
+        this.load.image('forest_layer_0', forest_layer_0);
+        this.load.image('forest_layer_1', forest_layer_1);
+        this.load.image('forest_layer_2', forest_layer_2);
+        this.load.image('forest_layer_3', forest_layer_3);
+        this.load.image('forest_layer_4', forest_layer_4);
+        this.load.image('forest_layer_5', forest_layer_5);
 
         //Image Alt
         this.load.image('Alpha_alt', alphaAlt);

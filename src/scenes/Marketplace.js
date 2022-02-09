@@ -7,9 +7,7 @@ import UpperUi from '../components/upperUI';
 class Marketplace extends BaseScene {
 
     create(){
-        this.gameBg = this.add.image(-2,-7.5,'inventory_bg');
-        this.gameBg.setOrigin(0,0);
-        this.gameBg.setScale(1.10);
+        this.generateBg();
 
         this.itemsOnSale=[];
         this.cardsOnSale=[];

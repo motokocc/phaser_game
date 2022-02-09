@@ -1,13 +1,11 @@
 import { tutorialDialogue } from '../js/character_dialogues/tutorial';
 import DialogBox from '../components/dialogBox';
-import Phaser from 'phaser';
+import BaseScene from '../plugins/BaseScene';
 
-class TutorialScreen extends Phaser.Scene {
+class TutorialScreen extends BaseScene{
 
     create(){
-        let gameBg = this.add.image(0,0,'background');
-        gameBg.setOrigin(0,0);
-        gameBg.setScale(1.1);
+        this.generateBg();
 
         this.anims.create({
             key: 'elf_idle',
