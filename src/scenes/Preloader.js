@@ -141,6 +141,16 @@ import forest_layer_3 from '../images/bg/parallax_bg/Forest/layer_3.png';
 import forest_layer_4 from '../images/bg/parallax_bg/Forest/layer_4.png';
 import forest_layer_5 from '../images/bg/parallax_bg/Forest/layer_5.png';
 
+//Explore Assets
+import adventure_mode_button from '../images/explore_page/adventure_mode_button.png';
+import event_mode_button from '../images/explore_page/event_mode_button.png';
+import story_mode_button from '../images/explore_page/story_mode_button.png';
+import tower_mode_button from '../images/explore_page/tower_mode_button.png';
+import start_mode_button from '../images/explore_page/start_mode_button.png';
+import lock from '../images/explore_page/lock.png';
+import lock_big from '../images/explore_page/lock_big.png';
+import select_mode_text from '../images/explore_page/select_mode_text.png';
+import setup_team_text from '../images/explore_page/setup_team_text.png';
 
 
 class LoadingScreen extends Phaser.Scene {
@@ -289,6 +299,17 @@ class LoadingScreen extends Phaser.Scene {
         this.load.spritesheet("smoke", smoke, { frameWidth: 500, frameHeight: 500 });
         this.load.spritesheet("alpha_idle", alpha_idle, { frameWidth: 335.1, frameHeight: 250 });
         this.load.spritesheet("alpha_run", alpha_run, { frameWidth: 335.1, frameHeight: 250 });
+
+        //Explore
+        this.load.image('adventure_mode_button', adventure_mode_button);
+        this.load.image('event_mode_button', event_mode_button);
+        this.load.image('story_mode_button', story_mode_button);
+        this.load.image('tower_mode_button', tower_mode_button);
+        this.load.image('start_mode_button', start_mode_button);
+        this.load.image('lock', lock);
+        this.load.image('lock_big', lock_big);
+        this.load.image('select_mode_text', select_mode_text);
+        this.load.image('setup_team_text', setup_team_text);
 
         //Audio Files
         this.load.audio('clickEffect', [clickSound]);

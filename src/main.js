@@ -16,6 +16,7 @@ import Marketplace from './scenes/Marketplace';
 import Shop from './scenes/Shop';
 import Missions from './scenes/Missions';
 import Explore from './scenes/Explore';
+import Adventure from './scenes/Adventure';
 
 const config = {
     widht: 800,
@@ -58,15 +59,16 @@ game.scene.add("shop", Shop);
 game.scene.add("missions", Missions);
 game.scene.add("game", Game);
 game.scene.add("explore", Explore);
+game.scene.add("adventure", Adventure);
 
 //game.scene.start("loading", {nextPage: "titlescreen"});
 //game.scene.start("loading", {nextPage: "summoningArea"});
 //game.scene.start("loading", {nextPage: "tutorial"});
-game.scene.start("loading", {nextPage: "game"});
+//game.scene.start("loading", {nextPage: "game"});
 //game.scene.start("loading", {nextPage: "roullete"});
 //game.scene.start("credits");
 //game.scene.start("loading", {nextPage: "inventory"});
 //game.scene.start("loading", {nextPage: "marketplace"});
 //game.scene.start("loading", {nextPage: "shop"});
 //game.scene.start("loading", {nextPage: "missions"});
-//game.scene.start("loading", {nextPage: "explore"});
+game.scene.start("loading", {nextPage: "explore"});
