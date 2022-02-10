@@ -73,25 +73,25 @@ class Explore extends BaseScene {
             onComplete: () => {
                 this.tweens.add({
                     targets: storyMode,
-                    x: { value: buttonX, duration: 250, ease: 'easeOut' },
+                    x: { value: buttonX, duration: 250, ease: 'Back.easeOut' },
                     delay: 100,
                 })
 
                 this.tweens.add({
                     targets: this.adventure_container,
-                    x: { value: -buttonX, duration: 250, ease: 'easeOut' },
+                    x: { value: -buttonX, duration: 250, ease: 'Back.easeOut' },
                     delay: 250
                 }) 
 
                 this.tweens.add({
                     targets: this.tower_container,
-                    x: { value: -buttonX, duration: 250, ease: 'easeOut' },
+                    x: { value: -buttonX, duration: 250, ease: 'Back.easeOut' },
                     delay: 400
                 }) 
 
                 this.tweens.add({
                     targets: this.event_container,
-                    x: { value: -buttonX, duration: 250, ease: 'easeOut' },
+                    x: { value: -buttonX, duration: 250, ease: 'Back.easeOut' },
                     delay: 550,
                     onComplete:() => {
                         buttons.forEach(button => {
@@ -111,24 +111,24 @@ class Explore extends BaseScene {
                                             //Retract game mode buttons
                                             this.tweens.add({
                                                 targets: storyMode,
-                                                x: { value: buttonXInitial, duration: 250, ease: 'easeOut' },
+                                                x: { value: buttonXInitial, duration: 250, ease: 'Back.easeIn' },
                                             })
 
                                             this.tweens.add({
                                                 targets: this.adventure_container,
-                                                x: { value: 0, duration: 250, ease: 'easeOut' },
+                                                x: { value: 0, duration: 250, ease: 'Back.easeIn' },
                                                 delay: 150
                                             }) 
 
                                             this.tweens.add({
                                                 targets: this.tower_container,
-                                                x: { value: 0, duration: 250, ease: 'easeOut' },
+                                                x: { value: 0, duration: 250, ease: 'Back.easeIn' },
                                                 delay: 300
                                             }) 
 
                                             this.tweens.add({
                                                 targets: this.event_container,
-                                                x: { value: 0, duration: 250, ease: 'easeOut' },
+                                                x: { value: 0, duration: 250, ease: 'Back.easeIn' },
                                                 delay: 450,
                                                 onComplete:() => {
                                                     boxText.setTexture('setup_team_text');
@@ -136,21 +136,30 @@ class Explore extends BaseScene {
                                                         targets: boxContainer,
                                                         x: { value: 0, duration: 250, ease: 'Power1'},
                                                         onComplete: () => {
+                                                            this.time.addEvent({
+                                                                duration: 1000,
+                                                                delay: 250,
+                                                                repeat: 2,
+                                                                callback: () => {
+                                                                    this.sound.play('cardPlace');
+                                                                }
+                                                            });
+
                                                             this.tweens.add({
                                                                 targets: card_1,
-                                                                x: { value: buttonX - card_2.displayWidth - this.paddingX, duration: 250, ease: 'easeOut' },
+                                                                x: { value: buttonX - card_2.displayWidth - this.paddingX, duration: 250, ease: 'Power1' },
                                                                 delay: 100
                                                             })
 
                                                             this.tweens.add({
                                                                 targets: card_2,
-                                                                x: { value: buttonX, duration: 250, ease: 'easeOut' },
+                                                                x: { value: buttonX, duration: 250, ease: 'Power1' },
                                                                 delay: 350
                                                             })
 
                                                             this.tweens.add({
                                                                 targets: card_3,
-                                                                x: { value: buttonX + card_2.displayWidth + this.paddingX, duration: 250, ease: 'easeOut' },
+                                                                x: { value: buttonX + card_2.displayWidth + this.paddingX, duration: 250, ease: 'Power1' },
                                                                 delay: 600,
                                                                 onComplete: () => {
                                                                     cardSlots.forEach(card => {
