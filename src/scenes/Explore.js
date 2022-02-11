@@ -1,16 +1,13 @@
 import 'regenerator-runtime/runtime';
 import BaseScene from '../plugins/BaseScene';
 import { getSoundSettings } from '../js/utils';
+import { ScrollablePanel, FixWidthSizer } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 
 class Explore extends BaseScene {
 
     create(){
-        let gameModeData = {
-            mode: null,
-            team: []
-        }
-
         this.generateBg(true);
+
         //Left side ui
         let boxContainer = this.add.container(-this.gameW*0.3,0);
         let box = this.add.rectangle(0, 0, this.gameW*0.30, this.gameH, 0x000000, 0.95).setOrigin(0);
@@ -48,16 +45,44 @@ class Explore extends BaseScene {
         this.event_container.add([eventMode]);
 
         //Team Setup cards
-        let card_1 = this.add.sprite(buttonXInitial, this.gameH/2, 'cardBack').setOrigin(0.5).setScale(0.7)
+        this.card_1_container = this.add.container();
+        let card_1 = this.add.sprite(buttonXInitial, this.gameH/2, 'cardSlot').setOrigin(0.5).setName('card_1')
            .setState(this.player.playerInfo.level >= 20? 1: 0);
-        let card_2 = this.add.sprite(buttonXInitial, this.gameH/2, 'cardBack').setOrigin(0.5).setScale(0.7)
+        this.card_1_container.add([card_1]);
+
+        this.card_2_container = this.add.container();
+        let card_2 = this.add.sprite(buttonXInitial, this.gameH/2, 'cardSlot').setOrigin(0.5).setName('card_2')
             .setState(this.player.playerInfo.level >= 10? 1: 0);
-        let card_3 = this.add.sprite(buttonXInitial, this.gameH/2, 'cardBack').setOrigin(0.5).setScale(0.7)
+        this.card_2_container.add([card_2]);
+
+        let card_3 = this.add.sprite(buttonXInitial, this.gameH/2, 'cardSlot').setOrigin(0.5).setName('card_3')
             .setState(1);
+
+        this.startGameButton = this.add.sprite(buttonX, card_2.y + card_2.displayHeight*0.7, 'start_mode_button')
+            .setInteractive().setOrigin(0.5).setScale(0.7).setAlpha(0)
+            .on('pointerdown', () => {
+                this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('default')});
+                this.scene.start('adventure');
+            })
+            .on('pointerover', () => {
+                this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
+                this.startGameButton.setScale(0.75);
+            })
+            .on('pointerout', () => this.startGameButton.setScale(0.7));
 
 
         let buttons = [adventureMode, towerMode, storyMode, eventMode];
         let cardSlots = [card_1, card_2, card_3];
+
+        this.add.sprite(this.gameW - this.paddingX, this.paddingX, 'exitIcon').setOrigin(1,0).setInteractive().setScale(0.6)
+            .on('pointerdown', () => {
+                this.player.gameModeData = {
+                    mode: null,
+                    team: { card_1: null, card_2: null, card_3: null }
+                };
+
+                this.scene.start('game');
+            });
 
         buttons.forEach(button => {
             if(button.state == 'disabled'){
@@ -67,10 +92,32 @@ class Explore extends BaseScene {
             }
         })
 
+        cardSlots.forEach(slot => {
+            if(!slot.state){
+                slot.tint = 0x808080;
+                let lockBig = this.add.sprite(slot.x, slot.y, 'lock_big').setOrigin(0.5);
+                let cardText = this.add.text(
+                    lockBig.x, lockBig.y + lockBig.displayHeight*0.8,
+                    `Unlock at Level ${slot.name == 'card_2'? 10: 20}`,
+                    {fontFamily: 'Arial', fontSize: 16, align: 'justify'}
+                ).setOrigin(0.5).setWordWrapWidth(slot.displayWidth*0.8);
+                this[`${slot.name}_container`].add([lockBig, cardText]);
+            }
+        })
+
         this.tweens.add({
             targets: boxContainer,
             x: { value: 0, duration: 250, ease: 'Power1'},
             onComplete: () => {
+                this.time.addEvent({
+                    duration: 1000,
+                    delay: 150,
+                    repeat: 3,
+                    callback: () => {
+                        this.sound.play('swoosh', {volume: getSoundSettings('default') });
+                    }
+                });
+
                 this.tweens.add({
                     targets: storyMode,
                     x: { value: buttonX, duration: 250, ease: 'Back.easeOut' },
@@ -101,13 +148,21 @@ class Explore extends BaseScene {
                             if(button.state == 'enabled'){
                                 button.on('pointerup', () => {
 
-                                    gameModeData.mode = button.name;
+                                    this.player.gameModeData.mode = button.name;
 
                                     //Let UI
                                     this.tweens.add({
                                         targets: boxContainer,
                                         x: { value: -this.gameW*0.3, duration: 250, ease: 'Power1'},
                                         onComplete:()=>{
+                                            this.time.addEvent({
+                                                duration: 1000,
+                                                delay: 150,
+                                                repeat: 3,
+                                                callback: () => {
+                                                    this.sound.play('swoosh', {volume: getSoundSettings('default') });
+                                                }
+                                            });
                                             //Retract game mode buttons
                                             this.tweens.add({
                                                 targets: storyMode,
@@ -141,19 +196,19 @@ class Explore extends BaseScene {
                                                                 delay: 250,
                                                                 repeat: 2,
                                                                 callback: () => {
-                                                                    this.sound.play('cardPlace');
+                                                                    this.sound.play('cardPlace', {volume: getSoundSettings('default') });
                                                                 }
                                                             });
 
                                                             this.tweens.add({
-                                                                targets: card_1,
-                                                                x: { value: buttonX - card_2.displayWidth - this.paddingX, duration: 250, ease: 'Power1' },
+                                                                targets: this.card_1_container,
+                                                                x: { value: -buttonX - card_2.displayWidth - this.paddingX, duration: 250, ease: 'Power1' },
                                                                 delay: 100
                                                             })
 
                                                             this.tweens.add({
-                                                                targets: card_2,
-                                                                x: { value: buttonX, duration: 250, ease: 'Power1' },
+                                                                targets: this.card_2_container,
+                                                                x: { value: -buttonX, duration: 250, ease: 'Power1' },
                                                                 delay: 350
                                                             })
 
@@ -167,16 +222,17 @@ class Explore extends BaseScene {
                                                                             card.setInteractive();
 
                                                                             card.on('pointerdown', () => {
-                                                                                console.log('hey');
+                                                                                this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('default')});
+                                                                                this.selectCard(card);
                                                                             })
 
                                                                             card.on('pointerover', () => {
                                                                                 this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
-                                                                                card.setScale(0.75);
+                                                                                card.setScale(1.05);
                                                                             })
 
                                                                             card.on('pointerout', () => {
-                                                                                card.setScale(0.7);
+                                                                                card.setScale(1);
                                                                             })
                                                                         }
                                                                         else{
@@ -194,7 +250,7 @@ class Explore extends BaseScene {
                                 })
 
                                 button.on('pointerdown', () => {
-                                    this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
+                                    this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('default')});
                                 })
 
                                 button.on('pointerover', () => {
@@ -227,6 +283,104 @@ class Explore extends BaseScene {
             }
         });
     }
+
+    selectCard(cardSlot){
+        this.player.gameModeData.team[cardSlot.name] = null;
+
+        this[`cardFlip_${cardSlot.name}`] = this.plugins.get('rexFlip').add(cardSlot, {
+            face: 'back',
+            front: {key: 'Alpha_slot'},
+            back: {key: 'cardSlot'},
+            duration: 250
+        });
+
+        this.popUpselection(cardSlot)
+    }
+
+    popUpselection(cardSlot){
+        this.formPopupContainer = this.add.group().setDepth(15);
+        let popupBg = this.add.rectangle(0,0, this.gameW, this.gameH, 0x000000, 0.7).setOrigin(0).setInteractive();
+
+        let sizer = new FixWidthSizer(this, {
+            space: {
+                left: 10,
+                right: 10,
+                bottom: 10,
+                item: 10,
+                line: 10
+            }
+        }).layout();
+        this.add.existing(sizer);
+
+        let panelBox = new ScrollablePanel(this, {
+            x: this.gameW/2,
+            y: this.gameH/2,
+            width: this.gameW*0.4,
+            height: this.gameH/2,
+            scrollMode:0,
+            background: this.add.rexRoundRectangle(this.gameW/2, this.gameH/2, this.gameW*0.4, this.gameH/2, 5, 0x000000, 1)
+            .setStrokeStyle(1, 0xffffff, 1).setInteractive(),
+            panel: {
+                child: sizer
+            },
+            space:{
+                left: 10,
+                right: 20,
+                top: 10,
+                bottom: 10,
+            },
+            slider: {
+                track: this.add.rexRoundRectangle(0, 0, 10, this.gameH/2, 4.5, 0x000000, 0.9).setStrokeStyle(0.5, 0xffffff, 0.8),
+                thumb: this.add.rexRoundRectangle(0, 0, 10, this.paddingX*4, 4.5, 0xffffff, 0.8).setAlpha(0.5),
+                input: 'drag',
+                position: 'right',
+            },
+        }).setOrigin(0.5).layout();
+        this.add.existing(panelBox);
+
+
+        this.formPopupContainer.addMultiple([popupBg, panelBox, sizer]);
+
+        popupBg.on('pointerdown', () => {
+            this.formPopupContainer.destroy(true);
+        });
+
+        //Test data
+        let cards = [
+            {name: 'Alpha'}
+        ]
+        //End test data
+        let filteredCard = cards.filter(
+            card => card.name != this.player.gameModeData.team.card_1 && card.name != this.player.gameModeData.team.card_2 && card.name != this.player.gameModeData.team.card_3
+        )
+
+        filteredCard.forEach(card => {
+            sizer.add(
+                this.add.sprite(0, 0, `${card.name}_mini`).setInteractive().setScale(0.7)
+                    .on('pointerdown', () => {
+                        this.player.gameModeData.team[cardSlot.name] = card.name;
+
+                        this[`cardFlip_${cardSlot.name}`].setFrontFace(`${card.name}_slot`);
+                        this[`cardFlip_${cardSlot.name}`].flip();
+              
+                        this.formPopupContainer.destroy(true);
+                    })
+            )
+        })
+        panelBox.layout();
+    }
+
+    update(){
+        let { mode, team } = this.player.gameModeData;
+
+        if(mode && (team.card_1 || team.card_2 || team.card_3)){
+            this.startGameButton.setAlpha(1);
+        }
+        else{
+            this.startGameButton.setAlpha(0);
+        }
+    }
 }
+
 
 export default Explore;

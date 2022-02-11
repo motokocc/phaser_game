@@ -28,6 +28,15 @@ class Player extends Phaser.Plugins.BasePlugin {
             title: '',
             content: '',
         }
+
+        this.gameModeData = {
+            mode: null,
+            team: {
+                card_1: null,
+                card_2: null,
+                card_3: null
+            }
+        }
     }
 
     async loadWeb3() {

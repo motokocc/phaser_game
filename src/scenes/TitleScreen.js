@@ -34,7 +34,6 @@ class TitleScreen extends BaseScene {
         this.generateBg(true);
 
         let titleLogo = this.add.sprite(this.game.config.width/2, buttonPosY * 2.2,'gameTitle');
-        let soundButton = this.add.sprite(this.game.config.width*0.95, buttonPosY*0.5,'soundOn').setInteractive();
         this.connectButton = this.add.sprite(this.game.config.width/2, buttonPosY * 4.4,'connectBtn').setInteractive();
 
         //Game version
@@ -63,25 +62,6 @@ class TitleScreen extends BaseScene {
             });
         });
 
-        //Sound Button
-        soundButton.on('pointerover', () => {
-            soundButton.setAlpha(0.7)
-            this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
-        });
-        soundButton.on('pointerout', () => {
-            soundButton.setAlpha(1)
-        });
-        soundButton.on('pointerdown', () => {
-            if(this.sound.mute){
-                soundButton.setTexture('soundOn')
-            }
-            else{
-                soundButton.setTexture('soundOff')
-            }
-
-            this.sound.mute = !this.sound.mute;
-        });
-
         //Start Button
         this.connectButton.on('pointerdown', async() => {
             this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});
@@ -102,7 +82,6 @@ class TitleScreen extends BaseScene {
 
         //Animations
         titleLogo.setAlpha(0);
-        soundButton.setAlpha(0);
         this.connectButton.setAlpha(0);
         this.cameras.main.fadeIn(1000);
 
@@ -114,7 +93,7 @@ class TitleScreen extends BaseScene {
         });
 
         this.tweens.add({
-            targets: [this.connectButton, soundButton],
+            targets: [this.connectButton],
             alpha: { value: 1, duration: 3000, ease: 'Power1'},
             yoyo: false,
             delay: 3000

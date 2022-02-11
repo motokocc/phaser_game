@@ -4,8 +4,6 @@ import bg from '../images/bg.PNG';
 import inventory_bg from '../images/bg/inventory_bg.png';
 import gameTitle from '../images/title.png';
 import startBtn from '../images/buttons/start.png';
-import soundOff from '../images/icons/sound_off.png';
-import soundOn from '../images/icons/sound_on.png';
 import connectBtn from '../images/buttons/connect.png';
 import light from '../images/light.png';
 
@@ -16,6 +14,7 @@ import spinWheelSound from '../audio/spin_wheel.wav';
 import optionSound from '../audio/options_sound.wav';
 import titleBgMusic from '../audio/title_bg.mp3';
 import cardPlace from '../audio/card_place.wav';
+import swoosh from '../audio/swoosh.wav';
 
 import elf from '../images/elf-0.png';
 import scroll from '../images/UI/scroll.png';
@@ -155,7 +154,9 @@ import lock from '../images/explore_page/lock.png';
 import lock_big from '../images/explore_page/lock_big.png';
 import select_mode_text from '../images/explore_page/select_mode_text.png';
 import setup_team_text from '../images/explore_page/setup_team_text.png';
-
+import alpha_slot from '../images/explore_page/card_slots/alpha_slot.png';
+import saya_slot from '../images/explore_page/card_slots/saya_slot.png';
+import card_yellow_slot from '../images/explore_page/card_slots/card_yellow_slot.png';
 
 class LoadingScreen extends Phaser.Scene {
 
@@ -293,8 +294,6 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('equipButton', equipButton);
         this.load.image('unequipButton', unequipButton);
         this.load.image('connectBtn', connectBtn);
-        this.load.image('soundOff', soundOff);
-        this.load.image('soundOn', soundOn);
         this.load.image('light', light);
         this.load.image('inventory_bg', inventory_bg);
 
@@ -314,6 +313,9 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('lock_big', lock_big);
         this.load.image('select_mode_text', select_mode_text);
         this.load.image('setup_team_text', setup_team_text);
+        this.load.image('cardSlot', card_yellow_slot);
+        this.load.image('Alpha_slot', alpha_slot);
+        this.load.image('Saya_slot', saya_slot);
 
         //Audio Files
         this.load.audio('clickEffect', [clickSound]);
@@ -322,6 +324,7 @@ class LoadingScreen extends Phaser.Scene {
         this.load.audio('spinWheelSound', [spinWheelSound]);
         this.load.audio('optionSound', [optionSound]);
         this.load.audio('cardPlace', [cardPlace]);
+        this.load.audio('swoosh', [swoosh]);
 
         this.progressBar = this.add.graphics();
         this.progressBox = this.add.graphics();

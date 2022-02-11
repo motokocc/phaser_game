@@ -208,6 +208,7 @@ export default class Settings extends Phaser.Scene{
 
                 localStorage.setItem("titleBgMusic", value);
                 localStorage.setItem("optionSound", value);
+                localStorage.setItem("default", value);
                 localStorage.setItem("spinWheelSound", value < 1? value * 2 : 1 );
                 localStorage.setItem("hoverEffect", hoverValue < 1? hoverValue : 1);
                 localStorage.setItem("clickEffect", hoverValue < 1? hoverValue : 1);

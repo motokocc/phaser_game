@@ -6,7 +6,9 @@ export const getSoundSettings = (sound) => {
         spinWheelSound: 0.4,
         clickEffect: 1,
         optionSound: 0.2,
-        titleBgMusic: 0.2
+        titleBgMusic: 0.2,
+        cardPlace: 0.2,
+        default:0.2,
     }
 
     return soundVolume? soundVolume : defaultVolume[sound];
