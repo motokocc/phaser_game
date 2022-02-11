@@ -61,11 +61,11 @@ class Explore extends BaseScene {
         this.startGameButton = this.add.sprite(buttonX, card_2.y + card_2.displayHeight*0.7, 'start_mode_button')
             .setInteractive().setOrigin(0.5).setScale(0.7).setAlpha(0)
             .on('pointerdown', () => {
-                this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('default')});
+                this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('high')});
                 this.scene.start('adventure');
             })
             .on('pointerover', () => {
-                this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
+                this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('high')});
                 this.startGameButton.setScale(0.75);
             })
             .on('pointerout', () => this.startGameButton.setScale(0.7));
@@ -222,12 +222,12 @@ class Explore extends BaseScene {
                                                                             card.setInteractive();
 
                                                                             card.on('pointerdown', () => {
-                                                                                this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('default')});
+                                                                                this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('high')});
                                                                                 this.selectCard(card);
                                                                             })
 
                                                                             card.on('pointerover', () => {
-                                                                                this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
+                                                                                this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('high')});
                                                                                 card.setScale(1.05);
                                                                             })
 
@@ -250,11 +250,11 @@ class Explore extends BaseScene {
                                 })
 
                                 button.on('pointerdown', () => {
-                                    this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('default')});
+                                    this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('high')});
                                 })
 
                                 button.on('pointerover', () => {
-                                    this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('hoverEffect')});
+                                    this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('high')});
                                     button.setScale(1.05);
                                 })
 
@@ -265,6 +265,7 @@ class Explore extends BaseScene {
                             else{
                                 button.on('pointerdown', () => {
                                     button.disableInteractive();
+                                    this.sound.play('denied', {loop: false, volume: getSoundSettings('default')});
 
                                     if(button.name == 'adventure'){
                                         this.popUpAlert('Game mode locked', 'You must finish Chapter 1 of Story mode first before you can play this mode.');
@@ -358,6 +359,7 @@ class Explore extends BaseScene {
             sizer.add(
                 this.add.sprite(0, 0, `${card.name}_mini`).setInteractive().setScale(0.7)
                     .on('pointerdown', () => {
+                        this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('high')});
                         this.player.gameModeData.team[cardSlot.name] = card.name;
 
                         this[`cardFlip_${cardSlot.name}`].setFrontFace(`${card.name}_slot`);

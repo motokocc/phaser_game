@@ -9,6 +9,7 @@ export const getSoundSettings = (sound) => {
         titleBgMusic: 0.2,
         cardPlace: 0.2,
         default:0.2,
+        high: 1,
     }
 
     return soundVolume? soundVolume : defaultVolume[sound];

@@ -54,7 +54,7 @@ class BaseScene extends Phaser.Scene {
         let popupBody = this.add.sprite(this.gameW/2, this.gameH/2,'scroll').setScale(0,1.3);
 
         let popupTitle = this.add.text(popupBody.x, popupBody.y - popupBody.height*0.4, title,
-            {fontFamily:'Arial', color: '#613e1e', fontSize: titleSize || '20px', fontStyle: 'Bold'}
+            {fontFamily:'GameTextFont', color: '#613e1e', fontSize: titleSize || '20px'} 
          ).setOrigin(0.5).setScale(0,1.3);
 
         this.popupContainer.addMultiple([popupBg, popupBody, popupTitle].concat(content.getChildren()));

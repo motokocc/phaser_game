@@ -72,3 +72,4 @@ game.scene.start("loading", {nextPage: "game"});
 //game.scene.start("loading", {nextPage: "shop"});
 //game.scene.start("loading", {nextPage: "missions"});
 //game.scene.start("loading", {nextPage: "explore"});
+//game.scene.start("loading", {nextPage: "adventure"});
