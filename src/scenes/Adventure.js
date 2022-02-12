@@ -1,5 +1,6 @@
 import 'regenerator-runtime/runtime';
 import Phaser from 'phaser';
+import { getSoundSettings } from '../js/utils';
 
 class Adventure extends Phaser.Scene {
 
@@ -21,6 +22,18 @@ class Adventure extends Phaser.Scene {
             repeat: -1
         });
 
+        //Audio
+        let battle_bgm = this.sound.add('battle_loop', {loop: true, volume: getSoundSettings('default')});        
+        let intro_bgm = this.sound.add('battle_intro', { volume: getSoundSettings('default') });
+
+        setTimeout(() => {
+            intro_bgm.play();
+
+            intro_bgm.once('complete', music => {
+                battle_bgm.play();
+            });
+        }, 500)
+        
         //BG
         let forest_width = 2133;
         this.forest_layer_0 = this.add.tileSprite(0,0,forest_width, this.game.config.height,'forest_layer_0').setOrigin(0).setScrollFactor(0, 1);

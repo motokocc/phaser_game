@@ -16,6 +16,9 @@ import titleBgMusic from '../audio/title_bg.mp3';
 import cardPlace from '../audio/card_place.wav';
 import swoosh from '../audio/swoosh.wav';
 import denied from '../audio/denied.wav';
+import battle_intro from '../audio/bgm/battle_intro.ogg';
+import battle_loop from '../audio/bgm/battle_loop.ogg';
+
 
 import elf from '../images/elf-0.png';
 import scroll from '../images/UI/scroll.png';
@@ -327,6 +330,8 @@ class LoadingScreen extends Phaser.Scene {
         this.load.audio('cardPlace', [cardPlace]);
         this.load.audio('swoosh', [swoosh]);
         this.load.audio('denied', [denied]);
+        this.load.audio('battle_intro', [battle_intro]);
+        this.load.audio('battle_loop', [battle_loop]);
 
         this.progressBar = this.add.graphics();
         this.progressBox = this.add.graphics();

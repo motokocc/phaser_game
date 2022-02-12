@@ -22,7 +22,7 @@ class Explore extends BaseScene {
         let adventureMode = this.add.sprite(buttonXInitial, this.gameH/2 - this.paddingX*0.6, 'adventure_mode_button')
             .setOrigin(0.5,1)
             .setName('adventure')
-            .setState('disabled');
+            .setState('enabled');
         this.adventure_container.add([adventureMode]);
 
         this.tower_container = this.add.container();
@@ -32,10 +32,12 @@ class Explore extends BaseScene {
             .setState('disabled');
         this.tower_container.add([towerMode]);
 
+        this.story_container = this.add.container();
         let storyMode = this.add.sprite(buttonXInitial, (adventureMode.y - adventureMode.displayHeight) - (this.paddingX*1.2), 'story_mode_button')
             .setOrigin(0.5,1)
             .setName('story')
-            .setState('enabled');
+            .setState('disabled');
+        this.story_container.add([storyMode]);
 
         this.event_container = this.add.container();
         let eventMode = this.add.sprite(buttonXInitial, (towerMode.y +  towerMode.displayHeight) + (this.paddingX*1.2), 'event_mode_button')
@@ -62,7 +64,7 @@ class Explore extends BaseScene {
             .setInteractive().setOrigin(0.5).setScale(0.7).setAlpha(0)
             .on('pointerdown', () => {
                 this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('high')});
-                this.scene.start('adventure');
+                this.scene.start('transitionScreen', { nextPage: this.player.gameModeData.mode });
             })
             .on('pointerover', () => {
                 this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('high')});
@@ -119,8 +121,8 @@ class Explore extends BaseScene {
                 });
 
                 this.tweens.add({
-                    targets: storyMode,
-                    x: { value: buttonX, duration: 250, ease: 'Back.easeOut' },
+                    targets: this.story_container,
+                    x: { value: -buttonX, duration: 250, ease: 'Back.easeOut' },
                     delay: 100,
                 })
 
@@ -165,8 +167,8 @@ class Explore extends BaseScene {
                                             });
                                             //Retract game mode buttons
                                             this.tweens.add({
-                                                targets: storyMode,
-                                                x: { value: buttonXInitial, duration: 250, ease: 'Back.easeIn' },
+                                                targets: this.story_container,
+                                                x: { value: 0 , duration: 250, ease: 'Back.easeIn' },
                                             })
 
                                             this.tweens.add({
@@ -196,7 +198,7 @@ class Explore extends BaseScene {
                                                                 delay: 250,
                                                                 repeat: 2,
                                                                 callback: () => {
-                                                                    this.sound.play('cardPlace', {volume: getSoundSettings('default') });
+                                                                    this.sound.play('cardPlace', {volume: getSoundSettings('default')*2 });
                                                                 }
                                                             });
 
@@ -266,8 +268,10 @@ class Explore extends BaseScene {
                                 button.on('pointerdown', () => {
                                     button.disableInteractive();
                                     this.sound.play('denied', {loop: false, volume: getSoundSettings('default')});
-
-                                    if(button.name == 'adventure'){
+                                    if(button.name == 'story'){
+                                        this.popUpAlert('Game mode locked', 'This game mode is not available at the moment. Please try again later.');
+                                    }
+                                    else if(button.name == 'adventure'){
                                         this.popUpAlert('Game mode locked', 'You must finish Chapter 1 of Story mode first before you can play this mode.');
                                     }
                                     else if(button.name == 'tower'){
@@ -348,7 +352,8 @@ class Explore extends BaseScene {
 
         //Test data
         let cards = [
-            {name: 'Alpha'}
+            {name: 'Alpha'},
+            {name: 'Saya'}
         ]
         //End test data
         let filteredCard = cards.filter(

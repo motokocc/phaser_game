@@ -17,6 +17,7 @@ import Shop from './scenes/Shop';
 import Missions from './scenes/Missions';
 import Explore from './scenes/Explore';
 import Adventure from './scenes/Adventure';
+import TransitionScreen from './scenes/TransitionScreen';
 
 const config = {
     widht: 800,
@@ -60,6 +61,7 @@ game.scene.add("missions", Missions);
 game.scene.add("game", Game);
 game.scene.add("explore", Explore);
 game.scene.add("adventure", Adventure);
+game.scene.add("transitionScreen", TransitionScreen);
 
 //game.scene.start("loading", {nextPage: "titlescreen"});
 //game.scene.start("loading", {nextPage: "summoningArea"});
@@ -73,3 +75,4 @@ game.scene.start("loading", {nextPage: "game"});
 //game.scene.start("loading", {nextPage: "missions"});
 //game.scene.start("loading", {nextPage: "explore"});
 //game.scene.start("loading", {nextPage: "adventure"});
+//game.scene.start("loading", {nextPage: "transitionScreen"});
