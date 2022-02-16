@@ -101,7 +101,7 @@ class Explore extends BaseScene {
                 let cardText = this.add.text(
                     lockBig.x, lockBig.y + lockBig.displayHeight*0.8,
                     `Unlock at Level ${slot.name == 'card_2'? 10: 20}`,
-                    {fontFamily: 'Arial', fontSize: 16, align: 'justify'}
+                    {fontFamily: 'GameTextFont', fontSize: 16, align: 'justify'}
                 ).setOrigin(0.5).setWordWrapWidth(slot.displayWidth*0.8);
                 this[`${slot.name}_container`].add([lockBig, cardText]);
             }

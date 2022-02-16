@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import { getSoundSettings } from '../js/utils';
 import bg from '../images/bg.PNG';
-import inventory_bg from '../images/bg/inventory_bg.png';
 import gameTitle from '../images/title.png';
 import startBtn from '../images/buttons/start.png';
 import connectBtn from '../images/buttons/connect.png';
@@ -302,7 +301,6 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('unequipButton', unequipButton);
         this.load.image('connectBtn', connectBtn);
         this.load.image('light', light);
-        this.load.image('inventory_bg', inventory_bg);
 
         //Mission
         this.load.spritesheet("ninja", ninja, { frameWidth: 297, frameHeight: 420 });
