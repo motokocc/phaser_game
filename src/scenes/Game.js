@@ -73,6 +73,7 @@ class Game extends BaseScene {
 
         // Left Notifications
         this.roullete_notif = this.add.circle(roullete_button.displayWidth - this.paddingX/2, roullete_button.y - roullete_button.displayHeight/3, 10, 0xff0000, 1);
+        this.roullete_alert = this.add.sprite(this.roullete_notif.x, this.roullete_notif.y, 'alertIcon').setOrigin(0.5).setScale(0.2)
         this.roullete_notif.setAlpha(0);
 
         //Upper Right Icons
@@ -82,8 +83,12 @@ class Game extends BaseScene {
 
         this.gift_notif = this.add.circle(gift_button.x + this.paddingX*0.9, gift_button.y - this.paddingX*0.8, 8, 0xff0000, 1);
         this.gift_notif.setAlpha(0);
+        this.gift_alert = this.add.sprite(this.gift_notif.x, this.gift_notif.y, 'alertIcon').setOrigin(0.5).setScale(0.15)
+        this.gift_alert.setAlpha(0);
         this.mail_notif = this.add.circle(mail_button.x + this.paddingX*0.9, mail_button.y - this.paddingX*0.8, 8, 0xff0000, 1);
         this.mail_notif.setAlpha(0);
+        this.mail_alert = this.add.sprite(this.mail_notif.x, this.mail_notif.y, 'alertIcon').setOrigin(0.5).setScale(0.15)
+        this.mail_alert.setAlpha(0);
 
         settings_button.setScale(0.1).setAlpha(0);
         gift_button.setScale(0.1).setAlpha(0);
@@ -95,7 +100,7 @@ class Game extends BaseScene {
         this.settings.generate(this.gameW, 0, 300, this.gameH/2 + this.paddingX , this.paddingX*0.95, this.paddingX*3, this.upper.gold_value, this.upper.gems_value);
 
         rightButtons.add([shop_button, pvp_button, mining_button, explore_button]);
-        leftButtons.add([roullete_button, black_market_button, missions_button, summon_button, this.roullete_notif]);
+        leftButtons.add([roullete_button, black_market_button, missions_button, summon_button, this.roullete_notif, this.roullete_alert]);
 
         //UI Animations
         this.tweens.add({
@@ -145,6 +150,7 @@ class Game extends BaseScene {
 
                 if(button.name == 'roullete'){
                     this.roullete_notif.setPosition(roullete_button.displayWidth + this.paddingX*0.8, roullete_button.y - roullete_button.displayHeight*0.45);
+                    this.roullete_alert.setPosition(this.roullete_notif.x, this.roullete_notif.y);
                 }
             });
 
@@ -152,6 +158,7 @@ class Game extends BaseScene {
                 button.setScale(buttonScale);
                 if(button.name == 'roullete'){
                     this.roullete_notif.setPosition(roullete_button.displayWidth + this.paddingX*0.8, roullete_button.y - roullete_button.displayHeight*0.4);
+                    this.roullete_alert.setPosition(this.roullete_notif.x, this.roullete_notif.y);
                 }
             });
 
@@ -174,8 +181,8 @@ class Game extends BaseScene {
                             gemsBox.setStrokeStyle(5, 0x613e1e, 1);
                             const goldReward = this.add.sprite(this.gameW/2 - 25, this.gameH/2-this.paddingX/2,'gold').setScale(0,1.3).setOrigin(1,0.5); 
                             const gemsReward = this.add.sprite(this.gameW/2 + 25, this.gameH/2-this.paddingX/2,'gems').setScale(0,1.3).setOrigin(0,0.5); 
-                            const goldCoins = this.add.text(goldBox.x - goldBox.width*0.7 , goldBox.y + goldBox.width, goldValue, {fontFamily: 'Arial', color:'#613e1e', fontStyle: 'Bold'}).setOrigin(0.5);
-                            const gemCoins = this.add.text(gemsBox.x + gemsBox.width*0.7 , gemsBox.y + gemsBox.width, gemValue, {fontFamily: 'Arial', color:'#613e1e', fontStyle: 'Bold'}).setOrigin(0.5);
+                            const goldCoins = this.add.text(goldBox.x - goldBox.width*0.7 , goldBox.y + goldBox.width, goldValue, {fontFamily: 'GameTextFont', color:'#613e1e', fontStyle: 'Bold'}).setOrigin(0.5);
+                            const gemCoins = this.add.text(gemsBox.x + gemsBox.width*0.7 , gemsBox.y + gemsBox.width, gemValue, {fontFamily: 'GameTextFont', color:'#613e1e', fontStyle: 'Bold'}).setOrigin(0.5);
 
                             content.addMultiple([goldBox, gemsBox, goldReward, gemsReward, goldCoins, gemCoins]);
 
@@ -221,7 +228,7 @@ class Game extends BaseScene {
                             let { title, content, id} = this.player.announcements;
 
                             let contentContainer = this.add.group();
-                            let contentBody = this.add.text(this.gameW/2, this.gameH/2, content, {fontFamily: 'Arial', color:'#613e1e', fontSize:12, align: 'justify' })
+                            let contentBody = this.add.text(this.gameW/2, this.gameH/2, content, {fontFamily: 'GameTextFont', color:'#613e1e', fontSize:12, align: 'justify' })
                             .setOrigin(0.5).setWordWrapWidth(250).setScale(0,1.3);
                             contentContainer.add(contentBody)
 
@@ -261,7 +268,7 @@ class Game extends BaseScene {
                 type: "text",
                 maxLength: 60,
                 fontSize : "12px",
-                fontFamily: "Arial",
+                fontFamily: "GameTextFont",
                 backgroundColor : "white",
                 color: "black",
                 placeholder: " Type your message here...",
@@ -276,7 +283,7 @@ class Game extends BaseScene {
                  chatBody.y - chatBody.height + this.paddingX/2,
                 '',
                  {
-                    fontFamily: 'Arial',
+                    fontFamily: 'GameTextFont',
                     fontSize: 12,
                     tags: {
                         playerName: {
@@ -371,14 +378,16 @@ class Game extends BaseScene {
     update(){
         if(getDifferenceInDays(new Date(), this.player.playerInfo.lastSpin) > 1 && this.roullete_notif.alpha == 0){
             this.roullete_notif.setAlpha(1);
+            this.roullete_alert.setAlpha(1);
         }
         else if(getDifferenceInDays(new Date(), this.player.playerInfo.lastSpin) <= 1 && this.roullete_notif.alpha == 1){
            this.roullete_notif.setAlpha(0); 
+           this.roullete_alert.setAlpha(0);
         }
 
         if(getDifferenceInDays(new Date(), this.player.playerInfo.lastReward) > 1 && this.gift_notif.alpha == 0){
             this.tweens.add({
-                targets: [this.gift_notif],
+                targets: [this.gift_notif, this.gift_alert],
                 alpha: { value: 1, duration: 600, ease: 'Power1'},
                 yoyo: false,
                 delay:1000
@@ -386,11 +395,12 @@ class Game extends BaseScene {
         }
         else if(getDifferenceInDays(new Date(), this.player.playerInfo.lastReward) <= 1 && this.gift_notif.alpha == 1){
             this.gift_notif.setAlpha(0);
+            this.gift_alert.setAlpha(0);
         }
 
         if(this.player.playerInfo.lastRead !== this.player.announcements.id && this.mail_notif.alpha == 0){
             this.tweens.add({
-                targets: this.mail_notif,
+                targets: [this.mail_notif, this.mail_alert],
                 alpha: { value: 1, duration: 600, ease: 'Power1'},
                 yoyo: false,
                 delay:1200
@@ -398,6 +408,7 @@ class Game extends BaseScene {
         }
         else if(this.player.playerInfo.lastRead == this.player.announcements.id && this.mail_notif.alpha == 1){
             this.mail_notif.setAlpha(0);
+            this.mail_alert.setAlpha(0);
         }
     }
 }

@@ -42,13 +42,13 @@ class DailyRoullete extends BaseScene {
         let gems = this.add.container();
         const gem_icon = this.add.sprite(this.paddingX, this.gameH*0.07,'gems').setOrigin(0.5).setDepth(2);
         const gem_box = this.add.rexRoundRectangle(gem_icon.x, gem_icon.y, this.paddingX*4, this.paddingX,this.paddingX/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
-        this.gems_value = this.add.text(gem_box.x + gem_box.width/2, gem_box.y, shortenLargeNumber(this.player.playerInfo.gems,2) || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
+        this.gems_value = this.add.text(gem_box.x + gem_box.width/2, gem_box.y, shortenLargeNumber(this.player.playerInfo.gems,2) || 0, {fontFamily: 'GameTextFont'}).setOrigin(0.5);
 
         //Gold
         let gold = this.add.container();
         const gold_icon = this.add.sprite(gem_box.x + gem_box.width + this.paddingX*2, this.gameH*0.07,'gold').setOrigin(0.5).setDepth(2);
         const gold_box = this.add.rexRoundRectangle(gold_icon.x, gem_icon.y, this.paddingX*4, this.paddingX, this.paddingX/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
-        this.gold_value = this.add.text(gold_box.x + gold_box.width/2, gold_box.y, shortenLargeNumber(this.player.playerInfo.gold,2) || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
+        this.gold_value = this.add.text(gold_box.x + gold_box.width/2, gold_box.y, shortenLargeNumber(this.player.playerInfo.gold,2) || 0, {fontFamily: 'GameTextFont'}).setOrigin(0.5);
 
         let currencyUI = this.add.container(0,-200);
 

@@ -32,7 +32,7 @@ class BaseScene extends Phaser.Scene {
             .setDepth(12).setScale(1.3).setStrokeStyle(1, 0xffffff, 1).setInteractive();
 
         let popupTitle = this.add.text(popupBody.x, popupBody.y - popupBody.displayHeight*0.4, title,
-            {fontFamily:'Arial', color: 'white', fontSize: titleSize || '20px', fontStyle: 'Bold'}
+            {fontFamily:'GameTextFont', color: 'white', fontSize: titleSize || '20px', fontStyle: 'Bold'}
         ).setDepth(12).setOrigin(0.5).setScale(1.3);
 
         this.formPopupContainer.addMultiple([popupBg, popupBody, popupTitle].concat(content.getChildren()));
@@ -82,7 +82,7 @@ class BaseScene extends Phaser.Scene {
         let alertGroup = this.add.group();
 
         let descriptionText = this.add.text( this.gameW/2,  this.gameH/2 - 50, description,
-            {fontFamily: 'Arial', color: '#613e1e', align: 'justify'}
+            {fontFamily: 'GameTextFont', color: '#613e1e', align: 'justify'}
         ).setOrigin(0.5,0).setWordWrapWidth(230).setScale(0,1.3);
 
         let okButton = this.add.sprite( descriptionText.x, descriptionText.y + 100, 'confirmButtonAlt').setOrigin(0.5).setInteractive().setScale(0,1.3);
@@ -168,7 +168,7 @@ class BaseScene extends Phaser.Scene {
         bubble.lineBetween(point2X, point2Y, point3X, point3Y);
         bubble.lineBetween(point1X, point1Y, point3X, point3Y);
 
-        let content = this.add.text(0, 0, quote, { fontFamily: 'Arial', fontSize: 20, color: '#000000', align: 'center', wordWrap: { width: bubbleWidth - (bubblePadding * 2) } });
+        let content = this.add.text(0, 0, quote, { fontFamily: 'GameTextFont', fontSize: 20, color: '#000000', align: 'center', wordWrap: { width: bubbleWidth - (bubblePadding * 2) } });
 
         let b = content.getBounds();
 

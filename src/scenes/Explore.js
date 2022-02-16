@@ -224,7 +224,7 @@ class Explore extends BaseScene {
                                                                             card.setInteractive();
 
                                                                             card.on('pointerdown', () => {
-                                                                                this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('high')});
+                                                                                this.sound.play('clickSelectEffect', {loop: false, volume: getSoundSettings('default')});
                                                                                 this.selectCard(card);
                                                                             })
 
@@ -364,13 +364,16 @@ class Explore extends BaseScene {
             sizer.add(
                 this.add.sprite(0, 0, `${card.name}_mini`).setInteractive().setScale(0.7)
                     .on('pointerdown', () => {
-                        this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('high')});
+                        this.sound.play('clickSelectEffect', {loop: false, volume: getSoundSettings('default')});
                         this.player.gameModeData.team[cardSlot.name] = card.name;
 
                         this[`cardFlip_${cardSlot.name}`].setFrontFace(`${card.name}_slot`);
                         this[`cardFlip_${cardSlot.name}`].flip();
               
                         this.formPopupContainer.destroy(true);
+                    })
+                    .on('pointerover', () => {
+                        this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('high')});
                     })
             )
         })

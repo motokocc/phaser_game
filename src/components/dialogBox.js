@@ -27,12 +27,12 @@ export default class DialogBox extends Phaser.Scene{
             dialogPadding, 
             (this.gameH - dialogBoxH) + dialogPadding,
             '',
-            {color: '#613e1e', fontFamily: 'Arial'}
+            {color: '#613e1e', fontFamily: 'GameTextFont'}
         ).setWordWrapWidth(this.gameW * 0.9, true);
         this.typewriteTextWrapped(this.dialogue[this.dialogueCounter].message)
 
         //Next Button Function
-        this.nextText = this.scene.add.text( this.gameW-dialogPadding, this.gameH - dialogPadding, 'Next >>>', {color: '#613e1e', fontFamily:'Arial'}).setInteractive();
+        this.nextText = this.scene.add.text( this.gameW-dialogPadding, this.gameH - dialogPadding, 'Next >>>', {color: '#613e1e', fontFamily:'GameTextFont'}).setInteractive();
         this.nextText.setOrigin(1,1);
       
         this.nextText.on('pointerdown', () => {

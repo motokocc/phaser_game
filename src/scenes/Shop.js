@@ -176,7 +176,7 @@ class Shop extends BaseScene {
 
     async loadNFTMarketplace(category){
         this.shopSizer.add(
-            this.add.text(0,0, 'Loading NFT marketplace.. Please wait...', {fontFamily: 'Arial'}).setDepth(10)
+            this.add.text(0,0, 'Loading NFT marketplace.. Please wait...', {fontFamily: 'GameTextFont'}).setDepth(10)
         );
  
         this.itemsOnSale = this.player.getShopItems(category);
@@ -193,7 +193,7 @@ class Shop extends BaseScene {
             }
             else{
                 this.shopSizer.add(
-                    this.add.text(0,0, `There is no available ${category} that can be bought using ${this.currencySelected} at the moment`, {fontFamily: 'Arial'}).setDepth(10)
+                    this.add.text(0,0, `There is no available ${category} that can be bought using ${this.currencySelected} at the moment`, {fontFamily: 'GameTextFont'}).setDepth(10)
                 );
             }
         }
@@ -205,7 +205,7 @@ class Shop extends BaseScene {
             }
             else{
                 this.shopSizer.add(
-                    this.add.text(0,0, `There is no available ${category} that can be bought using ${this.currencySelected} at the moment`, {fontFamily: 'Arial'}).setDepth(10)
+                    this.add.text(0,0, `There is no available ${category} that can be bought using ${this.currencySelected} at the moment`, {fontFamily: 'GameTextFont'}).setDepth(10)
                 );
             }
         }
@@ -222,7 +222,7 @@ class Shop extends BaseScene {
         ).setOrigin(0.5);
         this.add.existing(this.paginationSizer); 
 
-        this.paginationPageNumber = this.add.text(0,0, '1 of 1 Page', {fontFamily: 'Arial'}).setDepth(12).setOrigin(0.5).setInteractive();
+        this.paginationPageNumber = this.add.text(0,0, '1 of 1 Page', {fontFamily: 'GameTextFont'}).setDepth(12).setOrigin(0.5).setInteractive();
         let paginationFirstPage = this.add.sprite(0,0, 'fast_forward').setDepth(12).setInteractive();
         let paginationLastPage = this.add.sprite(0,0, 'fast_forward').setDepth(12).setInteractive();
         let paginationNextPage = this.add.sprite(0,0, 'forward_icon').setDepth(12).setInteractive();
@@ -263,12 +263,12 @@ class Shop extends BaseScene {
             this.add.existing(itemOnSaleSizer);
 
             let itemName = this.add.rexTagText(0,0, `<style='fontStyle:bold'>${item.name}</style>`, {
-                fontFamily: 'Arial',
+                fontFamily: 'GameTextFont',
                 lineSpacing: 9
             });
 
             let itemPrice = this.add.text(0,0, `${item.price}`, {
-                fontFamily: 'Arial',
+                fontFamily: 'GameTextFont',
                 lineSpacing: 9
             });
 
@@ -276,7 +276,7 @@ class Shop extends BaseScene {
                 .setScale(item.priceCurrency =='gold'? 0.5: 0.6).setOrigin(0.5);
 
             let itemDescription = this.add.text(0,0, `${item.description}`, {
-                fontFamily: 'Arial',
+                fontFamily: 'GameTextFont',
                 lineSpacing: 9,
                 align: 'justify'
             }).setWordWrapWidth(this.panelBox.width * 0.55);
@@ -317,7 +317,7 @@ class Shop extends BaseScene {
                     this.buyItemPopUp(item)
             });
 
-            let itemPrice = this.add.text(0,0, `${item.price}    `, {fontFamily: 'Arial', fontSize: 12}).setOrigin(0.5)
+            let itemPrice = this.add.text(0,0, `${item.price}    `, {fontFamily: 'GameTextFont', fontSize: 12}).setOrigin(0.5)
             let itemCurrency  = this.add.sprite(0, 0, item.priceCurrency)
                 .setScale(item.priceCurrency =='gold'? 0.3: 0.4).setOrigin(0, 0.5);
 
@@ -349,7 +349,7 @@ class Shop extends BaseScene {
             35,
             {
                 fontSize : "17px",
-                fontFamily: 'Arial',
+                fontFamily: 'GameTextFont',
                 backgroundColor : "black",
                 color: "white",
                 placeholder: "Search for name, attribute ...",
@@ -391,7 +391,7 @@ class Shop extends BaseScene {
             }
             else{
                 this.shopSizer.add(
-                    this.add.text(0,0, 'No match found', {fontFamily: 'Arial'}).setDepth(10)
+                    this.add.text(0,0, 'No match found', {fontFamily: 'GameTextFont'}).setDepth(10)
                 ); 
                 this.panelBox.layout();               
             }
@@ -504,7 +504,7 @@ class Shop extends BaseScene {
                 type: "number",
                 maxLength: 2,
                 fontSize : "17px",
-                fontFamily: 'Arial',
+                fontFamily: 'GameTextFont',
                 backgroundColor : "white",
                 color: "black",
             }
@@ -543,7 +543,7 @@ class Shop extends BaseScene {
                 type: "number",
                 maxLength: 2,
                 fontSize : "17px",
-                fontFamily: 'Arial',
+                fontFamily: 'GameTextFont',
                 backgroundColor : "white",
                 color: "black",
             }
@@ -566,14 +566,14 @@ class Shop extends BaseScene {
             buyQuantity.x - buyQuantity.displayWidth*0.65,
             buyQuantity.y - buyQuantity.displayHeight,
             'Quantity',
-            {fontFamily: 'Arial', fontSize: 14}
+            {fontFamily: 'GameTextFont', fontSize: 14}
         ).setOrigin(0,1);
 
         let priceText = this.add.text(
             buyingPrice.x - buyingPrice.displayWidth*0.65,
             buyingPrice.y - buyingPrice.displayHeight,
             `Total Price in ${item.priceCurrency}`,
-            {fontFamily: 'Arial', fontSize: 14}
+            {fontFamily: 'GameTextFont', fontSize: 14}
         ).setOrigin(0,1);
 
         let buycancelButton = this.add.sprite(

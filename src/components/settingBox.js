@@ -23,7 +23,7 @@ export default class Settings extends Phaser.Scene{
         let settingsBody = this.scene.add.rectangle(x-bodyPaddingX ,y + bodyPaddingY,width,height,0x000000, 1).setOrigin(1,0).setInteractive();       
         let exitIcon = this.scene.add.sprite(settingsBody.x - 25, settingsBody.y + 25, 'exitIcon').setOrigin(1,0).setScale(0.5).setInteractive();
         let settingsTitle = this.scene.add.text(settingsBody.x - settingsBody.width + 25, exitIcon.y+ exitIcon.displayWidth/2 , 'Settings').setOrigin(0, 0.5);
-        settingsTitle.setFont({fontFamily : 'Arial', fontsize: '20px', fontStyle: 'Bold'});
+        settingsTitle.setFont({fontFamily : 'GameTextFont', fontsize: '20px', fontStyle: 'Bold'});
 
         let line = this.scene.add.rectangle(settingsTitle.x, exitIcon.y + exitIcon.displayWidth + 5, settingsBody.displayWidth - 50, 1, 0xffffff,1).setOrigin(0);
 
@@ -75,7 +75,7 @@ export default class Settings extends Phaser.Scene{
                             type: "text",
                             maxLength: 15,
                             fontSize : "18px",
-                            fontFamily: 'Arial',
+                            fontFamily: 'GameTextFont',
                             minLength: 3,
                             backgroundColor : "white",
                             color: "black"
@@ -105,7 +105,7 @@ export default class Settings extends Phaser.Scene{
 
                             let rewardToClaim = codeFromFirebase.filter(data => data.code === couponCode);                        
                    
-                            let content = this.scene.add.text( this.gameW/2, this.gameH/2, '',{fontFamily: 'Arial', color:'#613e1e', fontSize:12, align: 'justify' })
+                            let content = this.scene.add.text( this.gameW/2, this.gameH/2, '',{fontFamily: 'GameTextFont', color:'#613e1e', fontSize:12, align: 'justify' })
                                 .setOrigin(0.5,0.75).setWordWrapWidth(250).setScale(0,1.3);
 
                             if(this.scene.player.playerInfo.couponCodes.includes(couponCode)){
@@ -123,7 +123,7 @@ export default class Settings extends Phaser.Scene{
                                 let rewardIcon = this.scene.add.sprite( this.gameW/2, this.gameH/2 - 10, rewardToClaim[0].reward.item).setOrigin(0.5).setScale(0,1.3);
 
                                 let rewardText = this.scene.add.text( rewardBox.x, rewardBox.y + rewardBox.width/2 + 25, rewardToClaim[0].reward.value,
-                                    {fontFamily: 'Arial', color:'#613e1e', fontStyle: 'Bold'} 
+                                    {fontFamily: 'GameTextFont', color:'#613e1e', fontStyle: 'Bold'} 
                                 ).setOrigin(0.5).setScale(0,1.3);
 
                                 //Save to firebase before setting to player locally  
@@ -182,7 +182,7 @@ export default class Settings extends Phaser.Scene{
         });
 
         gridTable.forEach((sprite,index) => {
-            iconTextData[index] = this.scene.add.text(sprite.x, sprite.y + 6, iconText[index], {fontFamily: 'Arial', fontSize: '12px'}).setOrigin(0.5);
+            iconTextData[index] = this.scene.add.text(sprite.x, sprite.y + 6, iconText[index], {fontFamily: 'GameTextFont', fontSize: '12px'}).setOrigin(0.5);
         })
 
         let audioIcon = this.scene.add.sprite(settingsTitle.x, (exitIcon.y + gridTable[0].y)/2, 'volumeIcon').setOrigin(0,0.5).setScale(0.8);

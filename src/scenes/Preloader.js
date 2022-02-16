@@ -10,6 +10,7 @@ import light from '../images/light.png';
 //Audio
 import hoverSound from '../audio/hover_button2.mp3';
 import clickSound from '../audio/click_button.wav';
+import clickSelectSound from '../audio/click_button_select.wav';
 import spinWheelSound from '../audio/spin_wheel.wav';
 import optionSound from '../audio/options_sound.wav';
 import titleBgMusic from '../audio/title_bg.mp3';
@@ -74,6 +75,7 @@ import gold from '../images/buttons/gold.png';
 import gems from '../images/buttons/gems.png';
 import player_gui_box from '../images/buttons/player_gui_box.png';
 import loading from '../images/spritesheets/loading_spritesheet.png'
+import alertIcon from '../images/icons/alert.png';
 
 //Daily Roullete
 import elfPirate from '../images/daily_roullete/elf-pirate.png';
@@ -205,6 +207,7 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('gold', gold);
         this.load.image('gems', gems);
         this.load.image('player_gui_box', player_gui_box);
+        this.load.image('alertIcon', alertIcon);
 
         //Tutorial
         this.load.image('cardBack', cardBack);
@@ -323,6 +326,7 @@ class LoadingScreen extends Phaser.Scene {
 
         //Audio Files
         this.load.audio('clickEffect', [clickSound]);
+        this.load.audio('clickSelectEffect', [clickSelectSound]);
         this.load.audio('hoverEffect', [hoverSound]);
         this.load.audio('titleBgMusic', [titleBgMusic]);
         this.load.audio('spinWheelSound', [spinWheelSound]);
@@ -341,8 +345,8 @@ class LoadingScreen extends Phaser.Scene {
         let loaderPosX = this.game.config.width/2 - barWidth/2;
         let loaderPosY = this.game.config.height/2 - barHeight/2;
 
-        this.loaderText = this.add.text(this.game.config.width/2, this.game.config.height/2, "Loading...", {fontFamily: 'Arial'});
-        this.completeText = this.add.text(this.game.config.width/2, this.game.config.height - barHeight, '', {fontFamily: 'Arial'}).setInteractive();
+        this.loaderText = this.add.text(this.game.config.width/2, this.game.config.height/2, "Loading...", {fontFamily: 'GameTextFont'});
+        this.completeText = this.add.text(this.game.config.width/2, this.game.config.height - barHeight, '', {fontFamily: 'GameTextFont'}).setInteractive();
         this.loaderText.setFontSize(20);
         this.loaderText.setOrigin(0.5,0.5);
         this.completeText.setFontSize(20);

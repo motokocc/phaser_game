@@ -41,7 +41,7 @@ class TitleScreen extends BaseScene {
             this.game.config.width * 0.02 , 
             this.game.config.height *0.95, 
             `Version: ${process.env.npm_package_version || '1.0.0'}`,
-            {fontFamily: 'Arial'}
+            {fontFamily: 'GameTextFont'}
         );
 
         const buttons = [ this.connectButton ];

@@ -62,11 +62,11 @@ class Missions extends BaseScene {
             dialogPadding, 
             (this.gameH - dialogBoxH) + dialogPadding,
             '',
-            {color: '#613e1e', fontFamily: 'Arial'}
+            {color: '#613e1e', fontFamily: 'GameTextFont'}
         ).setWordWrapWidth(this.gameW * 0.9, true);
 
         //Next Button Function
-        this.nextText = this.add.text( this.gameW-dialogPadding, this.gameH - dialogPadding, 'Next >>>', {color: '#613e1e', fontFamily: 'Arial'}).setInteractive();
+        this.nextText = this.add.text( this.gameW-dialogPadding, this.gameH - dialogPadding, 'Next >>>', {color: '#613e1e', fontFamily: 'GameTextFont'}).setInteractive();
         this.nextText.setOrigin(1,1);
 
         this.nextText.on('pointerdown', () => {
@@ -172,7 +172,7 @@ class Missions extends BaseScene {
             this.gameW/2,
             this.gameH/2 -25,
             "Do you want to accept this mission?",
-            {fontFamily: 'Arial', color:'#613e1e', align: 'center'}
+            {fontFamily: 'GameTextFont', color:'#613e1e', align: 'center'}
         ).setOrigin(0.5).setWordWrapWidth(200).setScale(0,1.3);
 
         const missionAcceptButton = this.add.sprite(
@@ -238,7 +238,7 @@ class Missions extends BaseScene {
             rewardIcon.x, 
             rewardIcon.y + rewardIcon.displayHeight/2,
             `${reward.amount}`
-            ,{fontFamily: 'Arial', color: '#613e1e', align: 'justify', fontSize: 14, fontStyle: 'Bold' }
+            ,{fontFamily: 'GameTextFont', color: '#613e1e', align: 'justify', fontSize: 14, fontStyle: 'Bold' }
         ).setOrigin(0.5,0).setWordWrapWidth(230).setScale(0,1.3);      
 
         let okButton = this.add.sprite(

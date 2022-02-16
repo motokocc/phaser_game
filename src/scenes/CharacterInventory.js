@@ -37,14 +37,14 @@ class CharacterInventory extends BaseScene {
 
         this.detailsText = this.add.text(messageDetailsBox.x + 10, messageDetailsBox.y + 10,
             'Alpha is a beast djinn ready to give a helping hand to any adventurer who summons him. He uses his arm-like tail to deal massive damage to his enemies. It is rummored that his eyes can locate hidden treasures and dungeons.',
-                {fontFamily: 'Arial', align: 'justify'})
+                {fontFamily: 'GameTextFont', align: 'justify'})
             .setOrigin(0)
             .setWordWrapWidth(messageDetailsBox.displayWidth-20, true);
 
         this.displayName = this.add.text(
             detailsBox.x + this.paddingX, detailsBox.y + this.paddingX, 
             'Alpha', 
-            { fontFamily:'Arial', fontSize: 20, fontStyle: 'Bold Italic'} 
+            { fontFamily:'GameTextFont', fontSize: 20, fontStyle: 'Bold Italic'} 
         ).setOrigin(0);
 
         this.rarity = this.add.sprite(
@@ -156,7 +156,7 @@ class CharacterInventory extends BaseScene {
                     })
                 }
                 else{
-                    this.sizerLeft.add(this.add.text(0,0, 'No items acquired', {fontFamily: 'Arial', padding:10 }));
+                    this.sizerLeft.add(this.add.text(0,0, 'No items acquired', {fontFamily: 'GameTextFont', padding:10 }));
                 }
             }
             else{
@@ -168,7 +168,7 @@ class CharacterInventory extends BaseScene {
                     })
                 }
                 else{
-                    this.sizerLeft.add(this.add.text(0,0, 'No available skills to learn', {fontFamily: 'Arial', padding:10 }));
+                    this.sizerLeft.add(this.add.text(0,0, 'No available skills to learn', {fontFamily: 'GameTextFont', padding:10 }));
                 }
             }
 
@@ -211,7 +211,7 @@ class CharacterInventory extends BaseScene {
         }).setOrigin(0).layout();
         this.add.existing(this.panelBoxRight);
         
-        let statsTitle = this.add.text(0,0, 'Stats', { fontFamily:'Arial', fontSize: 20, fontStyle: 'Bold Italic'} );
+        let statsTitle = this.add.text(0,0, 'Stats', { fontFamily:'GameTextFont', fontSize: 20, fontStyle: 'Bold Italic'} );
 
         this.sizerRight.add(statsTitle);
 
@@ -279,7 +279,7 @@ class CharacterInventory extends BaseScene {
                         `Cooldown Reduction : ${cooldownReduction.toFixed(2)}%`
                     ]
                     ,{
-                        fontFamily: 'Arial',
+                        fontFamily: 'GameTextFont',
                         lineSpacing: 10, 
                         tags: {
                             additionalStat:{
@@ -289,7 +289,7 @@ class CharacterInventory extends BaseScene {
                     }
                 );
     
-                let statsTitle = this.add.text(0,0, 'Stats', { fontFamily:'Arial', fontSize: 20, fontStyle: 'Bold Italic'} )
+                let statsTitle = this.add.text(0,0, 'Stats', { fontFamily:'GameTextFont', fontSize: 20, fontStyle: 'Bold Italic'} )
     
                 this.sizerRight.add(statsTitle, { padding : { right: this.gameW *0.2, bottom: 10 } });
                 this.sizerRight.add(statDetails);
@@ -305,12 +305,12 @@ class CharacterInventory extends BaseScene {
                             this.add.existing(this[`skillSizer_${item.name}`]);
 
                             let itemName = this.add.rexTagText(0,0, `<style='fontStyle:bold'>${item.name}</style>`, {
-                                fontFamily: 'Arial',
+                                fontFamily: 'GameTextFont',
                                 lineSpacing: 9
                             });
 
                             let itemDescription = this.add.text(0,0, `${item.description}${item.properties.type == 'item'? ` (Qty: ${item.quantity})` : ''}`, {
-                                fontFamily: 'Arial',
+                                fontFamily: 'GameTextFont',
                                 align: 'justify',
                                 fontSize: 14
                             }).setWordWrapWidth(this.panelBox.width * 0.52).setOrigin(0,1);
@@ -332,18 +332,18 @@ class CharacterInventory extends BaseScene {
                         });
                     }
                     else{
-                        this.sizerRight.add(this.add.text(0,0, 'No skills equipped', {fontFamily: 'Arial'}));
+                        this.sizerRight.add(this.add.text(0,0, 'No skills equipped', {fontFamily: 'GameTextFont'}));
                     }
                 }
                 else{
-                    this.sizerRight.add(this.add.text(0,0, 'No skills equipped', {fontFamily: 'Arial'}));
+                    this.sizerRight.add(this.add.text(0,0, 'No skills equipped', {fontFamily: 'GameTextFont'}));
                 }
 
             }
             else{
                 if(this.detailsImage.data.list.fromBlockchain){    
                     try{
-                        let loading = this.add.text(0,0, 'Loading Data.. Please wait...', { fontFamily: 'Arial', padding:10 })
+                        let loading = this.add.text(0,0, 'Loading Data.. Please wait...', { fontFamily: 'GameTextFont', padding:10 })
                         this.sizerRight.add(loading).layout();
                         this.allUiGroup.add(loading);
                         let cartItems = await this.player.getCardSaleStatus(this.detailsImage.data.list.id);
@@ -364,7 +364,7 @@ class CharacterInventory extends BaseScene {
                                     `Item on hand : ${itemOnHand}`,
                                     `Item on sale : ${quantityOnSale}`,
                                     `Price : ${price > 0? `${price.toFixed(6)} ETH` : 'N/A'}`,
-                                ], {fontFamily: 'Arial', lineSpacing:5 }), {key: 'details', expand:false, align: 'left-center', padding: { left: 20 }})
+                                ], {fontFamily: 'GameTextFont', lineSpacing:5 }), {key: 'details', expand:false, align: 'left-center', padding: { left: 20 }})
                                 .add(this.add.sprite(0,0,'sellButton').setScale(0.8).setInteractive(), {key: 'sellButton', expand:false, align: 'right-center', padding: { right: 20 }})
                                 .layout();
                             
@@ -383,7 +383,7 @@ class CharacterInventory extends BaseScene {
                                         this.gameW/2,
                                         this.gameH/2 -25,
                                         "Are you sure you want to cancel this item's on-going sale?",
-                                        {fontFamily: 'Arial', color:'#613e1e', align: 'center'}
+                                        {fontFamily: 'GameTextFont', color:'#613e1e', align: 'center'}
                                     ).setOrigin(0.5).setWordWrapWidth(200).setScale(0,1.3);
         
                                     const cancelConfirmButton = this.add.sprite(
@@ -441,7 +441,7 @@ class CharacterInventory extends BaseScene {
                     }                    
                 }
                 else{
-                    this.sizerRight.add(this.add.text(0,0, 'This item cannot be sold in the marketplace', {fontFamily: 'Arial'}));
+                    this.sizerRight.add(this.add.text(0,0, 'This item cannot be sold in the marketplace', {fontFamily: 'GameTextFont'}));
                 }           
             }
 
@@ -558,12 +558,12 @@ class CharacterInventory extends BaseScene {
         this.add.existing(itemSizer);
 
         let itemName = this.add.rexTagText(0,0, `<style='fontStyle:bold'>${item.name}</style>`, {
-            fontFamily: 'Arial',
+            fontFamily: 'GameTextFont',
             lineSpacing: 9
         });
 
         let itemDescription = this.add.text(0,0, `${item.description}${item.properties.type == 'item'? ` (Qty: ${item.quantity})` : ''}`, {
-            fontFamily: 'Arial',
+            fontFamily: 'GameTextFont',
             align: 'justify',
             fontSize: 14
         }).setWordWrapWidth(this.panelBox.width * 0.52).setOrigin(0,1);
@@ -691,7 +691,7 @@ class CharacterInventory extends BaseScene {
                 type: "number",
                 maxLength: 2,
                 fontSize : "17px",
-                fontFamily: 'Arial',
+                fontFamily: 'GameTextFont',
                 backgroundColor : "white",
                 color: "black",
             }
@@ -734,7 +734,7 @@ class CharacterInventory extends BaseScene {
                 type: "number",
                 maxLength: 2,
                 fontSize : "17px",
-                fontFamily: 'Arial',
+                fontFamily: 'GameTextFont',
                 backgroundColor : "white",
                 color: "black",
             }
@@ -786,14 +786,14 @@ class CharacterInventory extends BaseScene {
             sellquantity.x - sellquantity.displayWidth*0.65,
             sellquantity.y - sellquantity.displayHeight,
             'Quantity',
-            {fontFamily: 'Arial', fontSize: 14}
+            {fontFamily: 'GameTextFont', fontSize: 14}
         ).setOrigin(0,1);
 
         let priceText = this.add.text(
             sellingPrice.x - sellingPrice.displayWidth*0.65,
             sellingPrice.y - sellingPrice.displayHeight,
             `${fromBlockchain? 'Price per item' : 'Total Price'} - ${fromBlockchain? 'ETH ($0.00)' : itemCurrency.toUpperCase()}`,
-            {fontFamily: 'Arial', fontSize: 14}
+            {fontFamily: 'GameTextFont', fontSize: 14}
         ).setOrigin(0,1);
 
         let sellcancelButton = this.add.sprite(
@@ -869,7 +869,7 @@ class CharacterInventory extends BaseScene {
 
     async loadCards(){
         this.sizerLeft.add(
-            this.add.text(0,0, 'Loading Data.. Please wait...', { fontFamily: 'Arial', padding:10 }).setDepth(10)
+            this.add.text(0,0, 'Loading Data.. Please wait...', { fontFamily: 'GameTextFont', padding:10 }).setDepth(10)
         );
         
         let cardsTotal = await this.player.getAllItemsByCategory('card');
@@ -892,7 +892,7 @@ class CharacterInventory extends BaseScene {
         }
         else{
             this.sizerLeft.add(
-                this.add.text(0,0, 'No cards available in your inventory', { fontFamily: 'Arial', padding:10 }).setDepth(10)
+                this.add.text(0,0, 'No cards available in your inventory', { fontFamily: 'GameTextFont', padding:10 }).setDepth(10)
             );            
         }
 

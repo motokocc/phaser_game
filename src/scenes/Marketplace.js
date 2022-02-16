@@ -119,7 +119,7 @@ class Marketplace extends BaseScene {
 
     async loadNFTMarketplace(category){
         this.marketplaceSizer.add(
-            this.add.text(0,0, 'Loading NFT marketplace.. Please wait...', {fontFamily: 'Arial'}).setDepth(10)
+            this.add.text(0,0, 'Loading NFT marketplace.. Please wait...', {fontFamily: 'GameTextFont'}).setDepth(10)
         );
  
         this.itemsOnSale = await this.player.getAllItemsOnSale();
@@ -156,7 +156,7 @@ class Marketplace extends BaseScene {
             }
             else{
                 this.marketplaceSizer.add(
-                    this.add.text(0,0, 'No cards being sold at the moment', {fontFamily: 'Arial'}).setDepth(10)
+                    this.add.text(0,0, 'No cards being sold at the moment', {fontFamily: 'GameTextFont'}).setDepth(10)
                 );
             }
         }
@@ -168,7 +168,7 @@ class Marketplace extends BaseScene {
             }
             else{
                 this.marketplaceSizer.add(
-                    this.add.text(0,0, 'No items being sold at the moment', {fontFamily: 'Arial'}).setDepth(10)
+                    this.add.text(0,0, 'No items being sold at the moment', {fontFamily: 'GameTextFont'}).setDepth(10)
                 );
             }
         }
@@ -180,7 +180,7 @@ class Marketplace extends BaseScene {
             }
             else{
                 this.marketplaceSizer.add(
-                    this.add.text(0,0, 'No skills being sold at the moment', {fontFamily: 'Arial'}).setDepth(10)
+                    this.add.text(0,0, 'No skills being sold at the moment', {fontFamily: 'GameTextFont'}).setDepth(10)
                 );
             }
         }
@@ -197,7 +197,7 @@ class Marketplace extends BaseScene {
         ).setOrigin(0.5);
         this.add.existing(this.paginationSizer); 
 
-        this.paginationPageNumber = this.add.text(0,0, '1 of 1 Page', {fontFamily: 'Arial'}).setDepth(12).setOrigin(0.5).setInteractive();
+        this.paginationPageNumber = this.add.text(0,0, '1 of 1 Page', {fontFamily: 'GameTextFont'}).setDepth(12).setOrigin(0.5).setInteractive();
         let paginationFirstPage = this.add.sprite(0,0, 'fast_forward').setDepth(12).setInteractive();
         let paginationLastPage = this.add.sprite(0,0, 'fast_forward').setDepth(12).setInteractive();
         let paginationNextPage = this.add.sprite(0,0, 'forward_icon').setDepth(12).setInteractive();
@@ -250,7 +250,7 @@ class Marketplace extends BaseScene {
                 `<style='fontStyle:bold'>Price</style> : ${item.price} ETH`,
                 `<style='fontStyle:bold'>Seller</style> : ${item.seller}`,
             ], {
-                fontFamily: 'Arial',
+                fontFamily: 'GameTextFont',
                 lineSpacing: 9
             }), { expand:false, align: 'left-center', padding: { left: 145}})
             .add(this.add.sprite(0,0,'buyButton').setScale(0.8).setInteractive()
@@ -273,7 +273,7 @@ class Marketplace extends BaseScene {
                     this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('clickEffect')});    
                     this.buyItemPopUp(item)
                 }), { expand:false, align: 'center-bottom'})
-            .add(this.add.text(0,0, `${item.price} ETH`, {fontFamily: 'Arial', fontSize: 12}).setOrigin(0.5), { expand:false, align: 'center-bottom', padding:{bottom: 7.5}})
+            .add(this.add.text(0,0, `${item.price} ETH`, {fontFamily: 'GameTextFont', fontSize: 12}).setOrigin(0.5), { expand:false, align: 'center-bottom', padding:{bottom: 7.5}})
             .layout();
 
             this.marketplaceSizer.add(itemOnSaleSizer); 
@@ -290,7 +290,7 @@ class Marketplace extends BaseScene {
             35,
             {
                 fontSize : "17px",
-                fontFamily: 'Arial',
+                fontFamily: 'GameTextFont',
                 backgroundColor : "black",
                 color: "white",
                 placeholder: "Search for name, attribute, seller...",
@@ -336,7 +336,7 @@ class Marketplace extends BaseScene {
             }
             else{
                 this.marketplaceSizer.add(
-                    this.add.text(0,0, 'No match found', {fontFamily: 'Arial'}).setDepth(10)
+                    this.add.text(0,0, 'No match found', {fontFamily: 'GameTextFont'}).setDepth(10)
                 ); 
                 this.panelBox.layout();               
             }
@@ -448,7 +448,7 @@ class Marketplace extends BaseScene {
             this.gameH/2 - 50,
             215,
             25,
-            { type: "number", maxLength: 2, fontSize : "17px", fontFamily: 'Arial', backgroundColor : "white", color: "black" }
+            { type: "number", maxLength: 2, fontSize : "17px", fontFamily: 'GameTextFont', backgroundColor : "white", color: "black" }
         ).setOrigin(0.5).setScale(1.3)
         .on('textchange', async(inputText) => {
             let allowedKey = /^[1-9]\d*$/g;
@@ -493,7 +493,7 @@ class Marketplace extends BaseScene {
             this.gameH/2 + 35,
             215,
             25,
-            { type: "number", maxLength: 2, fontSize : "17px", fontFamily: 'Arial', backgroundColor : "white", color: "black" }
+            { type: "number", maxLength: 2, fontSize : "17px", fontFamily: 'GameTextFont', backgroundColor : "white", color: "black" }
         ).setOrigin(0.5).setScale(1.3);
 
         buyingPrice.setText(price);
@@ -512,14 +512,14 @@ class Marketplace extends BaseScene {
             buyQuantity.x - buyQuantity.displayWidth*0.65,
             buyQuantity.y - buyQuantity.displayHeight,
             'Quantity',
-            {fontFamily: 'Arial', fontSize: 14}
+            {fontFamily: 'GameTextFont', fontSize: 14}
         ).setOrigin(0,1);
 
         let priceText = this.add.text(
             buyingPrice.x - buyingPrice.displayWidth*0.65,
             buyingPrice.y - buyingPrice.displayHeight,
             'Total Price - ETH ($0.00)',
-            {fontFamily: 'Arial', fontSize: 14}
+            {fontFamily: 'GameTextFont', fontSize: 14}
         ).setOrigin(0,1);
 
         let buycancelButton = this.add.sprite(

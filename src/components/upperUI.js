@@ -1,5 +1,6 @@
 import 'regenerator-runtime/runtime'
 import { doc, updateDoc } from "firebase/firestore";
+import { shortenLargeNumber } from '../js/utils';
 import Phaser from 'phaser';
 
 export default class UpperUI extends Phaser.Scene{
@@ -19,13 +20,13 @@ export default class UpperUI extends Phaser.Scene{
         let gems = this.scene.add.container(containerOffset,-200);
         const gem_icon = this.scene.add.sprite(width/2 - padding*3, height*0.07,'gems').setOrigin(0.5).setDepth(2);
         const gem_box = this.scene.add.rexRoundRectangle(gem_icon.x, gem_icon.y, padding*4, padding, padding/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
-        this.gems_value = this.scene.add.text(gem_box.x + gem_box.width/2, gem_box.y, this.scene.player.playerInfo.gems || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
+        this.gems_value = this.scene.add.text(gem_box.x + gem_box.width/2, gem_box.y, shortenLargeNumber(this.scene.player.playerInfo.gems || 0), {fontFamily: 'GameTextFont'}).setOrigin(0.5);
 
         //Gold
-        let gold = this.scene.add.container(containerOffset,-200);
+        let gold = this.scene.add.container(containerOffset,-200); 
         this.gold_icon = this.scene.add.sprite(width/2 + padding*3, height*0.07,'gold').setOrigin(0.5).setDepth(2);
         const gold_box = this.scene.add.rexRoundRectangle(this.gold_icon.x, gem_icon.y, padding*4, padding, padding/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
-        this.gold_value = this.scene.add.text(gold_box.x + gold_box.width/2, gold_box.y, this.scene.player.playerInfo.gold || 0, {fontFamily: 'Arial'}).setOrigin(0.5);
+        this.gold_value = this.scene.add.text(gold_box.x + gold_box.width/2, gold_box.y, shortenLargeNumber(this.scene.player.playerInfo.gold || 0), {fontFamily: 'GameTextFont'}).setOrigin(0.5);
 
         //Player Stat GUI
         let playerUI = this.scene.add.container(0,-200);
@@ -34,7 +35,7 @@ export default class UpperUI extends Phaser.Scene{
             player_gui_box.x* 3.6,
             player_gui_box.y - padding*0.33,
             this.scene.player.playerInfo.name || 'Player',
-            {fontFamily: 'Arial', fontSize:14}
+            {fontFamily: 'GameTextFont', fontSize:14}
         ).setOrigin(0, 0.5);
 
         player_gui_box.on("pointerdown", () => {
@@ -47,14 +48,14 @@ export default class UpperUI extends Phaser.Scene{
             player_gui_box.x* 3.6,
             player_gui_box.y + padding*0.33,
             this.scene.player.playerInfo.role || 'Adventurer',
-            {fontFamily: 'Arial', fontSize:13, color: '#00ff00'}
+            {fontFamily: 'GameTextFont', fontSize:13, color: '#00ff00'}
         ).setOrigin(0, 0.5);
 
         const player_level = this.scene.add.text(
             player_gui_box.x* 2.2,
             player_gui_box.y + padding*0.1,
             ['Lvl', this.scene.player.playerInfo.level] || ['Lvl', 1],
-            {fontFamily: 'Arial', fontSize:13, align: 'center'}
+            {fontFamily: 'GameTextFont', fontSize:13, align: 'center'}
         ).setOrigin(0.5);
 
         if(!removeExitButton){
@@ -85,7 +86,7 @@ export default class UpperUI extends Phaser.Scene{
         if(isWithRewards){
             const rewards_icon = this.scene.add.sprite(gold_box.x + gold_box.displayWidth/2 + padding*4, height*0.07,'gift_button').setOrigin(0.5).setDepth(2).setScale(0.8);
             const rewards_box = this.scene.add.rexRoundRectangle(rewards_icon.x, gem_icon.y, padding*4, padding, padding/5, 0x000000).setOrigin(0,0.5).setAlpha(0.6);
-            this.rewards_value = this.scene.add.text(rewards_box.x + rewards_box.width/2, rewards_box.y, this.scene.player.playerInfo.rewardPoints || 0, {fontFamily: 'Arial'}).setOrigin(0.5);         
+            this.rewards_value = this.scene.add.text(rewards_box.x + rewards_box.width/2, rewards_box.y, shortenLargeNumber(this.scene.player.playerInfo.rewardPoints || 0), {fontFamily: 'GameTextFont'}).setOrigin(0.5);         
         
             rewards.add([rewards_box, rewards_icon, this.rewards_value])
         }
