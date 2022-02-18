@@ -33,7 +33,7 @@ class TitleScreen extends BaseScene {
 
         this.generateBg(true);
 
-        let titleLogo = this.add.sprite(this.game.config.width/2, buttonPosY * 2.2,'gameTitle');
+        let titleLogo = this.add.sprite(this.game.config.width/2, buttonPosY * 2.2,'gameTitle').setScale(0.9);
         this.connectButton = this.add.sprite(this.game.config.width/2, buttonPosY * 4.4,'connectBtn').setInteractive();
 
         //Game version

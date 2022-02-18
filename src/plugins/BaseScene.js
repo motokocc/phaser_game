@@ -16,7 +16,8 @@ class BaseScene extends Phaser.Scene {
         this.add.tileSprite(-100,0,2133, this.game.config.height,'forest_layer_2').setOrigin(0).setScrollFactor(0, 1).setFlipX(true).setScale(1.1);
         this.add.tileSprite(-50,0,2133, this.game.config.height,'forest_layer_3').setOrigin(0).setScrollFactor(0, 1).setFlipX(true).setScale(1.1);
         this.add.tileSprite(-100,0,2133, this.game.config.height,'forest_layer_4').setOrigin(0).setScrollFactor(0, 1).setFlipX(true);
-            
+        this.add.sprite(this.gameW*0.7, this.gameH*0.7, 'arrow');
+
         if(withBushes){
             this.add.tileSprite(-100,0,2133, this.game.config.height,'forest_layer_5').setOrigin(0).setScrollFactor(0, 1).setFlipX(true);
         }

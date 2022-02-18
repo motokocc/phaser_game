@@ -85,7 +85,7 @@ export default class Settings extends Phaser.Scene{
                         couponCode = inputText.text;
                     });
 
-                    const confirmButton = this.scene.add.sprite(this.gameW/2,this.gameH/2 + 35,'confirmButton')
+                    const confirmButton = this.scene.add.sprite(this.gameW/2,this.gameH/2 + 35,'confirmButtonAlt')
                         .setOrigin(0.5).setInteractive().setScale(0,1.3);
 
                     couponInput.setStyle("border-radius", "10px");
@@ -105,7 +105,7 @@ export default class Settings extends Phaser.Scene{
 
                             let rewardToClaim = codeFromFirebase.filter(data => data.code === couponCode);                        
                    
-                            let content = this.scene.add.text( this.gameW/2, this.gameH/2, '',{fontFamily: 'GameTextFont', color:'#613e1e', fontSize:12, align: 'justify' })
+                            let content = this.scene.add.text( this.gameW/2, this.gameH/2, '',{fontFamily: 'GameTextFont', color:'#613e1e', fontSize:14, align: 'justify' })
                                 .setOrigin(0.5,0.75).setWordWrapWidth(250).setScale(0,1.3);
 
                             if(this.scene.player.playerInfo.couponCodes.includes(couponCode)){

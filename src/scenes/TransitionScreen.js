@@ -1,13 +1,18 @@
 import Phaser from 'phaser';
+import { getSoundSettings } from '../js/utils';
 
 class TransitionScreen extends Phaser.Scene{
 	init(data){
-		this.data = data;
+		this.sceneData = data;
 	}
 
 	create(){
-		let bgSound = this.sound.get('titleBgMusic');
-		bgSound.stop();
+		this.sceneData.bgMusic.forEach(bg => {        	
+        	this[bg] = this.sound.get(bg);
+        	this[bg].stop();
+        	this[bg].destroy();
+			this.sound.removeByKey(bg);
+        })
 
         let card = this.add.sprite(
 			this.game.config.width/2, 
@@ -35,7 +40,7 @@ class TransitionScreen extends Phaser.Scene{
 
         let waitingtText = 'Loading... Please wait';
 		let loadingText = this.add.text(
-			card.x - card.displayWidth*0.65, 
+			card.x - card.displayWidth*0.6, 
 			card.y + card.displayWidth, 
 			waitingtText , 
 			{ 
@@ -70,7 +75,11 @@ class TransitionScreen extends Phaser.Scene{
 			duration: 500,
             delay: 5700,
             callback: () => {
-            	this.scene.start(this.data.nextPage || 'adventure');
+            	if(this.sceneData.nextBgMusic){
+            		this.sound.removeByKey(this.sceneData.nextBgMusic);
+            		this.sound.play(this.sceneData.nextBgMusic, { volume: getSoundSettings('default') });
+            	}
+            	this.scene.start(this.sceneData.nextPage || 'adventure');
             }
 		})
 	}

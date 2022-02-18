@@ -1,10 +1,10 @@
 import Phaser from 'phaser';
 import { getSoundSettings } from '../js/utils';
-import bg from '../images/bg.PNG';
 import gameTitle from '../images/title.png';
 import startBtn from '../images/buttons/start.png';
 import connectBtn from '../images/buttons/connect.png';
 import light from '../images/light.png';
+import arrow from '../images/bg/arrow.png';
 
 //Audio
 import hoverSound from '../audio/hover_button2.mp3';
@@ -18,7 +18,6 @@ import swoosh from '../audio/swoosh.wav';
 import denied from '../audio/denied.wav';
 import battle_intro from '../audio/bgm/battle_intro.ogg';
 import battle_loop from '../audio/bgm/battle_loop.ogg';
-
 
 import elf from '../images/elf-0.png';
 import scroll from '../images/UI/scroll.png';
@@ -163,6 +162,19 @@ import alpha_slot from '../images/explore_page/card_slots/alpha_slot.png';
 import saya_slot from '../images/explore_page/card_slots/saya_slot.png';
 import card_yellow_slot from '../images/explore_page/card_slots/card_yellow_slot.png';
 
+//Gameplay UI
+import pause_button from '../images/gameplay_ui/buttons/pause_button.png';
+import auto_button from '../images/gameplay_ui/buttons/auto_button.png';
+import multiplier_1x_button from '../images/gameplay_ui/buttons/multiplier_1x_button.png';
+import multiplier_2x_button from '../images/gameplay_ui/buttons/multiplier_2x_button.png';
+
+//Pause Scene
+import pause_text from '../images/gameplay_ui/pause_popup/pause_text.png';
+import pause_arrow from '../images/gameplay_ui/pause_popup/pause_arrow.png';
+import continue_button from '../images/gameplay_ui/pause_popup/continue_button.png';
+import quit_button from '../images/gameplay_ui/pause_popup/quit_button.png';
+import restart_button from '../images/gameplay_ui/pause_popup/restart_button.png';
+
 class LoadingScreen extends Phaser.Scene {
 
     init(data){
@@ -207,6 +219,7 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('gems', gems);
         this.load.image('player_gui_box', player_gui_box);
         this.load.image('alertIcon', alertIcon);
+        this.load.image('arrow', arrow);
 
         //Tutorial
         this.load.image('cardBack', cardBack);
@@ -287,7 +300,6 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('proceedBtn', proceedButton);
         this.load.image('elf-0', elf);
         this.load.image('scroll', scroll);
-        this.load.image('background', bg);
         this.load.image('gameTitle', gameTitle);
         this.load.image('startBtn', startBtn);
         this.load.image('backBtn', backButton);
@@ -322,6 +334,19 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('Alpha_slot', alpha_slot);
         this.load.image('Saya_slot', saya_slot);
 
+        //Gameplay
+        this.load.image('pause_button', pause_button);
+        this.load.image('auto_button', auto_button);
+        this.load.image('multiplier_1x_button', multiplier_1x_button);
+        this.load.image('multiplier_2x_button', multiplier_2x_button);
+
+        //Pause Scene
+        this.load.image('pause_text', pause_text);
+        this.load.image('pause_arrow', pause_arrow);
+        this.load.image('continue_button', continue_button);
+        this.load.image('restart_button', restart_button);
+        this.load.image('quit_button', quit_button);
+
         //Audio Files
         this.load.audio('clickEffect', [clickSound]);
         this.load.audio('clickSelectEffect', [clickSelectSound]);
@@ -355,7 +380,7 @@ class LoadingScreen extends Phaser.Scene {
 
         this.load.on('progress', val => {
             this.progressBar.clear();
-            this.progressBar.fillStyle(0x7cfc00, 1);
+            this.progressBar.fillStyle(0x00d500, 1);
             this.progressBar.fillRect(loaderPosX + 10 , loaderPosY + 10 , (barWidth - 20)*val, barHeight-20);
             this.loaderText.setText(`Loading... ${(val*100).toFixed(2)}%`);
         });

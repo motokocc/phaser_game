@@ -64,7 +64,7 @@ class Explore extends BaseScene {
             .setInteractive().setOrigin(0.5).setScale(0.7).setAlpha(0)
             .on('pointerdown', () => {
                 this.sound.play('clickEffect', {loop: false, volume: getSoundSettings('high')});
-                this.scene.start('transitionScreen', { nextPage: this.player.gameModeData.mode });
+                this.scene.start('transitionScreen', { nextPage: this.player.gameModeData.mode, bgMusic: ['titleBgMusic'] });
             })
             .on('pointerover', () => {
                 this.sound.play('hoverEffect', {loop: false, volume: getSoundSettings('high')});

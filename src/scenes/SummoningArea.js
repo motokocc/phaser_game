@@ -43,7 +43,7 @@ class SummoningArea extends BaseScene {
         let summoningUiContainer = this.add.container(300,0);
 
         let uibox = this.add.rectangle(this.gameW,0, 300, this.gameH, 0x000000).setOrigin(1,0).setAlpha(0.8);        
-        let uiText = this.add.text(this.gameW - 150, paddingY, 'Select Draw Type', {fontFamily: 'Arial', fontSize: 20}).setOrigin(0.5);
+        let uiText = this.add.text(this.gameW - 150, paddingY, 'Select Draw Type', {fontFamily: 'GameTextFont', fontSize: 20}).setOrigin(0.5);
         
         let freeButton = this.add.sprite(this.gameW - 150, paddingY*3.1, 'freeBtn').setName('free').setAlpha(this.player.playerInfo.isFirstTime? 1:0);
         let normalButton = this.add.sprite(this.gameW - 150, paddingY*3.1, 'normalBtn').setName('normal').setAlpha(this.player.playerInfo.isFirstTime? 0:1);
@@ -55,7 +55,7 @@ class SummoningArea extends BaseScene {
             .setScale(0.6)
             .setAlpha(0);
 
-        let backButton = this.add.text(this.gameW - paddingY,this.gameH-paddingY,'Back >>',{fontFamily: 'Arial', fontSize: 20}).setOrigin(1).setInteractive();
+        let backButton = this.add.text(this.gameW - paddingY,this.gameH-paddingY,'Back >>',{fontFamily: 'GameTextFont', fontSize: 20}).setOrigin(1).setInteractive();
 
         if(!this.player.playerInfo.isFirstTime){
             backButton.on('pointerdown', () => {

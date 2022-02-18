@@ -1,11 +1,10 @@
 import 'regenerator-runtime/runtime';
-import Phaser from 'phaser';
+import GameScene from '../plugins/GameScene';
 import { getSoundSettings } from '../js/utils';
 
-class Adventure extends Phaser.Scene {
+class Adventure extends GameScene {
 
     create(){
-
         this.anims.create({
             key: "alpha_idle_state",
             frameRate: 20,
@@ -33,6 +32,8 @@ class Adventure extends Phaser.Scene {
                 battle_bgm.play();
             });
         }, 500)
+
+        this.generateGameplayUI(this.player.gameModeData.mode, [intro_bgm.key, battle_bgm.key]);
         
         //BG
         let forest_width = 2133;
@@ -56,12 +57,13 @@ class Adventure extends Phaser.Scene {
         }
         else{
             if(this.char_state == 'running'){
-                this.forest_layer_0.tilePositionX += 4;
-                this.forest_layer_1.tilePositionX += 5;
-                this.forest_layer_2.tilePositionX += 6;
-                this.forest_layer_3.tilePositionX += 9;
-                this.forest_layer_4.tilePositionX += 7;
-                this.forest_layer_5.tilePositionX += 7;
+                this.alpha_char.anims.timeScale = this.speedMultiplier == 2? 1.5 : this.speedMultiplier;
+                this.forest_layer_0.tilePositionX += 4 * this.speedMultiplier;
+                this.forest_layer_1.tilePositionX += 5 * this.speedMultiplier;
+                this.forest_layer_2.tilePositionX += 6 * this.speedMultiplier;
+                this.forest_layer_3.tilePositionX += 9 * this.speedMultiplier;
+                this.forest_layer_4.tilePositionX += 7 * this.speedMultiplier;
+                this.forest_layer_5.tilePositionX += 7 * this.speedMultiplier;
             }
         }
     }
