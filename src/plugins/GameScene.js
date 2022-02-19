@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { Slider } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 
 export default class GameScene extends Phaser.Scene{
 	init(){
@@ -11,7 +12,8 @@ export default class GameScene extends Phaser.Scene{
 		this.speedMultiplier = 1;
 		let speedToggle = false;
 
-		let pauseButton = this.add.sprite(this.gameW - this.padding, this.padding, 'pause_button').setName('pause')	;		
+		//Upper Right Buttons
+		let pauseButton = this.add.sprite(this.gameW - this.padding/2, this.padding/2, 'pause_button').setName('pause')	;		
 		
 		let multiplierButton = this.add.sprite(
 			pauseButton.x - pauseButton.displayWidth - this.padding/2, pauseButton.y,
@@ -54,6 +56,44 @@ export default class GameScene extends Phaser.Scene{
 					})
 				}
 			})
+		});
+
+		//Character status
+
+		//Dummy data for testing
+        this.player.gameModeData = {
+            mode: 'adventure',
+            team: {
+                card_1: 'Alpha',
+                card_2: 'Alpha',
+                card_3: 'Alpha',
+            }
+        }
+		//end of dummy
+
+		let charactersToPlay = [];
+
+		for(let i=1; i<=3; i++){
+			if(this.player.gameModeData.team[`card_${i}`]){
+				charactersToPlay.unshift(this.player.gameModeData.team[`card_${i}`])
+			}
+		}
+
+		charactersToPlay.forEach((character, index) => {
+			this[`${character}_status_frame_${index}`] = this.add.sprite(this.padding/2, this.padding/2 + (index*120), 'char_status_frame')
+				.setOrigin(0).setDepth(25);
+
+			this.add.sprite(
+				this[`${character}_status_frame_${index}`].x + (this.padding/2)*0.2,
+				this[`${character}_status_frame_${index}`].y + (this.padding/2)*0.2,
+				'char_status_frame_fill'
+			).setOrigin(0).setDepth(20);
+
+			this[`${character}_frame_image_${index}`] = this.add.sprite(
+				this[`${character}_status_frame_${index}`].x + this.padding*0.65,
+				this[`${character}_status_frame_${index}`].y + this.padding*0.65,
+				`${character}_frame`
+			).setOrigin(0).setDepth(21);
 		})
 	}
 }

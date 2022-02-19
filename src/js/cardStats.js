@@ -1,5 +1,6 @@
 export const cardStats = [
     {
+        level: 1,
         name: "Alpha",
         health: 5,
         attack: 2,
@@ -9,9 +10,12 @@ export const cardStats = [
         critDamage: 120,
         evasion: 1,
         accuracy: 100,
-        cooldownReduction: 0
+        cooldownReduction: 0,
+        currentXp: 0,
+        levelupXp: 100,
     },
     {
+        level: 1,
         name: "Saya",
         health: 25,
         attack: 10,
@@ -21,6 +25,8 @@ export const cardStats = [
         critDamage: 150,
         evasion: 10,
         accuracy: 100,
-        cooldownReduction: 0
+        cooldownReduction: 0,
+        currentXp: 0,
+        levelupXp: 100,
     },
 ];

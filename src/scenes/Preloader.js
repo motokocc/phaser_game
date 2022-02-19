@@ -167,6 +167,12 @@ import pause_button from '../images/gameplay_ui/buttons/pause_button.png';
 import auto_button from '../images/gameplay_ui/buttons/auto_button.png';
 import multiplier_1x_button from '../images/gameplay_ui/buttons/multiplier_1x_button.png';
 import multiplier_2x_button from '../images/gameplay_ui/buttons/multiplier_2x_button.png';
+import Alpha_frame from '../images/gameplay_ui/character_status/Alpha_frame.png';
+import char_level_indicator from '../images/gameplay_ui/character_status/char_level_indicator.png';
+import char_status_frame from '../images/gameplay_ui/character_status/char_status_frame.png';
+import char_status_frame_fill from '../images/gameplay_ui/character_status/char_status_frame_fill.png';
+import health_bar from '../images/gameplay_ui/character_status/health_bar.png';
+import xp_bar from '../images/gameplay_ui/character_status/xp_bar.png';
 
 //Pause Scene
 import pause_text from '../images/gameplay_ui/pause_popup/pause_text.png';
@@ -339,6 +345,13 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('auto_button', auto_button);
         this.load.image('multiplier_1x_button', multiplier_1x_button);
         this.load.image('multiplier_2x_button', multiplier_2x_button);
+
+        this.load.image('Alpha_frame', Alpha_frame);
+        this.load.image('char_level_indicator', char_level_indicator);
+        this.load.image('char_status_frame', char_status_frame);
+        this.load.image('char_status_frame_fill', char_status_frame_fill);
+        this.load.image('health_bar', health_bar);
+        this.load.image('xp_bar', xp_bar);
 
         //Pause Scene
         this.load.image('pause_text', pause_text);

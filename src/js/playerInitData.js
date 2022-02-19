@@ -5,6 +5,8 @@ export const playerInitData = {
     gold: 3000,
     gems: 3000,
     level: 1,
+    currentXp: 0,
+    levelupXp: 100,
     role: "Adventurer",
     dateJoined: null,
     lastLogin: new Date(),
@@ -22,5 +24,6 @@ export const playerInitData = {
     missions:{
         finished: [],
         currentMission: null    
-    }
+    },
+    djinnsData:[];
 }
