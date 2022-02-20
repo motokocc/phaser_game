@@ -77,7 +77,7 @@ class TransitionScreen extends Phaser.Scene{
             callback: () => {
             	if(this.sceneData.nextBgMusic){
             		this.sound.removeByKey(this.sceneData.nextBgMusic);
-            		this.sound.play(this.sceneData.nextBgMusic, { volume: getSoundSettings('default') });
+            		this.sound.play(this.sceneData.nextBgMusic, { volume: getSoundSettings('default'), loop: true});
             	}
             	this.scene.start(this.sceneData.nextPage || 'adventure');
             }

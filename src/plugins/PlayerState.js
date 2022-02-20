@@ -8,6 +8,7 @@ import { firebaseConfig } from '../js/config/firebase-config';
 import card from "../js/card.json";
 import { skills, items } from '../js/shopItems';
 import { playerInitData } from '../js/playerInitData';
+import { cardStats } from '../js/cardStats';
 
 class Player extends Phaser.Plugins.BasePlugin {
     constructor(pluginManager) {
@@ -78,7 +79,7 @@ class Player extends Phaser.Plugins.BasePlugin {
 
                     if (user.exists()) {
                         //To add more data later for drops that can be exchanged to nfts
-                        const { gold, drawCount, isFirstTime, name, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes, role, level, rewards, inventory, missions } = user.data();
+                        const { gold, drawCount, isFirstTime, name, gems, lastLogin, lastSpin, dateJoined, lastReward, lastRead, couponCodes, role, level, rewards, inventory, missions, cardsBattleData } = user.data();
 
                         cardData = inventory.card? inventory.card.filter(card => card.fromBlockchain == false) : [];
 
@@ -95,7 +96,7 @@ class Player extends Phaser.Plugins.BasePlugin {
                             name, address: accounts[0], drawCount, gold, isFirstTime, gems,
                             lastLogin: lastLogin.toDate(), lastSpin : lastSpin? lastSpin.toDate() : null, 
                             dateJoined: dateJoined.toDate(), lastReward: lastReward? lastReward.toDate():null,
-                            lastRead, couponCodes, role, level, rewards, inventory, missions
+                            lastRead, couponCodes, role, level, rewards, inventory, missions, cardsBattleData
                         };
 
                         this.setPlayerInfo(data);
@@ -177,12 +178,27 @@ class Player extends Phaser.Plugins.BasePlugin {
                 },[])
 
                 this.playerInfo.inventory.card = cards;
-                await updateDoc(doc(this.users, this.playerInfo.address), { inventory: this.playerInfo.inventory.card });
+                await updateDoc(doc(this.users, this.playerInfo.address), { inventory: this.playerInfo.inventory });
             }
             catch(e){
                 console.log(e.message);
             }
         }
+
+        //For gameplay data
+        try{
+            let newCardData = this.playerInfo.cardsBattleData.filter(data => data.name == newCard.name);
+
+            if(newCardData.length <= 0){
+                let card_info = cardStats.filter(card => card.name == newCard.name)[0];
+                this.playerInfo.cardsBattleData.push(card_info);
+            }
+            await updateDoc(doc(this.users, this.playerInfo.address), { cardsBattleData: this.playerInfo.cardsBattleData });
+        }
+        catch(e){
+           console.log(e.message); 
+        }
+
         return newCard;
     }
 

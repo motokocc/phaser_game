@@ -25,5 +25,5 @@ export const playerInitData = {
         finished: [],
         currentMission: null    
     },
-    djinnsData:[];
+    cardsBattleData:[]
 }

@@ -58,8 +58,12 @@ export default class GameScene extends Phaser.Scene{
 			})
 		});
 
-		//Character status
+		this.generateCharacterStats();
 
+	}
+
+	generateCharacterStats(){
+		console.log('cardsData????', this.player.playerInfo.cardsBattleData);
 		//Dummy data for testing
         this.player.gameModeData = {
             mode: 'adventure',
@@ -69,6 +73,24 @@ export default class GameScene extends Phaser.Scene{
                 card_3: 'Alpha',
             }
         }
+
+      //   this.player.playerInfo.cardsBattleData = [
+      //   	   {
+		    //     level: 1,
+		    //     name: "Alpha",
+		    //     health: 10,
+		    //     attack: 2,
+		    //     defence: 1,
+		    //     speed: 1,
+		    //     critRate: 5,
+		    //     critDamage: 120,
+		    //     evasion: 1,
+		    //     accuracy: 100,
+		    //     cooldownReduction: 0,
+		    //     currentXp: 0,
+		    //     levelupXp: 100,
+		    // },
+      //   ]
 		//end of dummy
 
 		let charactersToPlay = [];
@@ -83,17 +105,19 @@ export default class GameScene extends Phaser.Scene{
 			this[`${character}_status_frame_${index}`] = this.add.sprite(this.padding/2, this.padding/2 + (index*120), 'char_status_frame')
 				.setOrigin(0).setDepth(25);
 
+			this[`${character}_frame_image_${index}`] = this.add.sprite(
+				this[`${character}_status_frame_${index}`].x + this.padding*0.65,
+				this[`${character}_status_frame_${index}`].y + this.padding*0.65,
+				`${character}_frame`
+			).setOrigin(0).setDepth(21);
+
 			this.add.sprite(
 				this[`${character}_status_frame_${index}`].x + (this.padding/2)*0.2,
 				this[`${character}_status_frame_${index}`].y + (this.padding/2)*0.2,
 				'char_status_frame_fill'
 			).setOrigin(0).setDepth(20);
 
-			this[`${character}_frame_image_${index}`] = this.add.sprite(
-				this[`${character}_status_frame_${index}`].x + this.padding*0.65,
-				this[`${character}_status_frame_${index}`].y + this.padding*0.65,
-				`${character}_frame`
-			).setOrigin(0).setDepth(21);
-		})
+
+		})		
 	}
 }

@@ -350,12 +350,9 @@ class Explore extends BaseScene {
             this.formPopupContainer.destroy(true);
         });
 
-        //Test data
-        let cards = [
-            {name: 'Alpha'},
-            {name: 'Saya'}
-        ]
-        //End test data
+        //Check if there are cards on players inventory
+        let cards = this.player.playerInfo.inventory.card.length >= 1? this.player.playerInfo.inventory.card : [{name: 'Alpha'}];
+
         let filteredCard = cards.filter(
             card => card.name != this.player.gameModeData.team.card_1 && card.name != this.player.gameModeData.team.card_2 && card.name != this.player.gameModeData.team.card_3
         )

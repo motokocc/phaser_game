@@ -261,13 +261,23 @@ class CharacterInventory extends BaseScene {
             this.panelBoxRight.layout();
 
             if(index == 0){
-                let stat = cardStats.filter(data => data.name == this.detailsImage.data.list.name)[0];
-                let { health, attack, defence, speed, critRate, critDamage, evasion, accuracy, cooldownReduction } = stat;
+                let stat;
+                let cardBattleData = this.player.playerInfo.cardsBattleData.filter(data => data.name == this.detailsImage.data.list.name);
+
+                if(cardBattleData.length <=0){
+                    stat = cardStats.filter(data => data.name == this.detailsImage.data.list.name)[0];
+                }
+                else{
+                    stat = this.player.playerInfo.cardsBattleData.filter(data => data.name == this.detailsImage.data.list.name)[0];
+                }
+                
+                let { level, health, attack, defence, speed, critRate, critDamage, evasion, accuracy, cooldownReduction } = stat;
 
                 let statBonuses = this.getStatBonuses(this.detailsImage.data.list);
 
                 let statDetails = this.add.rexTagText(0,0,
                     [
+                        `Level : ${level}`,
                         `Health : ${health} <class="additionalStat">${statBonuses.health? '+ ' + statBonuses.health.toString(): ''}</class>`,
                         `Attack : ${attack} <class="additionalStat">${statBonuses.attack? '+ ' + statBonuses.attack.toString(): ''}</class>`,
                         `Defence : ${defence} <class="additionalStat">${statBonuses.defence? '+ ' + statBonuses.defence.toString():''}</class>`,

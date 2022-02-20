@@ -2,7 +2,7 @@ export const cardStats = [
     {
         level: 1,
         name: "Alpha",
-        health: 5,
+        health: 10,
         attack: 2,
         defence: 1,
         speed: 1,
