@@ -19,6 +19,7 @@ import Explore from './scenes/Explore';
 import Adventure from './scenes/Adventure';
 import TransitionScreen from './scenes/TransitionScreen';
 import PauseScene from './scenes/popupPages/PauseScene';
+import LevelUpScene from './scenes/popupPages/LevelUpScene';
 
 const config = {
     widht: 800,
@@ -64,11 +65,12 @@ game.scene.add("explore", Explore);
 game.scene.add("adventure", Adventure);
 game.scene.add("transitionScreen", TransitionScreen);
 game.scene.add("pauseScene", PauseScene);
+game.scene.add("levelUpScene", LevelUpScene);
 
 //game.scene.start("loading", {nextPage: "titlescreen"});
 //game.scene.start("loading", {nextPage: "summoningArea"});
 //game.scene.start("loading", {nextPage: "tutorial"});
-//game.scene.start("loading", {nextPage: "game"}); 
+game.scene.start("loading", {nextPage: "game"}); 
 //game.scene.start("loading", {nextPage: "roullete"});
 //game.scene.start("credits");
 //game.scene.start("loading", {nextPage: "inventory"});
@@ -76,6 +78,6 @@ game.scene.add("pauseScene", PauseScene);
 //game.scene.start("loading", {nextPage: "shop"});
 //game.scene.start("loading", {nextPage: "missions"});
 //game.scene.start("loading", {nextPage: "explore"});
-game.scene.start("loading", {nextPage: "adventure"});
+//game.scene.start("loading", {nextPage: "adventure"});
 //game.scene.start("loading", {nextPage: "transitionScreen"});
 //game.scene.start("loading", {nextPage: "pauseScene"});

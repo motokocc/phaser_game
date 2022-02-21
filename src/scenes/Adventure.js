@@ -48,6 +48,80 @@ class Adventure extends GameScene {
         this.alpha_char.play("alpha_run_state");
 
          this.char_state = "running";
+
+         //TESTING HP & XP(TO BE REMOVED LATER)
+         let hpButton = this.add.text(
+                this.Alpha_status_frame.x + this.Alpha_status_frame.displayWidth + this.padding, 
+                this.Alpha_status_frame.y + this.padding/2,
+                'TAKE DAMAGE',
+                {fontFamily: 'GameTextFont', fontSize: 25, fontStyle: 'Bold'}
+            ).setInteractive()
+            .on('pointerdown', () => {
+                this.Alpha_currentHp--;
+
+                if(this.Alpha_currentHp < 0){
+                    this.Alpha_currentHp = this.Alpha_maxHp;
+                }
+
+                this.Alpha_hpBar.value = this.Alpha_currentHp/this.Alpha_maxHp;
+                this.Alpha_hpText.setText(`${this.Alpha_currentHp}/${this.Alpha_maxHp}`);
+            }).setOrigin(0);
+
+        this.add.text(
+                hpButton.x,
+                hpButton.y + hpButton.displayHeight + this.padding/2,
+                'GET XP',
+                {fontFamily: 'GameTextFont', fontSize: 25, fontStyle: 'Bold'}
+            ).setInteractive()
+            .on('pointerdown', () => {
+                this.Alpha_currentXp = this.Alpha_currentXp + 10;
+
+                if(this.Alpha_currentXp >=  this.Alpha_levelupXp){
+                    this.Alpha_currentXp = 0;
+                    this.Alpha_level++;
+                    this.Alpha_levelText.setText(this.Alpha_level);
+                    this.levelUp(this.Alpha_level, this.player.gameModeData.mode, [intro_bgm.key, battle_bgm.key]);
+                }
+
+                this.Alpha_xpBar.value = this.Alpha_currentXp/this.Alpha_levelupXp;
+            }).setOrigin(0);
+
+            //Saya
+            let sayahpButton = this.add.text(
+                this.Saya_status_frame.x + this.Saya_status_frame.displayWidth + this.padding, 
+                this.Saya_status_frame.y + this.padding/2,
+                'TAKE DAMAGE',
+                {fontFamily: 'GameTextFont', fontSize: 25, fontStyle: 'Bold'}
+            ).setInteractive()
+            .on('pointerdown', () => {
+                this.Saya_currentHp--;
+
+                if(this.Saya_currentHp < 0){
+                    this.Saya_currentHp = this.Saya_maxHp;
+                }
+
+                this.Saya_hpBar.value = this.Saya_currentHp/this.Saya_maxHp;
+                this.Saya_hpText.setText(`${this.Saya_currentHp}/${this.Saya_maxHp}`);
+            }).setOrigin(0);
+
+        this.add.text(
+                sayahpButton.x,
+                sayahpButton.y + sayahpButton.displayHeight + this.padding/2,
+                'GET XP',
+                {fontFamily: 'GameTextFont', fontSize: 25, fontStyle: 'Bold'}
+            ).setInteractive()
+            .on('pointerdown', () => {
+                this.Saya_currentXp = this.Saya_currentXp + 10;
+
+                if(this.Saya_currentXp >=  this.Saya_levelupXp){
+                    this.Saya_currentXp = 0;
+                    this.Saya_level++;
+                    this.Saya_levelText.setText(this.Saya_level);
+                    this.levelUp(this.Saya_level, this.player.gameModeData.mode, [intro_bgm.key, battle_bgm.key]);
+                }
+
+                this.Saya_xpBar.value = this.Saya_currentXp/this.Saya_levelupXp;
+            }).setOrigin(0);
     }
 
 
