@@ -18,6 +18,8 @@ import swoosh from '../audio/swoosh.wav';
 import denied from '../audio/denied.wav';
 import battle_intro from '../audio/bgm/battle_intro.ogg';
 import battle_loop from '../audio/bgm/battle_loop.ogg';
+import levelUpSfx from '../audio/levelup.wav';
+import completeSfx from '../audio/complete.wav';
 
 import elf from '../images/elf-0.png';
 import scroll from '../images/UI/scroll.png';
@@ -174,6 +176,12 @@ import char_status_frame from '../images/gameplay_ui/character_status/char_statu
 import char_status_frame_fill from '../images/gameplay_ui/character_status/char_status_frame_fill.png';
 import health_bar from '../images/gameplay_ui/character_status/health_bar.png';
 import xp_bar from '../images/gameplay_ui/character_status/xp_bar.png';
+
+//Level Up Scene
+import levelUp_frame from '../images/gameplay_ui/levelup_popup/levelUp_frame.png';
+import levelUp_shine from '../images/gameplay_ui/levelup_popup/levelUp_shine.png';
+import levelUp_stars from '../images/gameplay_ui/levelup_popup/levelUp_stars.png';
+import levelUp_text from '../images/gameplay_ui/levelup_popup/levelUp_text.png';
 
 //Pause Scene
 import pause_text from '../images/gameplay_ui/pause_popup/pause_text.png';
@@ -355,6 +363,12 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('health_bar', health_bar);
         this.load.image('xp_bar', xp_bar);
 
+        //Level Up Scene
+        this.load.image('levelUp_frame', levelUp_frame);
+        this.load.image('levelUp_shine', levelUp_shine);
+        this.load.image('levelUp_stars', levelUp_stars);
+        this.load.image('levelUp_text', levelUp_text);
+
         //Pause Scene
         this.load.image('pause_text', pause_text);
         this.load.image('pause_arrow', pause_arrow);
@@ -374,6 +388,8 @@ class LoadingScreen extends Phaser.Scene {
         this.load.audio('denied', [denied]);
         this.load.audio('battle_intro', [battle_intro]);
         this.load.audio('battle_loop', [battle_loop]);
+        this.load.audio('levelUpSfx', [levelUpSfx]);
+        this.load.audio('completeSfx', [completeSfx]);
 
         this.progressBar = this.add.graphics();
         this.progressBox = this.add.graphics();

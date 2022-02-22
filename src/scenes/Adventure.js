@@ -77,6 +77,11 @@ class Adventure extends GameScene {
                 this.Alpha_currentXp = this.Alpha_currentXp + 10;
 
                 if(this.Alpha_currentXp >=  this.Alpha_levelupXp){
+                    this.Alpha_maxHp = this.Alpha_maxHp + 2;
+                    this.Alpha_currentHp = this.Alpha_maxHp;
+                    this.Alpha_hpBar.value = this.Alpha_currentHp/this.Alpha_maxHp;
+                    this.Alpha_hpText.setText(`${this.Alpha_currentHp}/${this.Alpha_maxHp}`);
+
                     this.Alpha_currentXp = 0;
                     this.Alpha_level++;
                     this.Alpha_levelText.setText(this.Alpha_level);
@@ -114,6 +119,11 @@ class Adventure extends GameScene {
                 this.Saya_currentXp = this.Saya_currentXp + 10;
 
                 if(this.Saya_currentXp >=  this.Saya_levelupXp){
+                    this.Saya_maxHp = this.Saya_maxHp + 2;
+                    this.Saya_currentHp = this.Saya_maxHp;
+                    this.Saya_hpBar.value = this.Saya_currentHp/this.Saya_maxHp;
+                    this.Saya_hpText.setText(`${this.Saya_currentHp}/${this.Saya_maxHp}`);
+
                     this.Saya_currentXp = 0;
                     this.Saya_level++;
                     this.Saya_levelText.setText(this.Saya_level);
