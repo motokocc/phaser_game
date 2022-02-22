@@ -20,6 +20,7 @@ import battle_intro from '../audio/bgm/battle_intro.ogg';
 import battle_loop from '../audio/bgm/battle_loop.ogg';
 import levelUpSfx from '../audio/levelup.wav';
 import completeSfx from '../audio/complete.wav';
+import loseSfx from '../audio/lose_sfx.wav';
 
 import elf from '../images/elf-0.png';
 import scroll from '../images/UI/scroll.png';
@@ -189,6 +190,7 @@ import pause_arrow from '../images/gameplay_ui/pause_popup/pause_arrow.png';
 import continue_button from '../images/gameplay_ui/pause_popup/continue_button.png';
 import quit_button from '../images/gameplay_ui/pause_popup/quit_button.png';
 import restart_button from '../images/gameplay_ui/pause_popup/restart_button.png';
+import lose_popup from '../images/gameplay_ui/lose_popup/lose_popup.png';
 
 class LoadingScreen extends Phaser.Scene {
 
@@ -375,6 +377,7 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('continue_button', continue_button);
         this.load.image('restart_button', restart_button);
         this.load.image('quit_button', quit_button);
+        this.load.image('lose_popup', lose_popup);
 
         //Audio Files
         this.load.audio('clickEffect', [clickSound]);
@@ -390,6 +393,7 @@ class LoadingScreen extends Phaser.Scene {
         this.load.audio('battle_loop', [battle_loop]);
         this.load.audio('levelUpSfx', [levelUpSfx]);
         this.load.audio('completeSfx', [completeSfx]);
+        this.load.audio('loseSfx', [loseSfx]);
 
         this.progressBar = this.add.graphics();
         this.progressBox = this.add.graphics();

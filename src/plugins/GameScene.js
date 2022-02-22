@@ -186,4 +186,9 @@ export default class GameScene extends Phaser.Scene{
 		this.scene.pause(scene);
 		this.scene.launch('levelUpScene', {scene, bgMusic, level});
 	}
+
+	lose(scene, bgMusic){
+		this.scene.pause(scene);
+		this.scene.launch('loseScene', {scene, bgMusic});
+	}
 }
