@@ -7,7 +7,15 @@ export const skills = [
         priceCurrency: "gold",
         properties: {
         	type: "skill",
-        	attribute: ["fire"]
+        	attribute: ["fire"],
+            subType: "active",
+            cooldown: 20,
+            effect: {
+                multiplier: [ {attack: 1.2} ],
+                effectType: "burn",
+                chance: 0.1,
+                duration: null 
+            }
         }
     },
     {
@@ -18,7 +26,15 @@ export const skills = [
         priceCurrency: "gold",
         properties: {
         	type: "skill",
-        	attribute: ["water"]
+        	attribute: ["water"],
+            subType: "active",
+            cooldown: 20,
+            effect: {
+                multiplier: [ {attack: 1.2} ],
+                effectType: "freeze",
+                chance: 0.1,
+                duration: 1.5 
+            }
         }
     }, 
     {
@@ -29,7 +45,15 @@ export const skills = [
         priceCurrency: "gold",
         properties: {
         	type: "skill",
-        	attribute: ["fire", "water"]
+        	attribute: ["fire", "water"],
+            subType: "passive",
+            cooldown: 45,
+            effect: {
+                multiplier: [ {attack: 0.25}, {critRate: 0.25}, {critDamage: 0.25} ],
+                effectType: null,
+                chance: null,
+                duration: null 
+            }
         }
     }, 
     {
@@ -40,7 +64,15 @@ export const skills = [
         priceCurrency: "gems",
         properties: {
         	type: "skill",
-        	attribute: ["fire"]
+        	attribute: ["fire"],
+            subType: "active",
+            cooldown: 45,
+            effect: {
+                multiplier: [ {attack: 1.6} ],
+                effectType: "burn",
+                chance: 0.2,
+                duration: null  
+            }
         }
     }, 
     {
@@ -51,7 +83,15 @@ export const skills = [
         priceCurrency: "gems",
         properties: {
         	type: "skill",
-        	attribute: ["water"]
+        	attribute: ["water"],
+            subType: "active",
+            cooldown: 45,
+            effect: {
+                multiplier: [ {attack: 1.6} ],
+                effectType: "freeze",
+                chance: 0.15,
+                duration: 3  
+            }
         }
     },   
     {
@@ -62,7 +102,15 @@ export const skills = [
         priceCurrency: "gems",
         properties: {
         	type: "skill",
-        	attribute: ["fire", "water"]
+        	attribute: ["fire", "water"],
+            subType: "passive",
+            cooldown: 0,
+            effect: {
+                multiplier: [ {attack: 0.25} ],
+                effectType: null,
+                chance: null,
+                duration: null  
+            }
         }
     }, 
 ];
@@ -71,12 +119,22 @@ export const items = [
     {
         itemId: 700,
         name: "Small heal potion",
-        description: "Potion brewed by wizards used by novice adventurers that replenishes 25% of their health during battles",
+        description: "Potion brewed by wizards used by novice adventurers that replenishes 20% of their health during battles",
         price: 20,
         priceCurrency: "gold",
         properties: {
         	type: "item",
-        	attribute: []
+        	attribute: [],
+            subType: "potion",
+            cooldown: 10,
+            effect: {
+                target: { name: 'currentHp', max: 'maxHp', main: 'hp' },
+                targetUI: ['Bar', 'Text'],
+                multiplier: 0.2,
+                effectType: null,
+                chance: null,
+                duration: null  
+            }
         }
     },
     {
@@ -87,7 +145,15 @@ export const items = [
         priceCurrency: "gems",
         properties: {
         	type: "item",
-        	attribute: []
+        	attribute: [],
+            subType: null,
+            cooldown: null,
+            effect: {
+                multiplier: null,
+                effectType: null,
+                chance: null,
+                duration: null  
+            }
         }
     }
 ];

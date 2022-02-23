@@ -39,7 +39,8 @@ export default class GameScene extends Phaser.Scene{
 
 		this.generateUpperRightUI(scene, bgMusic);
 		this.generateCharacterStats(this.charactersToPlay);
-
+		this.generateItemSlots();
+		this.generateSkillSlots(this.charactersToPlay);
 	}
 
 	generateUpperRightUI(scene, bgMusic){
@@ -122,13 +123,11 @@ export default class GameScene extends Phaser.Scene{
 				this[`${character}_stats`] = cardStats.filter(cardData => cardData.name == character)[0];
 			}
 
-
 			this[`${character}_currentHp`] = this[`${character}_stats`].health;
 			this[`${character}_maxHp`] = this[`${character}_stats`].health;
 			this[`${character}_currentXp`] = this[`${character}_stats`].currentXp;
 			this[`${character}_levelupXp`] = this[`${character}_stats`].levelupXp;
 			this[`${character}_level`] = this[`${character}_stats`].level;
-
 
 			//HP Slider
 			this[`${character}_hpBar`] = new Slider(this, {
@@ -180,6 +179,86 @@ export default class GameScene extends Phaser.Scene{
 			).setOrigin(0.5).setDepth(26);
 
 		})		
+	}
+
+	generateItemSlots(){
+		let itemSlot = this.add.sprite(this.gameW - this.padding/2, this.gameH - this.padding/2, 'item_slot').setOrigin(1).setDepth(20);
+
+		let potions = this.player.playerInfo.inventory.item.filter(item => item.properties.subType == 'potion');
+
+		if(potions.length >= 1){
+			let potionData = potions[0];
+			let potion = this.add.sprite(
+				itemSlot.x - itemSlot.displayWidth/2, 
+				itemSlot.y - itemSlot.displayWidth/2 - this.padding*0.1, 
+				'Small heal potion slot'
+			).setOrigin(0.5).setInteractive().setDepth(20);
+
+			let potionText = this.add.text(potion.x, potion.y, potionData.quantity, {
+				fontFamily: 'GameTextFont', fontSize: 40, fontStyle: 'Bold'
+			}).setOrigin(0.5).setDepth(20);
+			potion.setTint(0x808080);
+
+			potion.on('pointerdown', () => {
+				if(potionData.quantity >= 1){
+					this.charactersToPlay.filter(character => {
+						let {multiplier, target, targetUI } = potionData.properties.effect;
+
+						let newStat = Math.floor(this[`${character}_${target.name}`] + (this[`${character}_${target.max}`]*multiplier));
+
+						if(newStat  > this[`${character}_${target.max}`]){
+							newStat = this[`${character}_${target.max}`];
+						}
+
+						this[`${character}_${target.name}`] = newStat;
+
+						targetUI.filter(ui => {
+							if(ui == 'Bar'){
+								this[`${character}_${target.main}${ui}`].value = newStat/this[`${character}_${target.max}`]
+							}
+							else{
+								this[`${character}_${target.main}${ui}`].setText(newStat + '/' + this[`${character}_${target.max}`]);
+							}
+						})
+					})
+				}
+				else{
+					potionData.quantity = 0;
+				}
+
+				potionData.quantity--;
+
+				if(potionData.quantity < 0){
+					potionData.quantity = 0;
+				}
+
+				potionText.setText(potionData.quantity);
+			})
+		}
+	}
+
+	generateSkillSlots(charactersToPlay){
+		let skills = []
+
+		charactersToPlay.forEach(character => {
+			this.player.playerInfo.inventory.skill.forEach(skill => {
+				if(skill.equipped.some(data => data == character)){
+					skills.push({ name: character, skill })
+				}
+			})
+		})
+
+		for(let i=0; i<=8; i++){
+			this[`skill_slot_${i+1}`] = this.add.sprite(this.padding/2 + (i*this.gameW * 0.075), this.gameH - this.padding/2, 'skill_slot').setOrigin(0,1).setDepth(25);
+		}
+
+		skills.forEach((item, index) => {
+			this.add.sprite(
+				this[`skill_slot_${index+1}`].x + this[`skill_slot_${index+1}`].displayWidth/2,
+				this[`skill_slot_${index+1}`].y - this[`skill_slot_${index+1}`].displayWidth/2,
+				`${item.skill.name} slot`
+			).setOrigin(0.5).setDepth(25);
+		})
 	}
 
 	levelUp(level, scene, bgMusic){

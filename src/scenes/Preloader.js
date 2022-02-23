@@ -178,6 +178,16 @@ import char_status_frame_fill from '../images/gameplay_ui/character_status/char_
 import health_bar from '../images/gameplay_ui/character_status/health_bar.png';
 import xp_bar from '../images/gameplay_ui/character_status/xp_bar.png';
 
+import skill_slot from '../images/gameplay_ui/lower_ui/left/skill_slot.png';
+import fatal_wounds_slot from '../images/gameplay_ui/lower_ui/left/fatal_wounds_slot.png';
+import fire_ball_slot from '../images/gameplay_ui/lower_ui/left/fire_ball_slot.png';
+import ice_spikes_slot from '../images/gameplay_ui/lower_ui/left/ice_spikes_slot.png';
+import icicle_spears_slot from '../images/gameplay_ui/lower_ui/left/icicle_spears_slot.png';
+import meteor_rain_slot from '../images/gameplay_ui/lower_ui/left/meteor_rain_slot.png';
+import war_cry_slot from '../images/gameplay_ui/lower_ui/left/war_cry_slot.png';
+import small_heal_potion_frame from '../images/gameplay_ui/lower_ui/right/heal_potion_frame.png';
+import item_slot from '../images/gameplay_ui/lower_ui/right/item_slot.png';
+
 //Level Up Scene
 import levelUp_frame from '../images/gameplay_ui/levelup_popup/levelUp_frame.png';
 import levelUp_shine from '../images/gameplay_ui/levelup_popup/levelUp_shine.png';
@@ -390,6 +400,17 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('complete_chest_glow', complete_chest_glow);
         this.load.image('complete_popup', complete_popup);
         this.load.image('complete_chest', complete_chest);
+
+        //Lower UI
+        this.load.image('Fire ball slot', fire_ball_slot);
+        this.load.image('Fatal wounds slot', fatal_wounds_slot);
+        this.load.image('Ice spikes slot', ice_spikes_slot);
+        this.load.image('Icicle spears slot', icicle_spears_slot);
+        this.load.image('Meteor rain slot', meteor_rain_slot);
+        this.load.image('War cry slot', war_cry_slot);
+        this.load.image('skill_slot', skill_slot);
+        this.load.image('item_slot', item_slot);
+        this.load.image('Small heal potion slot', small_heal_potion_frame);
 
         //Audio Files
         this.load.audio('clickEffect', [clickSound]);
