@@ -191,4 +191,9 @@ export default class GameScene extends Phaser.Scene{
 		this.scene.pause(scene);
 		this.scene.launch('loseScene', {scene, bgMusic});
 	}
+
+	complete(scene, bgMusic){
+		this.scene.pause(scene);
+		this.scene.launch('completeScene', {scene, bgMusic});
+	}
 }

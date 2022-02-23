@@ -21,6 +21,7 @@ import TransitionScreen from './scenes/TransitionScreen';
 import PauseScene from './scenes/popupPages/PauseScene';
 import LevelUpScene from './scenes/popupPages/LevelUpScene';
 import LoseScene from './scenes/popupPages/LoseScene';
+import CompleteScene from './scenes/popupPages/CompleteScene';
 
 const config = {
     widht: 800,
@@ -68,6 +69,7 @@ game.scene.add("transitionScreen", TransitionScreen);
 game.scene.add("pauseScene", PauseScene);
 game.scene.add("levelUpScene", LevelUpScene);
 game.scene.add("loseScene", LoseScene);
+game.scene.add("completeScene", CompleteScene);
 
 //game.scene.start("loading", {nextPage: "titlescreen"});
 //game.scene.start("loading", {nextPage: "summoningArea"});

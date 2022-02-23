@@ -192,6 +192,13 @@ import quit_button from '../images/gameplay_ui/pause_popup/quit_button.png';
 import restart_button from '../images/gameplay_ui/pause_popup/restart_button.png';
 import lose_popup from '../images/gameplay_ui/lose_popup/lose_popup.png';
 
+//Complete Scene
+import complete_popup from '../images/gameplay_ui/complete_popup/complete_popup.png';
+import complete_chest from '../images/gameplay_ui/complete_popup/complete_chest.png';
+import complete_chest_glow from '../images/gameplay_ui/complete_popup/complete_chest_glow.png';
+
+
+
 class LoadingScreen extends Phaser.Scene {
 
     init(data){
@@ -378,6 +385,11 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('restart_button', restart_button);
         this.load.image('quit_button', quit_button);
         this.load.image('lose_popup', lose_popup);
+
+        //Complete Scene
+        this.load.image('complete_chest_glow', complete_chest_glow);
+        this.load.image('complete_popup', complete_popup);
+        this.load.image('complete_chest', complete_chest);
 
         //Audio Files
         this.load.audio('clickEffect', [clickSound]);

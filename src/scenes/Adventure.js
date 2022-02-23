@@ -151,6 +151,9 @@ class Adventure extends GameScene {
             }).setInteractive().setOrigin(1,0.5)
             .on('pointerdown', () => {
                 this.game_state = 'off';
+                setTimeout(() => {
+                    this.complete(this.player.gameModeData.mode, [intro_bgm.key, battle_bgm.key]);
+                }, 2000)
             })
     }
 
