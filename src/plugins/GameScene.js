@@ -40,7 +40,7 @@ export default class GameScene extends Phaser.Scene{
 		this.generateUpperRightUI(scene, bgMusic);
 		this.generateCharacterStats(this.charactersToPlay);
 		this.generateItemSlots();
-		this.generateSkillSlots(this.charactersToPlay);
+		this.generateSkillSlots(this.charactersToPlay, 9);
 	}
 
 	generateUpperRightUI(scene, bgMusic){
@@ -237,27 +237,58 @@ export default class GameScene extends Phaser.Scene{
 		}
 	}
 
-	generateSkillSlots(charactersToPlay){
-		let skills = []
+	generateSkillSlots(charactersToPlay, skillSlotAllowed){
+		let skills = [];
 
 		charactersToPlay.forEach(character => {
 			this.player.playerInfo.inventory.skill.forEach(skill => {
 				if(skill.equipped.some(data => data == character)){
-					skills.push({ name: character, skill })
+					skills.push({ character, skill })
 				}
 			})
 		})
 
-		for(let i=0; i<=8; i++){
+		for(let i=0; i<=skillSlotAllowed-1; i++){
 			this[`skill_slot_${i+1}`] = this.add.sprite(this.padding/2 + (i*this.gameW * 0.075), this.gameH - this.padding/2, 'skill_slot').setOrigin(0,1).setDepth(25);
 		}
 
 		skills.forEach((item, index) => {
-			this.add.sprite(
+			let { skill } = item;
+
+			this[`${skill.name} skill`] = this.add.sprite(
 				this[`skill_slot_${index+1}`].x + this[`skill_slot_${index+1}`].displayWidth/2,
 				this[`skill_slot_${index+1}`].y - this[`skill_slot_${index+1}`].displayWidth/2,
-				`${item.skill.name} slot`
+				`${skill.name} slot`
+			).setOrigin(0.5).setDepth(25).setInteractive();
+
+			this[`${skill.name} countdown`] = this.add.text(
+				this[`${skill.name} skill`].x,
+				this[`${skill.name} skill`].y,
+				'',
+				{ fontFamily: 'GameTextFont', fontSize: 25, fontStyle: 'Bold' }
 			).setOrigin(0.5).setDepth(25);
+
+			this[`${skill.name} skill`].on('pointerdown', () => {
+				this.activateSkill(item);		
+
+				let timeCountdown = skill.properties.cooldown;
+				this[`${skill.name} skill`].disableInteractive().setTint(0x808080);
+				this[`${skill.name} countdown`].setText(timeCountdown);
+
+				this.time.addEvent({
+					delay: 1000,
+					repeat: skill.properties.cooldown - 1,
+					callback: () => {
+						timeCountdown--;
+						this[`${skill.name} countdown`].setText(timeCountdown);
+
+						if(timeCountdown === 0){
+							this[`${skill.name} skill`].setInteractive().setTint(0xffffff);
+							this[`${skill.name} countdown`].setText('');
+						}
+					},
+				})
+			});
 		})
 	}
 
@@ -274,5 +305,9 @@ export default class GameScene extends Phaser.Scene{
 	complete(scene, bgMusic){
 		this.scene.pause(scene);
 		this.scene.launch('completeScene', {scene, bgMusic});
+	}
+
+	activateSkill(skillData){
+		console.log('SKILL ACTIVATED: ', skillData.skill.name);
 	}
 }
