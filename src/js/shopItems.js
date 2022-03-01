@@ -47,7 +47,7 @@ export const skills = [
         	type: "skill",
         	attribute: ["fire", "water"],
             subType: "passive",
-            cooldown: 45,
+            cooldown: 0,
             effect: {
                 multiplier: [ {attack: 0.25}, {critRate: 0.25}, {critDamage: 0.25} ],
                 effectType: null,

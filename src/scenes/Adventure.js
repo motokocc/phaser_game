@@ -34,7 +34,9 @@ class Adventure extends GameScene {
         }, 500)
 
         this.generateGameplayUI(this.player.gameModeData.mode, [intro_bgm.key, battle_bgm.key]);
-        
+        this.bgm.push(intro_bgm.key);
+        this.bgm.push(battle_bgm.key);
+
         //BG
         let forest_width = 2133;
         this.forest_layer_0 = this.add.tileSprite(0,0,forest_width, this.game.config.height,'forest_layer_0').setOrigin(0).setScrollFactor(0, 1);
@@ -44,8 +46,9 @@ class Adventure extends GameScene {
         this.forest_layer_4 = this.add.tileSprite(0,0,forest_width, this.game.config.height,'forest_layer_4').setOrigin(0).setScrollFactor(0, 1);
         this.forest_layer_5 = this.add.tileSprite(0,0,forest_width, this.game.config.height,'forest_layer_5').setOrigin(0).setScrollFactor(0, 1);
 
-        this.alpha_char = this.add.sprite(0, this.game.config.height*0.65, "alpha_idle").setOrigin(1,0.5).setDepth(10);
-        this.alpha_char.play("alpha_run_state");
+        this.Alpha_char = this.physics.add.sprite(0, this.game.config.height*0.65, "alpha_idle").setOrigin(1,0.5).setDepth(10).setName('Alpha');
+        this.Alpha_char.play("alpha_run_state");
+        this.Alpha_char.body.setSize(this.Alpha_char.width, this.Alpha_char.height,true);
 
          this.char_state = "running";
          this.game_state = "on";
@@ -64,11 +67,8 @@ class Adventure extends GameScene {
 
                 if(this.Alpha_currentHp <= 0){
                     this.Alpha_frame_image.tint = 0x808080;
-                    this.Alpha_currentHp = 0;      
-                }
-
-                if(this.Saya_currentHp <= 0 && this.Alpha_currentHp <= 0){
-                    this.lose(this.player.gameModeData.mode, [intro_bgm.key, battle_bgm.key]);
+                    this.Alpha_currentHp = 0;   
+                    this.lose(this.player.gameModeData.mode, [intro_bgm.key, battle_bgm.key]);   
                 }
 
                 this.Alpha_hpBar.value = this.Alpha_currentHp/this.Alpha_maxHp;
@@ -98,86 +98,76 @@ class Adventure extends GameScene {
 
                 this.Alpha_xpBar.value = this.Alpha_currentXp/this.Alpha_levelupXp;
             }).setOrigin(0);
-
-            //Saya
-            let sayahpButton = this.add.text(
-                this.Saya_status_frame.x + this.Saya_status_frame.displayWidth + this.padding, 
-                this.Saya_status_frame.y + this.padding/2,
-                'TAKE DAMAGE',
-                {fontFamily: 'GameTextFont', fontSize: 25, fontStyle: 'Bold'}
-            ).setInteractive()
-            .on('pointerdown', () => {
-                this.Saya_currentHp = this.Saya_currentHp - damage;
-
-                if(this.Saya_currentHp <= 0){
-                    this.Saya_frame_image.tint = 0x808080;
-                    this.Saya_currentHp = 0;      
-                }
-
-                if(this.Saya_currentHp <= 0 && this.Alpha_currentHp <= 0){
-                    this.lose(this.player.gameModeData.mode, [intro_bgm.key, battle_bgm.key]);
-                }
-
-                this.Saya_hpBar.value = this.Saya_currentHp/this.Saya_maxHp;
-                this.Saya_hpText.setText(`${this.Saya_currentHp}/${this.Saya_maxHp}`);
-            }).setOrigin(0);
-
-        this.add.text(
-                sayahpButton.x,
-                sayahpButton.y + sayahpButton.displayHeight + this.padding/2,
-                'GET XP',
-                {fontFamily: 'GameTextFont', fontSize: 25, fontStyle: 'Bold'}
-            ).setInteractive()
-            .on('pointerdown', () => {
-                this.Saya_currentXp = this.Saya_currentXp + xp;
-
-                if(this.Saya_currentXp >=  this.Saya_levelupXp){
-                    this.Saya_maxHp = this.Saya_maxHp + 2;
-                    this.Saya_currentHp = this.Saya_maxHp;
-                    this.Saya_hpBar.value = this.Saya_currentHp/this.Saya_maxHp;
-                    this.Saya_hpText.setText(`${this.Saya_currentHp}/${this.Saya_maxHp}`);
-
-                    this.Saya_currentXp = 0;
-                    this.Saya_level++;
-                    this.Saya_levelText.setText(this.Saya_level);
-                    this.levelUp(this.Saya_level, this.player.gameModeData.mode, [intro_bgm.key, battle_bgm.key]);
-                }
-
-                this.Saya_xpBar.value = this.Saya_currentXp/this.Saya_levelupXp;
-            }).setOrigin(0);
-
-            this.add.text(this.gameW - this.padding, sayahpButton.y, 'FINISH HUNT >>', {
-                fontFamily: 'GameTextFont', fontStyle: 'Bold', fontSize:25
-            }).setInteractive().setOrigin(1,0.5)
-            .on('pointerdown', () => {
-                this.game_state = 'off';
-                setTimeout(() => {
-                    this.complete(this.player.gameModeData.mode, [intro_bgm.key, battle_bgm.key]);
-                }, 2000)
-            })
     }
 
 
     update(){
         if(this.game_state == 'on'){
-            if(this.alpha_char.x <= this.game.config.width*0.6){
-                this.alpha_char.x = this.alpha_char.x + 9;
+            if(this.Alpha_char.x <= this.game.config.width*0.6){
+                this.Alpha_char.setVelocityX(600);
             }
             else{
                 if(this.char_state == 'running'){
-                    this.alpha_char.anims.timeScale = this.speedMultiplier == 2? 1.5 : this.speedMultiplier;
+                    this.Alpha_char.setVelocityX(0);
+                    this.Alpha_char.anims.timeScale = this.speedMultiplier == 2? 1.5 : this.speedMultiplier;
                     this.forest_layer_0.tilePositionX += 4 * this.speedMultiplier;
                     this.forest_layer_1.tilePositionX += 5 * this.speedMultiplier;
                     this.forest_layer_2.tilePositionX += 6 * this.speedMultiplier;
                     this.forest_layer_3.tilePositionX += 9 * this.speedMultiplier;
                     this.forest_layer_4.tilePositionX += 7 * this.speedMultiplier;
                     this.forest_layer_5.tilePositionX += 7 * this.speedMultiplier;
+
+                    if(this.enemies.getLength() >= 1){
+                        this.enemies.children.each(enemy => {
+                            this[`${enemy.name}_hp`].x = enemy.x;
+
+                            if( Math.abs(enemy.x - this.Alpha_char.x) <= 700){
+                                let currentAnim = this.Alpha_char.anims.currentAnim;
+                                let frame = currentAnim.getFrameAt(0);
+                                this.Alpha_char.stopOnFrame(frame);
+
+                                this.Alpha_char.on('animationstop', (currentAnim, currentFrame, sprite) => {
+                                    this.Alpha_char.play('alpha_idle_state', true);
+                                    this.char_state = 'fighting';
+                                });
+                            }
+                        })
+                    }
+                }
+                else if(this.char_state == 'fighting'){
+                    
+                    this.Alpha_char.body.setSize(this.Alpha_char.width, this.Alpha_char.height,true);
+
+                    this.enemies.children.each(enemy => {
+                        this[`${enemy.name}_hp`].x = enemy.x;
+                        if(enemy.x - this.Alpha_char.x <= 220){
+                            enemy.setVelocityX(0);
+                            enemy.play('alpha_idle_state', true);
+                            enemy.anims.timeScale = this.speedMultiplier == 2? 1.5 : this.speedMultiplier;
+
+                            //testing
+                            setTimeout(() => {
+                                let xp = 10;
+                                this[`${enemy.name}_addXP`] = true;   
+
+                                enemy.destroy();
+                                this[`${enemy.name}_hp`].destroy();
+
+                                if(this.enemies.getLength() <= 0){
+                                    this.char_state = 'running';
+                                    this.Alpha_char.play('alpha_run_state', true);    
+                                }                          
+
+
+                            }, 3000);
+                        }
+                    })
                 }
             }
         }
         else{
-            if(this.alpha_char.x <= this.game.config.width + this.alpha_char.displayWidth + this.padding){
-                this.alpha_char.x = this.alpha_char.x + 9;
+            if(this.Alpha_char.x <= this.game.config.width + this.Alpha_char.displayWidth + this.padding){
+                this.Alpha_char.setVelocityX(600);
             }
         }
 

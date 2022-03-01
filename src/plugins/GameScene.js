@@ -14,22 +14,21 @@ export default class GameScene extends Phaser.Scene{
 		//Dummy data for testing
         this.player.gameModeData = {
             mode: 'adventure',
-            team: { card_1: null, card_2: 'Saya', card_3: 'Alpha' }
+            team: { card_1: null, card_2: null, card_3: 'Alpha' }
         }
 
         this.player.playerInfo.cardsBattleData = [
         	{
 		        level: 1, name: "Alpha", health: 10, attack: 2, defence: 1, speed: 1, critRate: 5, critDamage: 120,
 		        evasion: 1, accuracy: 100, cooldownReduction: 0, currentXp: 0, levelupXp: 100,
-		    },
-		    {
-		        level: 1, name: "Saya", health: 30, attack: 5, defence: 5, speed: 1, critRate: 5, critDamage: 120,
-		        evasion: 1, accuracy: 100, cooldownReduction: 0, currentXp: 0, levelupXp: 100,
-		    },
+		    }
         ]
 		//end of dummy
 
+		this.bgm = [];
 		this.charactersToPlay = [];
+		this.enemies = this.physics.add.group();
+		this.totalEnemyCount = 0;
 
 		for(let i=1; i<=3; i++){
 			if(this.player.gameModeData.team[`card_${i}`]){
@@ -41,6 +40,7 @@ export default class GameScene extends Phaser.Scene{
 		this.generateCharacterStats(this.charactersToPlay);
 		this.generateItemSlots();
 		this.generateSkillSlots(this.charactersToPlay, 9);
+		this.spawnEnemy(10000, this.charactersToPlay);
 	}
 
 	generateUpperRightUI(scene, bgMusic){
@@ -268,27 +268,34 @@ export default class GameScene extends Phaser.Scene{
 				{ fontFamily: 'GameTextFont', fontSize: 25, fontStyle: 'Bold' }
 			).setOrigin(0.5).setDepth(25);
 
-			this[`${skill.name} skill`].on('pointerdown', () => {
-				this.activateSkill(item);		
 
-				let timeCountdown = skill.properties.cooldown;
-				this[`${skill.name} skill`].disableInteractive().setTint(0x808080);
-				this[`${skill.name} countdown`].setText(timeCountdown);
+			if(skill.properties.subType == "active"){
+				this[`${skill.name} skill`].on('pointerdown', () => {
+					this.activateSkill(item);		
 
-				this.time.addEvent({
-					delay: 1000,
-					repeat: skill.properties.cooldown - 1,
-					callback: () => {
-						timeCountdown--;
-						this[`${skill.name} countdown`].setText(timeCountdown);
+					let timeCountdown = skill.properties.cooldown;
+					this[`${skill.name} skill`].disableInteractive().setTint(0x808080);
+					this[`${skill.name} countdown`].setText(timeCountdown);
 
-						if(timeCountdown === 0){
-							this[`${skill.name} skill`].setInteractive().setTint(0xffffff);
-							this[`${skill.name} countdown`].setText('');
-						}
-					},
-				})
-			});
+					this.time.addEvent({
+						delay: 1000,
+						repeat: skill.properties.cooldown - 1,
+						callback: () => {
+							timeCountdown--;
+							this[`${skill.name} countdown`].setText(timeCountdown);
+
+							if(timeCountdown === 0){
+								this[`${skill.name} skill`].setInteractive().setTint(0xffffff);
+								this[`${skill.name} countdown`].setText('');
+							}
+						},
+					})
+				});
+			}
+			else{
+				//passive skills
+				console.log(skill.name)
+			}
 		})
 	}
 
@@ -309,5 +316,56 @@ export default class GameScene extends Phaser.Scene{
 
 	activateSkill(skillData){
 		console.log('SKILL ACTIVATED: ', skillData.skill.name);
+	}
+
+	spawnEnemy(spawnInterval, charactersToPlay){
+		this.time.addEvent({
+			delay: (spawnInterval || 10000)/this.speedMultiplier,
+			repeat: -1,
+			callback: () => {
+				let numberOfEnemies = Math.ceil(Math.random()*2);
+				for(let i=0; i<=numberOfEnemies - 1;i++){
+					if(this.enemies.getLength() < 2 ){
+						setTimeout(() => {
+							this.totalEnemyCount++;
+
+							this[`enemy_${this.totalEnemyCount}`] = this.physics.add.sprite(this.gameW*1.75, this.gameH*0.65, 'alpha_idle')
+								.setOrigin(0.5).setDepth(10).setName(`enemy_${this.totalEnemyCount}`).setFlipX(true);
+
+							this.enemies.add(this[`enemy_${this.totalEnemyCount}`]);
+							this[`enemy_${this.totalEnemyCount}`].play("alpha_run_state", true);
+							//this[`enemy_${this.totalEnemyCount}`].body.setSize(this[`enemy_${this.totalEnemyCount}`].width, this[`enemy_${this.totalEnemyCount}`].height,true);
+							this.enemies.setVelocityX(-600);
+
+							this[`${this[`enemy_${this.totalEnemyCount}`].name}_hp`] = this.add.rectangle(this[`enemy_${this.totalEnemyCount}`].x, this[`enemy_${this.totalEnemyCount}`].y, 100,15, 0x00ff00,1)
+								.setOrigin(0.5).setDepth(10).setStrokeStyle(1,0x000000, 1);
+
+							charactersToPlay.forEach(character => {
+								this.physics.add.overlap(this[`${character}_char`], this.enemies,this.encounterEnemy, null, this);			
+							})
+						}, i*3000);
+					}
+				}
+			} 
+		})
+	}
+
+	encounterEnemy(char, enemy){
+        enemy.body.setEnable(false);
+
+		this[`${char.name}_currentHp`] = this.Alpha_currentHp - 1;
+
+        if(this[`${char.name}_currentHp`] <= 0){
+            this[`${char.name}_frame_image`].tint = 0x808080;
+            this[`${char.name}_currentHp`] = 0;   
+            this.lose(this.player.gameModeData.mode, this.bgm);   
+        }
+
+		this[`${char.name}_hpBar`].value = this.Alpha_currentHp/this.Alpha_maxHp;
+        this[`${char.name}_hpText`].setText(`${this.Alpha_currentHp}/${this.Alpha_maxHp}`);
+
+		setTimeout(() => {
+			enemy.body.setEnable();
+		}, 1000);
 	}
 }

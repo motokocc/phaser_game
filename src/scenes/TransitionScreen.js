@@ -25,7 +25,7 @@ class TransitionScreen extends Phaser.Scene{
 
         let cardFlip = this.plugins.get('rexFlip').add(card, {
             face: 'back',
-            front: {key: `${cards[Math.floor(Math.random()* (cards.length - 1))]}_slot`},
+            front: {key: `${cards[Math.ceil(Math.random()* (cards.length)) - 1]}_slot`},
             back: {key: 'cardSlot'},
             duration: 500
         });
