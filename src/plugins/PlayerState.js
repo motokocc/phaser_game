@@ -36,7 +36,8 @@ class Player extends Phaser.Plugins.BasePlugin {
                 card_1: null,
                 card_2: null,
                 card_3: null
-            }
+            },
+            location: 'elvent_forest'
         }
     }
 

@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { cardStats } from '../js/cardStats';
 import { getSoundSettings } from '../js/utils';
 import { Slider } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
+import CharacterAnimation from '../components/characterAnimations';
 
 export default class GameScene extends Phaser.Scene{
 	init(){
@@ -14,7 +15,8 @@ export default class GameScene extends Phaser.Scene{
 		//Dummy data for testing
         this.player.gameModeData = {
             mode: 'adventure',
-            team: { card_1: null, card_2: null, card_3: 'Alpha' }
+            team: { card_1: null, card_2: null, card_3: 'Alpha' },
+            location: 'elven_forest'
         }
 
         this.player.playerInfo.cardsBattleData = [
@@ -319,6 +321,13 @@ export default class GameScene extends Phaser.Scene{
 	}
 
 	spawnEnemy(spawnInterval, charactersToPlay){
+		let charAnimation = new CharacterAnimation(this);
+		this.add.existing(charAnimation);
+
+		let monsters = charAnimation.charactersAvailable.filter(char => 
+			char.location == this.player.gameModeData.location && char.role == "enemy"
+		) || [];
+
 		this.time.addEvent({
 			delay: (spawnInterval || 10000)/this.speedMultiplier,
 			repeat: -1,
@@ -328,6 +337,8 @@ export default class GameScene extends Phaser.Scene{
 					if(this.enemies.getLength() < 2 ){
 						setTimeout(() => {
 							this.totalEnemyCount++;
+
+							let enemyRandomlySelected = monsters[Math.ceil(Math.random()* (monsters.length)) - 1];
 
 							this[`enemy_${this.totalEnemyCount}`] = this.physics.add.sprite(this.gameW*1.75, this.gameH*0.65, 'alpha_idle')
 								.setOrigin(0.5).setDepth(10).setName(`enemy_${this.totalEnemyCount}`).setFlipX(true);
