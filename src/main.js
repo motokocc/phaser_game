@@ -28,6 +28,12 @@ const config = {
     height: 600,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     type: Phaser.AUTO,
+    scale: {
+        parent: 'phaser-input',
+        mode: Phaser.Scale.FIT,
+        width: 1024,
+        height: 600
+    },
     physics: {
         default: "arcade",
         arcade: {
