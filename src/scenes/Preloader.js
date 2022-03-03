@@ -142,6 +142,7 @@ import smoke from '../images/spritesheets/smoke_spritesheet.png';
 //Adventure
 import alpha_idle from '../images/spritesheets/alpha_idle.png';
 import alpha_run from '../images/spritesheets/alpha_run.png';
+import slime_spritesheet from '../images/spritesheets/slime_spritesheet.png';
 
 //Parallax BG
 import forest_layer_0 from '../images/bg/parallax_bg/Forest/layer_0.png';
@@ -351,8 +352,10 @@ class LoadingScreen extends Phaser.Scene {
         //Mission
         this.load.spritesheet("ninja", ninja, { frameWidth: 297, frameHeight: 420 });
         this.load.spritesheet("smoke", smoke, { frameWidth: 500, frameHeight: 500 });
+
         this.load.spritesheet("alpha_idle", alpha_idle, { frameWidth: 335.1, frameHeight: 250 });
         this.load.spritesheet("alpha_run", alpha_run, { frameWidth: 335.1, frameHeight: 250 });
+        this.load.spritesheet("slime_spritesheet", slime_spritesheet, { frameWidth: 266.67, frameHeight: 120 });
 
         //Explore
         this.load.image('adventure_mode_button', adventure_mode_button);
@@ -437,7 +440,7 @@ class LoadingScreen extends Phaser.Scene {
         let loaderPosY = this.game.config.height/2 - barHeight/2;
 
         this.loaderText = this.add.text(this.game.config.width/2, this.game.config.height/2, "Loading...", {fontFamily: 'GameTextFont'});
-        this.completeText = this.add.text(this.game.config.width/2, this.game.config.height - barHeight, '', {fontFamily: 'GameTextFont'}).setInteractive();
+        this.completeText = this.add.text(this.game.config.width/2, this.game.config.height - barHeight, 'Tip: Enable auto-rotate if you are using mobile so you can play in landscape mode', {fontFamily: 'GameTextFont'}).setInteractive();
         this.loaderText.setFontSize(20);
         this.loaderText.setOrigin(0.5,0.5);
         this.completeText.setFontSize(20);

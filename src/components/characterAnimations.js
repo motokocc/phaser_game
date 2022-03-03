@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { charInitData } from '../js/charInitData';
 
 /**
  * Class for generating animations.
@@ -11,9 +12,7 @@ export default class CharacterAnimation extends Phaser.Scene{
 		super(scene);
 		this.scene = scene;
 		
-		this.charactersAvailable = [ 
-			{ name: "slime", isOneSpritesheetOnly: true, location: "elven_forest", role: "enemy" }
-		];
+		this.charactersAvailable = [...charInitData];
 	}
 
     /**
@@ -44,7 +43,7 @@ export default class CharacterAnimation extends Phaser.Scene{
 	            frames: this.scene.anims.generateFrameNumbers(
 	            	`${name}_${characterToAnimate.isOneSpritesheetOnly? 'spritesheet': action}`, { start: startFrame, end: endFrame }
 	            	),
-	            repeat: -1
+	            repeat: repeat || -1
 	        });
 
 	        return {

@@ -324,9 +324,8 @@ export default class GameScene extends Phaser.Scene{
 		let charAnimation = new CharacterAnimation(this);
 		this.add.existing(charAnimation);
 
-		let monsters = charAnimation.charactersAvailable.filter(char => 
-			char.location == this.player.gameModeData.location && char.role == "enemy"
-		) || [];
+		let monsters = charAnimation.charactersAvailable.filter(monster => 
+			monster.location == this.player.gameModeData.location && monster.role == "enemy") || [];
 
 		this.time.addEvent({
 			delay: (spawnInterval || 10000)/this.speedMultiplier,
@@ -339,17 +338,25 @@ export default class GameScene extends Phaser.Scene{
 							this.totalEnemyCount++;
 
 							let enemyRandomlySelected = monsters[Math.ceil(Math.random()* (monsters.length)) - 1];
+							let enemyRunAnim = charAnimation.generateAnimation(enemyRandomlySelected.name, "run", 6, 6, 8);
 
-							this[`enemy_${this.totalEnemyCount}`] = this.physics.add.sprite(this.gameW*1.75, this.gameH*0.65, 'alpha_idle')
-								.setOrigin(0.5).setDepth(10).setName(`enemy_${this.totalEnemyCount}`).setFlipX(true);
+							this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`] = this.physics.add.sprite(
+								this.gameW*1.75, this.gameH*0.875, enemyRunAnim.spritesheet
+							).setOrigin(0, 1)
+							.setDepth(10)
+							.setName(`${enemyRandomlySelected.name}_${this.totalEnemyCount}`)
+							.setFlipX(enemyRandomlySelected.flipImage);
 
-							this.enemies.add(this[`enemy_${this.totalEnemyCount}`]);
-							this[`enemy_${this.totalEnemyCount}`].play("alpha_run_state", true);
-							//this[`enemy_${this.totalEnemyCount}`].body.setSize(this[`enemy_${this.totalEnemyCount}`].width, this[`enemy_${this.totalEnemyCount}`].height,true);
-							this.enemies.setVelocityX(-600);
+							this.enemies.add(this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`]);
+							this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`].play(enemyRunAnim.animation, true);
+							this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`].body.setSize(this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`].width/2, this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`].height/2, true);
+							this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`].setVelocityX(-enemyRandomlySelected.speed);
 
-							this[`${this[`enemy_${this.totalEnemyCount}`].name}_hp`] = this.add.rectangle(this[`enemy_${this.totalEnemyCount}`].x, this[`enemy_${this.totalEnemyCount}`].y, 100,15, 0x00ff00,1)
-								.setOrigin(0.5).setDepth(10).setStrokeStyle(1,0x000000, 1);
+							this[`${this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`].name}_hp`] = this.add.rectangle(
+								this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`].x, 
+								this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`].y + this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`].displayHeight, 
+								100,15, 0x00ff00,1
+							).setOrigin(0.5).setDepth(10).setStrokeStyle(1,0x000000, 1);
 
 							charactersToPlay.forEach(character => {
 								this.physics.add.overlap(this[`${character}_char`], this.enemies,this.encounterEnemy, null, this);			
@@ -362,6 +369,7 @@ export default class GameScene extends Phaser.Scene{
 	}
 
 	encounterEnemy(char, enemy){
+		enemy.body.setSize(enemy.width/2, enemy.height/2);
         enemy.body.setEnable(false);
 
 		this[`${char.name}_currentHp`] = this.Alpha_currentHp - 1;

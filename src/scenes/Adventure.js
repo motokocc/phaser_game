@@ -1,6 +1,7 @@
 import 'regenerator-runtime/runtime';
 import GameScene from '../plugins/GameScene';
 import { getSoundSettings } from '../js/utils';
+import CharacterAnimation from '../components/characterAnimations';
 
 class Adventure extends GameScene {
 
@@ -46,9 +47,9 @@ class Adventure extends GameScene {
         this.forest_layer_4 = this.add.tileSprite(0,0,forest_width, this.game.config.height,'forest_layer_4').setOrigin(0).setScrollFactor(0, 1);
         this.forest_layer_5 = this.add.tileSprite(0,0,forest_width, this.game.config.height,'forest_layer_5').setOrigin(0).setScrollFactor(0, 1);
 
-        this.Alpha_char = this.physics.add.sprite(0, this.game.config.height*0.65, "alpha_idle").setOrigin(1,0.5).setDepth(10).setName('Alpha');
+        this.Alpha_char = this.physics.add.sprite(0, this.game.config.height*0.875, "alpha_idle").setOrigin(1).setDepth(10).setName('Alpha');
         this.Alpha_char.play("alpha_run_state");
-        this.Alpha_char.body.setSize(this.Alpha_char.width, this.Alpha_char.height,true);
+        this.Alpha_char.body.setSize(this.Alpha_char.width*0.6, this.Alpha_char.height/2,true);
 
          this.char_state = "running";
          this.game_state = "on";
@@ -121,12 +122,12 @@ class Adventure extends GameScene {
                         this.enemies.children.each(enemy => {
                             this[`${enemy.name}_hp`].x = enemy.x;
 
-                            if( Math.abs(enemy.x - this.Alpha_char.x) <= 700){
+                            if( Math.abs(enemy.x - this.Alpha_char.x) <= 500){
                                 let currentAnim = this.Alpha_char.anims.currentAnim;
                                 let frame = currentAnim.getFrameAt(0);
                                 this.Alpha_char.stopOnFrame(frame);
 
-                                this.Alpha_char.on('animationstop', (currentAnim, currentFrame, sprite) => {
+                                this.Alpha_char.on('animationstop', () => {
                                     this.Alpha_char.play('alpha_idle_state', true);
                                     this.char_state = 'fighting';
                                 });
@@ -136,20 +137,30 @@ class Adventure extends GameScene {
                 }
                 else if(this.char_state == 'fighting'){
                     
-                    this.Alpha_char.body.setSize(this.Alpha_char.width, this.Alpha_char.height,true);
+                    this.Alpha_char.body.setSize(this.Alpha_char.width*0.6, this.Alpha_char.height/2,true);
 
                     this.enemies.children.each(enemy => {
                         this[`${enemy.name}_hp`].x = enemy.x;
-                        if(enemy.x - this.Alpha_char.x <= 220){
+
+                        let charAnimation = new CharacterAnimation(this);
+                        this.add.existing(charAnimation);
+
+                        let enemyName = enemy.name.split("_").slice(0,1)[0];
+                        let enemyData = charAnimation.charactersAvailable.filter(char => char.name == enemyName)[0];
+
+                        if(enemy.x - this.Alpha_char.x <= enemyData.distance){
+                            let enemyIdle = charAnimation.generateAnimation(enemyName, "idle", 6, 0, 5);
+
                             enemy.setVelocityX(0);
-                            enemy.play('alpha_idle_state', true);
+                            enemy.play(enemyIdle.animation, true);
+
+                            setTimeout(() => {
+                                enemy.body.setSize(enemy.width*2, enemy.height/2, true);
+                            }, 1000)
                             enemy.anims.timeScale = this.speedMultiplier == 2? 1.5 : this.speedMultiplier;
 
                             //testing
                             setTimeout(() => {
-                                let xp = 10;
-                                this[`${enemy.name}_addXP`] = true;   
-
                                 enemy.destroy();
                                 this[`${enemy.name}_hp`].destroy();
 
@@ -157,8 +168,6 @@ class Adventure extends GameScene {
                                     this.char_state = 'running';
                                     this.Alpha_char.play('alpha_run_state', true);    
                                 }                          
-
-
                             }, 3000);
                         }
                     })
