@@ -53,54 +53,8 @@ class Adventure extends GameScene {
         this.Alpha_char.play("alpha_run_state");
         this.Alpha_char.body.setSize(this.Alpha_char.width*0.6, this.Alpha_char.height/2,true);
 
-         //TESTING HP & XP(TO BE REMOVED LATER)
-         let damage = 2;
-         let xp = 10;
-         let hpButton = this.add.text(
-                this.Alpha_status_frame.x + this.Alpha_status_frame.displayWidth + this.padding, 
-                this.Alpha_status_frame.y + this.padding/2,
-                'TAKE DAMAGE',
-                {fontFamily: 'GameTextFont', fontSize: 25, fontStyle: 'Bold'}
-            ).setInteractive()
-            .on('pointerdown', () => {
-                this.Alpha_currentHp = this.Alpha_currentHp - damage;
-
-                if(this.Alpha_currentHp <= 0){
-                    this.Alpha_frame_image.tint = 0x808080;
-                    this.Alpha_currentHp = 0;   
-                    this.lose(this.player.gameModeData.mode, [intro_bgm.key, battle_bgm.key]);   
-                }
-
-                this.Alpha_hpBar.value = this.Alpha_currentHp/this.Alpha_maxHp;
-                this.Alpha_hpText.setText(`${this.Alpha_currentHp}/${this.Alpha_maxHp}`);
-            }).setOrigin(0);
-
-        this.add.text(
-                hpButton.x,
-                hpButton.y + hpButton.displayHeight + this.padding/2,
-                'GET XP',
-                {fontFamily: 'GameTextFont', fontSize: 25, fontStyle: 'Bold'}
-            ).setInteractive()
-            .on('pointerdown', () => {
-                this.Alpha_currentXp = this.Alpha_currentXp + xp;
-
-                if(this.Alpha_currentXp >=  this.Alpha_levelupXp){
-                    this.Alpha_maxHp = this.Alpha_maxHp + 2;
-                    this.Alpha_currentHp = this.Alpha_maxHp;
-                    this.Alpha_hpBar.value = this.Alpha_currentHp/this.Alpha_maxHp;
-                    this.Alpha_hpText.setText(`${this.Alpha_currentHp}/${this.Alpha_maxHp}`);
-
-                    this.Alpha_currentXp = 0;
-                    this.Alpha_level++;
-                    this.Alpha_levelText.setText(this.Alpha_level);
-                    this.levelUp(this.Alpha_level, this.player.gameModeData.mode, [intro_bgm.key, battle_bgm.key]);
-                }
-
-                this.Alpha_xpBar.value = this.Alpha_currentXp/this.Alpha_levelupXp;
-            }).setOrigin(0);
-
-            this.enemyCount = 0;
-            this.endCount = false;
+        this.enemyCount = 0;
+        this.endCount = false;
     }
 
 

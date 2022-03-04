@@ -16,6 +16,7 @@ export const charInitData = [
 			attack: 1,
 			speed: 1,
 			health: 5
-		} 
+		},
+		xp: 20 
 	}
 ]

@@ -24,7 +24,7 @@ export default class GameScene extends Phaser.Scene{
 
         this.player.playerInfo.cardsBattleData = [
         	{
-		        level: 1, name: "Alpha", health: 10, attack: 2, defence: 1, speed: 1, critRate: 5, critDamage: 120,
+		        level: 1, name: "Alpha", health: 20, attack: 2, defence: 1, speed: 1, critRate: 5, critDamage: 120,
 		        evasion: 1, accuracy: 100, cooldownReduction: 0, currentXp: 0, levelupXp: 100,
 		    }
         ]
@@ -136,6 +136,7 @@ export default class GameScene extends Phaser.Scene{
 			this[`${character}_currentXp`] = this[`${character}_stats`].currentXp;
 			this[`${character}_levelupXp`] = this[`${character}_stats`].levelupXp;
 			this[`${character}_level`] = this[`${character}_stats`].level;
+			this[`${character}_attack`] = this[`${character}_stats`].attack;
 
 			//HP Slider
 			this[`${character}_hpBar`] = new Slider(this, {
@@ -359,11 +360,24 @@ export default class GameScene extends Phaser.Scene{
 								this[enemyName].setVelocityX(-enemyRandomlySelected.speed * this.speedMultiplier);
 							}, i* (Math.ceil(Math.random()*1500) + 500))
 
-							this[`${this[enemyName].name}_hp`] = this.add.rectangle(
-								this[enemyName].x, 
-								this[enemyName].y - this[enemyName].displayHeight/2 - 20, 
-								100,10, 0x00ff00,1
-							).setOrigin(0,1).setDepth(15).setStrokeStyle(1,0x000000, 1);
+							//HP Slider
+							this[`${this[enemyName].name}_hp`] = new Slider(this, {
+					            x: this[enemyName].x, 
+					            y: this[enemyName].y - this[enemyName].height/2 - 20,
+					            width: 100,
+					            height: 10,
+					            orientation: 'x',
+					            value: 1,
+					            indicator: this.add.sprite(0, 0, 'health_bar'),
+					            input: 'none',
+					            easeValue: { duration: 1000 },
+				        	}).setDepth(15).setOrigin(0,1).layout();
+
+							this.add.existing(this[`${this[enemyName].name}_hp`]);
+
+							//Enemy stats
+							this[`${enemyName}_currentHp`] = enemyRandomlySelected.stats.health;
+							this[`${enemyName}_maxHealth`] = enemyRandomlySelected.stats.health;
 
 							charactersToPlay.forEach(character => {
 								this.physics.add.overlap(this[`${character}_char`], this.enemies,this.encounterEnemy, null, this);			
@@ -377,10 +391,11 @@ export default class GameScene extends Phaser.Scene{
 	encounterEnemy(char, enemy){
         enemy.body.setEnable(false);
 
-        let { stats, name, animation } = enemy.data.values;
-        let { attack, speed, health } = stats;
+        let { stats, name, animation, xp } = enemy.data.values;
+        let { attack, speed } = stats;
 
-		this[`${char.name}_currentHp`] = this.Alpha_currentHp - attack;
+        //Character
+		this[`${char.name}_currentHp`] = this[`${char.name}_currentHp`] - attack;
 
         if(this[`${char.name}_currentHp`] <= 0){
             this[`${char.name}_frame_image`].tint = 0x808080;
@@ -388,10 +403,33 @@ export default class GameScene extends Phaser.Scene{
             this.lose(this.player.gameModeData.mode, this.bgm);   
         }
 
-		this[`${char.name}_hpBar`].value = this.Alpha_currentHp/this.Alpha_maxHp;
-        this[`${char.name}_hpText`].setText(`${this.Alpha_currentHp}/${this.Alpha_maxHp}`);
+		this[`${char.name}_hpBar`].value = this[`${char.name}_currentHp`]/this[`${char.name}_maxHp`];
+        this[`${char.name}_hpText`].setText(`${this[`${char.name}_currentHp`]}/${this[`${char.name}_maxHp`]}`);
 
-        if(health == 5){
+        //Enemy
+		this[`${enemy.name}_currentHp`] =  this[`${enemy.name}_currentHp`] - this[`${char.name}_attack`];
+		this[`${enemy.name}_hp`].value = this[`${enemy.name}_currentHp`]/ this[`${enemy.name}_maxHealth`];
+
+        if(this[`${enemy.name}_currentHp`] <= 0){
+        	//Add player xp when enemy is dead
+			this[`${char.name}_currentXp`] = this[`${char.name}_currentXp`] + xp;
+
+			if(this[`${char.name}_currentXp`] >= this[`${char.name}_levelupXp`]){
+		        this[`${char.name}_maxHp`] = this[`${char.name}_maxHp`] + 2;
+	            this[`${char.name}_currentHp`] = this[`${char.name}_maxHp`];
+	            this[`${char.name}_hpBar`].value = this[`${char.name}_currentHp`]/this[`${char.name}_maxHp`];
+	            this[`${char.name}_hpText`].setText(`${this[`${char.name}_currentHp`]}/${this[`${char.name}_maxHp`]}`);
+
+	            this[`${char.name}_currentXp`] = 0;
+	            this[`${char.name}_levelupXp`] = this[`${char.name}_levelupXp`]*2;
+	            this[`${char.name}_level`]++;
+	            this[`${char.name}_levelText`].setText(this[`${char.name}_level`]);
+	            this.levelUp(this[`${char.name}_level`], this.player.gameModeData.mode, this.bgm);
+			}
+
+			this[`${char.name}_xpBar`].value = this[`${char.name}_currentXp`] / this[`${char.name}_levelupXp`];
+
+			//Play dead animation and put a little delay before destroying to prevent error
         	enemy.body.setSize(enemy.width/2, enemy.height/2);
             let enemyDeadAnim = this.charAnimation.generateAnimation(name, "dead", 6, 0);
             enemy.play(enemyDeadAnim.animation, true);
@@ -404,12 +442,12 @@ export default class GameScene extends Phaser.Scene{
 	        enemy.on('animationstop', () => {
 	        	enemy.body.setEnable();
 	        	this.time.addEvent({
-	        		delay: 500,
+	        		delay: 250,
 	        		repeat: 0,
 	        		callback: () => {
 	        			this.tweens.add({
 				            targets: enemy,
-				            alpha: { value: 0, duration: 1000, ease: 'Power1'},
+				            alpha: { value: 0, duration: 800, ease: 'Power1'},
 				            onComplete: () => {
 					            enemy.destroy();
 				            }

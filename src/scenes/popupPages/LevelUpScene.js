@@ -61,7 +61,21 @@ export default class LevelUpScene extends Phaser.Scene{
             targets: levelUp,
             alpha: { value: 1, duration: 500, ease: 'Linear'},
             scale: { value: 1, duration: 500, ease: 'Back.easeOut'},
-            yoyo: false
+            yoyo: false,
+            onComplete: () => {
+            	this.time.addEvent({
+            		delay: 3000,
+            		callback: () => {
+            			bgMusic.forEach(bg => {
+				        	this.sound.get(bg).resume();
+				        })
+				        levelUpSfx.destroy();
+				        completeSfx.destroy();
+						this.scene.stop();
+						this.scene.resume(scene || 'adventure');
+            		}
+            	})
+            }
         });
 
         this.tweens.add({
