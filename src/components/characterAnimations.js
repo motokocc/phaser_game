@@ -16,17 +16,15 @@ export default class CharacterAnimation extends Phaser.Scene{
 	}
 
     /**
-     * Generate Animation for the scene.
+     * Generate individual character animation.
      * 
      * @param name: name of the character
      * @param action: animation to be performed(idle, run, walk, attack, dead, etc)
-     * @param frameRate: how fast the animation will be played. The higher the value the faster the animation
-     * @param startFrame: starting frame of the animation
-     * @param endFrame: last frame of the animation
+     * @param frameRate: how fast the animation will be played.
      * @param repeat: optional parameter(defaults to -1 which means infinite if not added)
-     * @returns animation object which includes the name of the generated animation
+     * @return animation object which includes the name of the generated animation
      */
-	generateAnimation(name,action, frameRate, startFrame, endFrame, repeat){
+	generateAnimation(name, action, frameRate, repeat){
 
 		let characterCheck = this.charactersAvailable.filter(char => char.name === name);
 
@@ -36,21 +34,16 @@ export default class CharacterAnimation extends Phaser.Scene{
 
 		else {
 			let characterToAnimate = characterCheck[0];
+			let frameKey = `${name}_${characterToAnimate.isOneSpritesheetOnly? 'spritesheet': action}`;
 
 			this.scene.anims.create({
 	            key: `${name}_${action}`,
 	            frameRate,
-	            frames: this.scene.anims.generateFrameNumbers(
-	            	`${name}_${characterToAnimate.isOneSpritesheetOnly? 'spritesheet': action}`, { start: startFrame, end: endFrame }
-	            	),
+	            frames: this.scene.anims.generateFrameNumbers(frameKey, characterToAnimate.animation[action]),
 	            repeat: repeat || -1
 	        });
 
-	        return {
-	        	name,
-	        	animation: `${name}_${action}`,
-	        	spritesheet: `${name}_${characterToAnimate.isOneSpritesheetOnly? 'spritesheet': action}` 
-	        }
+	        return { name, animation: `${name}_${action}`, spritesheet: frameKey }
 		}
 	}
 } 

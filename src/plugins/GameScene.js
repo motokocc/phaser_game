@@ -9,6 +9,9 @@ export default class GameScene extends Phaser.Scene{
 		this.gameW = this.game.config.width;
         this.gameH = this.game.config.height;
         this.padding = this.gameW * 0.025;
+
+        this.char_state = "running";
+        this.game_state = "on";
 	}
 
 	generateGameplayUI(scene, bgMusic){
@@ -31,6 +34,9 @@ export default class GameScene extends Phaser.Scene{
 		this.charactersToPlay = [];
 		this.enemies = this.physics.add.group();
 		this.totalEnemyCount = 0;
+		this.charAnimation = new CharacterAnimation(this);
+		this.add.existing(this.charAnimation);
+		this.isFighting = true;
 
 		for(let i=1; i<=3; i++){
 			if(this.player.gameModeData.team[`card_${i}`]){
@@ -42,7 +48,7 @@ export default class GameScene extends Phaser.Scene{
 		this.generateCharacterStats(this.charactersToPlay);
 		this.generateItemSlots();
 		this.generateSkillSlots(this.charactersToPlay, 9);
-		this.spawnEnemy(10000, this.charactersToPlay);
+		this.spawnEnemy(2, 8000, this.charactersToPlay);
 	}
 
 	generateUpperRightUI(scene, bgMusic){
@@ -320,59 +326,61 @@ export default class GameScene extends Phaser.Scene{
 		console.log('SKILL ACTIVATED: ', skillData.skill.name);
 	}
 
-	spawnEnemy(spawnInterval, charactersToPlay){
-		let charAnimation = new CharacterAnimation(this);
-		this.add.existing(charAnimation);
-
-		let monsters = charAnimation.charactersAvailable.filter(monster => 
+	spawnEnemy(maxSpawn, spawnInterval, charactersToPlay){
+		let monsters = this.charAnimation.charactersAvailable.filter(monster => 
 			monster.location == this.player.gameModeData.location && monster.role == "enemy") || [];
 
 		this.time.addEvent({
 			delay: (spawnInterval || 10000)/this.speedMultiplier,
 			repeat: -1,
 			callback: () => {
-				let numberOfEnemies = Math.ceil(Math.random()*2);
-				for(let i=0; i<=numberOfEnemies - 1;i++){
-					if(this.enemies.getLength() < 2 ){
-						setTimeout(() => {
+					if(this.enemies.getLength() <= 0 ){
+						let numberOfEnemies = Math.ceil(Math.random()*maxSpawn);
+						for(let i=0; i<=numberOfEnemies - 1;i++){
+							
 							this.totalEnemyCount++;
 
 							let enemyRandomlySelected = monsters[Math.ceil(Math.random()* (monsters.length)) - 1];
-							let enemyRunAnim = charAnimation.generateAnimation(enemyRandomlySelected.name, "run", 6, 6, 8);
+							let enemyRunAnim = this.charAnimation.generateAnimation(enemyRandomlySelected.name, "run", 4);
 
-							this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`] = this.physics.add.sprite(
-								this.gameW*1.75, this.gameH*0.875, enemyRunAnim.spritesheet
-							).setOrigin(0, 1)
-							.setDepth(10)
-							.setName(`${enemyRandomlySelected.name}_${this.totalEnemyCount}`)
-							.setFlipX(enemyRandomlySelected.flipImage);
+							let enemyName = `${enemyRandomlySelected.name}_${this.totalEnemyCount}`;
 
-							this.enemies.add(this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`]);
-							this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`].play(enemyRunAnim.animation, true);
-							this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`].body.setSize(this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`].width/2, this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`].height/2, true);
-							this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`].setVelocityX(-enemyRandomlySelected.speed);
+							this[enemyName] = this.physics.add.sprite(this.gameW*2, this.gameH*0.875, enemyRunAnim.spritesheet)
+								.setOrigin(0, 1)
+								.setDepth(10)
+								.setName(enemyName)
+								.setFlipX(enemyRandomlySelected.flipImage)
+								.setData(enemyRandomlySelected);
 
-							this[`${this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`].name}_hp`] = this.add.rectangle(
-								this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`].x, 
-								this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`].y + this[`${enemyRandomlySelected.name}_${this.totalEnemyCount}`].displayHeight, 
-								100,15, 0x00ff00,1
-							).setOrigin(0.5).setDepth(10).setStrokeStyle(1,0x000000, 1);
+							this.enemies.add(this[enemyName]);
+							this[enemyName].play(enemyRunAnim.animation, true);
+							this[enemyName].body.setSize(this[enemyName].width/2, this[enemyName].height/2, true);
+							setTimeout(() => {
+								this[enemyName].setVelocityX(-enemyRandomlySelected.speed * this.speedMultiplier);
+							}, i* (Math.ceil(Math.random()*1500) + 500))
+
+							this[`${this[enemyName].name}_hp`] = this.add.rectangle(
+								this[enemyName].x, 
+								this[enemyName].y - this[enemyName].displayHeight/2 - 20, 
+								100,10, 0x00ff00,1
+							).setOrigin(0,1).setDepth(15).setStrokeStyle(1,0x000000, 1);
 
 							charactersToPlay.forEach(character => {
 								this.physics.add.overlap(this[`${character}_char`], this.enemies,this.encounterEnemy, null, this);			
 							})
-						}, i*3000);
-					}
+					}	
 				}
 			} 
 		})
 	}
 
 	encounterEnemy(char, enemy){
-		enemy.body.setSize(enemy.width/2, enemy.height/2);
         enemy.body.setEnable(false);
 
-		this[`${char.name}_currentHp`] = this.Alpha_currentHp - 1;
+        let { stats, name, animation } = enemy.data.values;
+        let { attack, speed, health } = stats;
+
+		this[`${char.name}_currentHp`] = this.Alpha_currentHp - attack;
 
         if(this[`${char.name}_currentHp`] <= 0){
             this[`${char.name}_frame_image`].tint = 0x808080;
@@ -383,8 +391,36 @@ export default class GameScene extends Phaser.Scene{
 		this[`${char.name}_hpBar`].value = this.Alpha_currentHp/this.Alpha_maxHp;
         this[`${char.name}_hpText`].setText(`${this.Alpha_currentHp}/${this.Alpha_maxHp}`);
 
+        if(health == 5){
+        	enemy.body.setSize(enemy.width/2, enemy.height/2);
+            let enemyDeadAnim = this.charAnimation.generateAnimation(name, "dead", 6, 0);
+            enemy.play(enemyDeadAnim.animation, true);
+
+            let currentAnim = enemy.anims.currentAnim;
+            let frame = currentAnim.getFrameAt(animation.dead.end - animation.dead.start);
+            enemy.stopOnFrame(frame);
+            this[`${enemy.name}_hp`].destroy();
+
+	        enemy.on('animationstop', () => {
+	        	enemy.body.setEnable();
+	        	this.time.addEvent({
+	        		delay: 500,
+	        		repeat: 0,
+	        		callback: () => {
+	        			this.tweens.add({
+				            targets: enemy,
+				            alpha: { value: 0, duration: 1000, ease: 'Power1'},
+				            onComplete: () => {
+					            enemy.destroy();
+				            }
+				        });
+	        		}
+	        	})
+	        }) 
+        }
+
 		setTimeout(() => {
 			enemy.body.setEnable();
-		}, 1000);
+		}, (speed*1000)/this.speedMultiplier);
 	}
 }

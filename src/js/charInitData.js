@@ -6,6 +6,16 @@ export const charInitData = [
 		role: "enemy", 
 		speed: 400, 
 		flipImage: false, 
-		distance: -100 
+		distance: -100,
+		animation: {
+			attack: { start: 0, end: 5 },
+			run: { start: 6, end: 7 },
+			dead: { start: 45, end: 47 }
+		},
+		stats: {
+			attack: 1,
+			speed: 1,
+			health: 5
+		} 
 	}
 ]

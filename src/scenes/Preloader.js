@@ -353,9 +353,9 @@ class LoadingScreen extends Phaser.Scene {
         this.load.spritesheet("ninja", ninja, { frameWidth: 297, frameHeight: 420 });
         this.load.spritesheet("smoke", smoke, { frameWidth: 500, frameHeight: 500 });
 
-        this.load.spritesheet("alpha_idle", alpha_idle, { frameWidth: 335.1, frameHeight: 250 });
-        this.load.spritesheet("alpha_run", alpha_run, { frameWidth: 335.1, frameHeight: 250 });
-        this.load.spritesheet("slime_spritesheet", slime_spritesheet, { frameWidth: 266.67, frameHeight: 120 });
+        this.load.spritesheet("alpha_idle", alpha_idle, { frameWidth: 335, frameHeight: 250 });
+        this.load.spritesheet("alpha_run", alpha_run, { frameWidth: 335, frameHeight: 250 });
+        this.load.spritesheet("slime_spritesheet", slime_spritesheet, { frameWidth: 267, frameHeight: 120 });
 
         //Explore
         this.load.image('adventure_mode_button', adventure_mode_button);
@@ -434,7 +434,7 @@ class LoadingScreen extends Phaser.Scene {
         this.progressBar = this.add.graphics();
         this.progressBox = this.add.graphics();
 
-        let barWidth = 520;
+        let barWidth = 750;
         let barHeight = 50;
         let loaderPosX = this.game.config.width/2 - barWidth/2;
         let loaderPosY = this.game.config.height/2 - barHeight/2;
