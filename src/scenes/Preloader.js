@@ -189,6 +189,9 @@ import war_cry_slot from '../images/gameplay_ui/lower_ui/left/war_cry_slot.png';
 import small_heal_potion_frame from '../images/gameplay_ui/lower_ui/right/heal_potion_frame.png';
 import item_slot from '../images/gameplay_ui/lower_ui/right/item_slot.png';
 
+import enemy_hpbar from '../images/gameplay_ui/enemy_ui/enemy_hpbar.png';
+import enemy_hpbar_frame from '../images/gameplay_ui/enemy_ui/enemy_hpbar_frame.png';
+
 //Level Up Scene
 import levelUp_frame from '../images/gameplay_ui/levelup_popup/levelUp_frame.png';
 import levelUp_shine from '../images/gameplay_ui/levelup_popup/levelUp_shine.png';
@@ -384,6 +387,9 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('char_status_frame_fill', char_status_frame_fill);
         this.load.image('health_bar', health_bar);
         this.load.image('xp_bar', xp_bar);
+
+        this.load.image('enemy_hpbar', enemy_hpbar);
+        this.load.image('enemy_hpbar_frame', enemy_hpbar_frame);
 
         //Level Up Scene
         this.load.image('levelUp_frame', levelUp_frame);

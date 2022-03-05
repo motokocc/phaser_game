@@ -335,53 +335,55 @@ export default class GameScene extends Phaser.Scene{
 			delay: (spawnInterval || 10000)/this.speedMultiplier,
 			repeat: -1,
 			callback: () => {
-					if(this.enemies.getLength() <= 0 ){
-						let numberOfEnemies = Math.ceil(Math.random()*maxSpawn);
-						for(let i=0; i<=numberOfEnemies - 1;i++){
-							
-							this.totalEnemyCount++;
+				if(this.enemies.getLength() <= 0 ){
+					let numberOfEnemies = Math.ceil(Math.random()*maxSpawn);
+					for(let i=0; i<=numberOfEnemies - 1;i++){
+						
+						this.totalEnemyCount++;
+						maxSpawn++;
 
-							let enemyRandomlySelected = monsters[Math.ceil(Math.random()* (monsters.length)) - 1];
-							let enemyRunAnim = this.charAnimation.generateAnimation(enemyRandomlySelected.name, "run", 4);
+						let enemyRandomlySelected = monsters[Math.ceil(Math.random()* (monsters.length)) - 1];
+						let enemyRunAnim = this.charAnimation.generateAnimation(enemyRandomlySelected.name, "run", 4);
 
-							let enemyName = `${enemyRandomlySelected.name}_${this.totalEnemyCount}`;
+						let enemyName = `${enemyRandomlySelected.name}_${this.totalEnemyCount}`;
 
-							this[enemyName] = this.physics.add.sprite(this.gameW*2, this.gameH*0.875, enemyRunAnim.spritesheet)
-								.setOrigin(0, 1)
-								.setDepth(10)
-								.setName(enemyName)
-								.setFlipX(enemyRandomlySelected.flipImage)
-								.setData(enemyRandomlySelected);
+						this[enemyName] = this.physics.add.sprite(this.gameW*2, this.gameH*0.875, enemyRunAnim.spritesheet)
+							.setOrigin(0, 1)
+							.setDepth(10)
+							.setName(enemyName)
+							.setFlipX(enemyRandomlySelected.flipImage)
+							.setData(enemyRandomlySelected);
 
-							this.enemies.add(this[enemyName]);
-							this[enemyName].play(enemyRunAnim.animation, true);
-							this[enemyName].body.setSize(this[enemyName].width/2, this[enemyName].height/2, true);
-							setTimeout(() => {
-								this[enemyName].setVelocityX(-enemyRandomlySelected.speed * this.speedMultiplier);
-							}, i* (Math.ceil(Math.random()*1500) + 500))
+						this.enemies.add(this[enemyName]);
+						this[enemyName].play(enemyRunAnim.animation, true);
+						this[enemyName].body.setSize(this[enemyName].width/2, this[enemyName].height/2, true);
+						setTimeout(() => {
+							this[enemyName].setVelocityX(-enemyRandomlySelected.speed * this.speedMultiplier);
+						}, i* (Math.ceil(Math.random()*1500) + 500))
 
-							//HP Slider
-							this[`${this[enemyName].name}_hp`] = new Slider(this, {
-					            x: this[enemyName].x, 
-					            y: this[enemyName].y - this[enemyName].height/2 - 20,
-					            width: 100,
-					            height: 10,
-					            orientation: 'x',
-					            value: 1,
-					            indicator: this.add.sprite(0, 0, 'health_bar'),
-					            input: 'none',
-					            easeValue: { duration: 1000 },
-				        	}).setDepth(15).setOrigin(0,1).layout();
+						//Enemy HP bar
+						this[`${this[enemyName].name}_hp`] = new Slider(this, {
+				            x: this[enemyName].x, 
+				            y: this[enemyName].y - this[enemyName].height/2 - 20,
+				            width: 80,
+				            height: 10,
+				            orientation: 'x',
+				            value: 1,
+				            track: this.add.sprite(0, 0, 'enemy_hpbar_frame'),
+				            indicator: this.add.sprite(0, 0, 'enemy_hpbar'),
+				            input: 'none',
+				            easeValue: { duration: 1000 },
+			        	}).setDepth(15).setOrigin(0,1).layout();
 
-							this.add.existing(this[`${this[enemyName].name}_hp`]);
+						this.add.existing(this[`${this[enemyName].name}_hp`]);
 
-							//Enemy stats
-							this[`${enemyName}_currentHp`] = enemyRandomlySelected.stats.health;
-							this[`${enemyName}_maxHealth`] = enemyRandomlySelected.stats.health;
+						//Enemy stats
+						this[`${enemyName}_currentHp`] = enemyRandomlySelected.stats.health;
+						this[`${enemyName}_maxHealth`] = enemyRandomlySelected.stats.health;
 
-							charactersToPlay.forEach(character => {
-								this.physics.add.overlap(this[`${character}_char`], this.enemies,this.encounterEnemy, null, this);			
-							})
+						charactersToPlay.forEach(character => {
+							this.physics.add.overlap(this[`${character}_char`], this.enemies,this.encounterEnemy, null, this);			
+						})
 					}	
 				}
 			} 
@@ -419,6 +421,7 @@ export default class GameScene extends Phaser.Scene{
 	            this[`${char.name}_currentHp`] = this[`${char.name}_maxHp`];
 	            this[`${char.name}_hpBar`].value = this[`${char.name}_currentHp`]/this[`${char.name}_maxHp`];
 	            this[`${char.name}_hpText`].setText(`${this[`${char.name}_currentHp`]}/${this[`${char.name}_maxHp`]}`);
+	            this[`${char.name}_attack`]++;
 
 	            this[`${char.name}_currentXp`] = 0;
 	            this[`${char.name}_levelupXp`] = this[`${char.name}_levelupXp`]*2;
