@@ -211,7 +211,8 @@ import complete_popup from '../images/gameplay_ui/complete_popup/complete_popup.
 import complete_chest from '../images/gameplay_ui/complete_popup/complete_chest.png';
 import complete_chest_glow from '../images/gameplay_ui/complete_popup/complete_chest_glow.png';
 
-
+//Skill Spritesheets
+import heal_spritesheet from '../images/spritesheets/skills/heal_spritesheet.png';
 
 class LoadingScreen extends Phaser.Scene {
 
@@ -323,6 +324,9 @@ class LoadingScreen extends Phaser.Scene {
         this.load.image('Icicle spears', icicle_spears);
         this.load.image('Meteor rain', meteor_rain);
         this.load.image('War cry', war_cry);
+
+        //Skills Spritesheet
+        this.load.spritesheet('heal_spritesheet', heal_spritesheet, { frameWidth: 300, frameHeight: 300 });
 
         //Items
         this.load.image('Iron pickaxe', iron_pickaxe);

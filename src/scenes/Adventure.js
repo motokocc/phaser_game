@@ -53,12 +53,24 @@ class Adventure extends GameScene {
         this.Alpha_char.play("alpha_run_state");
         this.Alpha_char.body.setSize(this.Alpha_char.width*0.6, this.Alpha_char.height/2,true);
 
+        this.charactersToPlay.forEach(character => {
+            this[`${character}_vfx`] = this.add.sprite(
+                this[`${character}_char`].x + this[`${character}_char`].width/2,
+                this[`${character}_char`].y,
+                'heal_spritesheet'
+            ).setOrigin(1).setAlpha(0).setDepth(10);
+        })
+
         this.enemyCount = 0;
         this.endCount = false;
     }
 
 
     update(){
+        this.charactersToPlay.forEach(character => {
+            this[`${character}_vfx`].x = this[`${character}_char`].x
+        });
+
         if(this.game_state == 'on'){
             if(this.Alpha_char.x <= this.game.config.width*0.6){
                 this.Alpha_char.setVelocityX(600);

@@ -15,6 +15,13 @@ export default class GameScene extends Phaser.Scene{
 	}
 
 	generateGameplayUI(scene, bgMusic){
+		//Put in separate class later
+		this.anims.create({
+            key: "heal_vfx",
+            frameRate: 30,
+            frames: this.anims.generateFrameNumbers("heal_spritesheet", { start: 0, end: 13 }),
+        });
+
 		//Dummy data for testing
         this.player.gameModeData = {
             mode: 'adventure',
@@ -29,7 +36,7 @@ export default class GameScene extends Phaser.Scene{
 		    }
         ]
 		//end of dummy
-
+		this.isAuto = true;
 		this.bgm = [];
 		this.charactersToPlay = [];
 		this.enemies = this.physics.add.group();
@@ -75,7 +82,7 @@ export default class GameScene extends Phaser.Scene{
 
 			button.on('pointerdown', () => {
 				if(button.name == 'auto'){
-					console.log('hey')
+					this.isAuto = !this.isAuto;
 				}
 				else if(button.name == 'pause'){
 					this.sound.play('clickSelectEffect', {loop: false, volume: getSoundSettings('default')});
@@ -197,20 +204,27 @@ export default class GameScene extends Phaser.Scene{
 
 		if(potions.length >= 1){
 			let potionData = potions[0];
-			let potion = this.add.sprite(
+			this.potion = this.add.sprite(
 				itemSlot.x - itemSlot.displayWidth/2, 
 				itemSlot.y - itemSlot.displayWidth/2 - this.padding*0.1, 
 				'Small heal potion slot'
 			).setOrigin(0.5).setInteractive().setDepth(20);
 
-			let potionText = this.add.text(potion.x, potion.y, potionData.quantity, {
+			let potionText = this.add.text(this.potion.x, this.potion.y, potionData.quantity, {
 				fontFamily: 'GameTextFont', fontSize: 40, fontStyle: 'Bold'
 			}).setOrigin(0.5).setDepth(20);
-			potion.setTint(0x808080);
+			this.potion.setTint(0x808080);
 
-			potion.on('pointerdown', () => {
+			this.potion.on('pointerdown', () => {
 				if(potionData.quantity >= 1){
 					this.charactersToPlay.filter(character => {
+						//Heal animation
+						this[`${character}_vfx`].setAlpha(1);
+						this[`${character}_vfx`].play('heal_vfx');
+						this[`${character}_vfx`].on('animationcomplete', () => {
+							this[`${character}_vfx`].setAlpha(0);
+						})
+
 						let {multiplier, target, targetUI } = potionData.properties.effect;
 
 						let newStat = Math.floor(this[`${character}_${target.name}`] + (this[`${character}_${target.max}`]*multiplier));
