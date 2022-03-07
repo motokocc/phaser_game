@@ -79,7 +79,7 @@ export default class GameScene extends Phaser.Scene{
 
 		let autoButton = this.add.sprite(
 			multiplierButton.x - multiplierButton.displayWidth - this.padding/2, multiplierButton.y,
-			'auto_button'
+			'auto_button_on'
 		).setName('auto');
 
 		let upperRightButtons = [pauseButton, multiplierButton, autoButton];
@@ -90,6 +90,7 @@ export default class GameScene extends Phaser.Scene{
 			button.on('pointerdown', () => {
 				if(button.name == 'auto'){
 					this.isAuto = !this.isAuto;
+					autoButton.setTexture(`auto_button_${this.isAuto? 'on': 'off'}`);
 				}
 				else if(button.name == 'pause'){
 					this.sound.play('clickSelectEffect', {loop: false, volume: getSoundSettings('default')});

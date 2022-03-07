@@ -169,7 +169,8 @@ import card_yellow_slot from '../images/explore_page/card_slots/card_yellow_slot
 
 //Gameplay UI
 import pause_button from '../images/gameplay_ui/buttons/pause_button.png';
-import auto_button from '../images/gameplay_ui/buttons/auto_button.png';
+import auto_button_on from '../images/gameplay_ui/buttons/auto_button_on.png';
+import auto_button_off from '../images/gameplay_ui/buttons/auto_button_off.png';
 import multiplier_1x_button from '../images/gameplay_ui/buttons/multiplier_1x_button.png';
 import multiplier_2x_button from '../images/gameplay_ui/buttons/multiplier_2x_button.png';
 import Alpha_frame from '../images/gameplay_ui/character_status/Alpha_frame.png';
@@ -383,7 +384,8 @@ class LoadingScreen extends Phaser.Scene {
 
         //Gameplay
         this.load.image('pause_button', pause_button);
-        this.load.image('auto_button', auto_button);
+        this.load.image('auto_button_on', auto_button_on);
+        this.load.image('auto_button_off', auto_button_off);
         this.load.image('multiplier_1x_button', multiplier_1x_button);
         this.load.image('multiplier_2x_button', multiplier_2x_button);
 
