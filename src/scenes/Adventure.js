@@ -59,6 +59,12 @@ class Adventure extends GameScene {
                 this[`${character}_char`].y,
                 'heal_spritesheet'
             ).setOrigin(1).setAlpha(0).setDepth(10);
+
+            this[`${character}_levelUp`] = this.add.sprite(
+                this[`${character}_char`].x,
+                this[`${character}_char`].y - this[`${character}_char`].height/3,
+                'levelup_spritesheet'
+            ).setOrigin(0.5,1).setAlpha(0).setDepth(10);
         })
 
         this.enemyCount = 0;
@@ -68,7 +74,8 @@ class Adventure extends GameScene {
 
     update(){
         this.charactersToPlay.forEach(character => {
-            this[`${character}_vfx`].x = this[`${character}_char`].x
+            this[`${character}_vfx`].x = this[`${character}_char`].x;
+            this[`${character}_levelUp`].x = this[`${character}_char`].x - this[`${character}_char`].width*0.35;
         });
 
         if(this.game_state == 'on'){
@@ -132,6 +139,25 @@ class Adventure extends GameScene {
                                 setTimeout(() => {
                                     enemy.body.setSize(enemy.width*2, enemy.height/2, true);
                                 }, 1000)
+                            }
+
+                            //Auto mode
+                            if(this.isAuto){
+                                this.charactersToPlay.forEach(character => {
+                                    if(this.potion && this[`${character}_currentHp`] <= this[`${character}_maxHp`]*0.25){
+                                        this.potion.emit('pointerdown');
+                                    }
+
+                                    if(this.skills){
+                                        this.skills.forEach(item => {
+                                            let { skill } = item;
+
+                                            if(skill.properties.subType == "active" && this[`${skill.name} skill`].input.enabled){
+                                                this[`${skill.name} skill`].emit('pointerdown')
+                                            }
+                                        })
+                                    }
+                                })
                             }
                         }
                     })

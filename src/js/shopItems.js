@@ -119,7 +119,7 @@ export const items = [
     {
         itemId: 700,
         name: "Small heal potion",
-        description: "Potion brewed by wizards used by novice adventurers that replenishes 20% of their health during battles",
+        description: "Potion brewed by wizards used by novice adventurers that replenishes 25% of their health during battles",
         price: 20,
         priceCurrency: "gold",
         properties: {
@@ -130,7 +130,7 @@ export const items = [
             effect: {
                 target: { name: 'currentHp', max: 'maxHp', main: 'hp' },
                 targetUI: ['Bar', 'Text'],
-                multiplier: 0.2,
+                multiplier: 0.25,
                 effectType: null,
                 chance: null,
                 duration: null  

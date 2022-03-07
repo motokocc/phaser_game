@@ -22,6 +22,13 @@ export default class GameScene extends Phaser.Scene{
             frames: this.anims.generateFrameNumbers("heal_spritesheet", { start: 0, end: 13 }),
         });
 
+
+        this.anims.create({
+            key: "levelUp_vfx",
+            frameRate: 30,
+            frames: this.anims.generateFrameNumbers("levelup_spritesheet", { start: 0, end: 47 }),
+        });
+
 		//Dummy data for testing
         this.player.gameModeData = {
             mode: 'adventure',
@@ -55,7 +62,7 @@ export default class GameScene extends Phaser.Scene{
 		this.generateCharacterStats(this.charactersToPlay);
 		this.generateItemSlots();
 		this.generateSkillSlots(this.charactersToPlay, 9);
-		this.spawnEnemy(2, 8000, this.charactersToPlay);
+		this.spawnEnemy(4, 8000, this.charactersToPlay);
 	}
 
 	generateUpperRightUI(scene, bgMusic){
@@ -218,6 +225,8 @@ export default class GameScene extends Phaser.Scene{
 			this.potion.on('pointerdown', () => {
 				if(potionData.quantity >= 1){
 					this.charactersToPlay.filter(character => {
+						this.sound.play('healSfx', {volume: getSoundSettings('default')})
+
 						//Heal animation
 						this[`${character}_vfx`].setAlpha(1);
 						this[`${character}_vfx`].play('heal_vfx');
@@ -227,7 +236,7 @@ export default class GameScene extends Phaser.Scene{
 
 						let {multiplier, target, targetUI } = potionData.properties.effect;
 
-						let newStat = Math.floor(this[`${character}_${target.name}`] + (this[`${character}_${target.max}`]*multiplier));
+						let newStat = Math.ceil(this[`${character}_${target.name}`] + (this[`${character}_${target.max}`]*multiplier));
 
 						if(newStat  > this[`${character}_${target.max}`]){
 							newStat = this[`${character}_${target.max}`];
@@ -261,12 +270,12 @@ export default class GameScene extends Phaser.Scene{
 	}
 
 	generateSkillSlots(charactersToPlay, skillSlotAllowed){
-		let skills = [];
+		this.skills = [];
 
 		charactersToPlay.forEach(character => {
 			this.player.playerInfo.inventory.skill.forEach(skill => {
 				if(skill.equipped.some(data => data == character)){
-					skills.push({ character, skill })
+					this.skills.push({ character, skill })
 				}
 			})
 		})
@@ -275,7 +284,7 @@ export default class GameScene extends Phaser.Scene{
 			this[`skill_slot_${i+1}`] = this.add.sprite(this.padding/2 + (i*this.gameW * 0.075), this.gameH - this.padding/2, 'skill_slot').setOrigin(0,1).setDepth(25);
 		}
 
-		skills.forEach((item, index) => {
+		this.skills.forEach((item, index) => {
 			let { skill } = item;
 
 			this[`${skill.name} skill`] = this.add.sprite(
@@ -296,18 +305,18 @@ export default class GameScene extends Phaser.Scene{
 				this[`${skill.name} skill`].on('pointerdown', () => {
 					this.activateSkill(item);		
 
-					let timeCountdown = skill.properties.cooldown;
+					this[`${skill.name}_timeCountdown`] = skill.properties.cooldown;
 					this[`${skill.name} skill`].disableInteractive().setTint(0x808080);
-					this[`${skill.name} countdown`].setText(timeCountdown);
+					this[`${skill.name} countdown`].setText(this[`${skill.name}_timeCountdown`]);
 
 					this.time.addEvent({
 						delay: 1000,
 						repeat: skill.properties.cooldown - 1,
 						callback: () => {
-							timeCountdown--;
-							this[`${skill.name} countdown`].setText(timeCountdown);
+							this[`${skill.name}_timeCountdown`]--;
+							this[`${skill.name} countdown`].setText(this[`${skill.name}_timeCountdown`]);
 
-							if(timeCountdown === 0){
+							if(this[`${skill.name}_timeCountdown`] === 0){
 								this[`${skill.name} skill`].setInteractive().setTint(0xffffff);
 								this[`${skill.name} countdown`].setText('');
 							}
@@ -354,7 +363,7 @@ export default class GameScene extends Phaser.Scene{
 					for(let i=0; i<=numberOfEnemies - 1;i++){
 						
 						this.totalEnemyCount++;
-						maxSpawn++;
+						// maxSpawn++;
 
 						let enemyRandomlySelected = monsters[Math.ceil(Math.random()* (monsters.length)) - 1];
 						let enemyRunAnim = this.charAnimation.generateAnimation(enemyRandomlySelected.name, "run", 4);
@@ -430,6 +439,7 @@ export default class GameScene extends Phaser.Scene{
         	//Add player xp when enemy is dead
 			this[`${char.name}_currentXp`] = this[`${char.name}_currentXp`] + xp;
 
+			//Level up
 			if(this[`${char.name}_currentXp`] >= this[`${char.name}_levelupXp`]){
 		        this[`${char.name}_maxHp`] = this[`${char.name}_maxHp`] + 2;
 	            this[`${char.name}_currentHp`] = this[`${char.name}_maxHp`];
@@ -442,6 +452,12 @@ export default class GameScene extends Phaser.Scene{
 	            this[`${char.name}_level`]++;
 	            this[`${char.name}_levelText`].setText(this[`${char.name}_level`]);
 	            this.levelUp(this[`${char.name}_level`], this.player.gameModeData.mode, this.bgm);
+
+	            this[`${char.name}_levelUp`].setAlpha(1);
+	            this[`${char.name}_levelUp`].play('levelUp_vfx');
+        		this[`${char.name}_levelUp`].on('animationcomplete', () => {
+					this[`${char.name}_levelUp`].setAlpha(0);
+				})
 			}
 
 			this[`${char.name}_xpBar`].value = this[`${char.name}_currentXp`] / this[`${char.name}_levelupXp`];
