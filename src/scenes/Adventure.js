@@ -31,6 +31,9 @@ class Adventure extends GameScene {
 
             intro_bgm.once('complete', music => {
                 battle_bgm.play();
+
+                let { location, level } = this.player.gameModeData;
+                this.gameLevelPopup(location, level);
             });
         }, 500)
 
@@ -153,7 +156,10 @@ class Adventure extends GameScene {
                                             let { skill } = item;
 
                                             if(skill.properties.subType == "active" && this[`${skill.name} skill`].input.enabled){
-                                                this[`${skill.name} skill`].emit('pointerdown')
+                                                if(this.isAuto){
+                                                    this.isAuto = false;
+                                                    this[`${skill.name} skill`].emit('pointerdown')
+                                                }
                                             }
                                         })
                                     }

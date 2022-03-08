@@ -2,7 +2,7 @@ export const charInitData = [
 	{ 
 		name: "slime", 
 		isOneSpritesheetOnly: true, 
-		location: "elven_forest", 
+		location: "elven forest", 
 		role: "enemy", 
 		speed: 400, 
 		flipImage: false, 

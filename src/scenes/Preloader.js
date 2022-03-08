@@ -180,6 +180,7 @@ import char_status_frame from '../images/gameplay_ui/character_status/char_statu
 import char_status_frame_fill from '../images/gameplay_ui/character_status/char_status_frame_fill.png';
 import health_bar from '../images/gameplay_ui/character_status/health_bar.png';
 import xp_bar from '../images/gameplay_ui/character_status/xp_bar.png';
+import leaves from '../images/gameplay_ui/others/leaves.png';
 
 import skill_slot from '../images/gameplay_ui/lower_ui/left/skill_slot.png';
 import fatal_wounds_slot from '../images/gameplay_ui/lower_ui/left/fatal_wounds_slot.png';
@@ -399,6 +400,7 @@ class LoadingScreen extends Phaser.Scene {
 
         this.load.image('enemy_hpbar', enemy_hpbar);
         this.load.image('enemy_hpbar_frame', enemy_hpbar_frame);
+        this.load.image('leaves', leaves);
 
         //Level Up Scene
         this.load.image('levelUp_frame', levelUp_frame);

@@ -33,7 +33,8 @@ export default class GameScene extends Phaser.Scene{
         this.player.gameModeData = {
             mode: 'adventure',
             team: { card_1: null, card_2: null, card_3: 'Alpha' },
-            location: 'elven_forest'
+            location: 'elven forest',
+            level: 1
         }
 
         this.player.playerInfo.cardsBattleData = [
@@ -349,6 +350,9 @@ export default class GameScene extends Phaser.Scene{
 
 	activateSkill(skillData){
 		console.log('SKILL ACTIVATED: ', skillData.skill.name);
+		setTimeout(() => {
+			this.isAuto = true;
+		}, 1000)
 	}
 
 	spawnEnemy(maxSpawn, spawnInterval, charactersToPlay){
@@ -494,5 +498,56 @@ export default class GameScene extends Phaser.Scene{
 		setTimeout(() => {
 			enemy.body.setEnable();
 		}, (speed*1000)/this.speedMultiplier);
+	}
+
+	gameLevelPopup(location, level){
+        let gameLevelContainer = this.add.rectangle(this.gameW/2, this.gameH/2, this.gameW, this.gameH*0.35, 0x000000, 0.85).setOrigin(0.5).setScale(1,0);
+
+        let gameLevelText = this.add.text(
+        	gameLevelContainer.x, gameLevelContainer.y,
+        	 `${location.toUpperCase()} LVL ${level}`,
+        	 {
+        	 	fontFamily: 'GameTextFont',
+        	 	fontSize: 70,
+        	 	fontStyle: "Bold"
+        	 } 
+        ).setOrigin(0.5).setScale(0.5,0);
+
+        let rightLeaves = this.add.sprite(
+        	gameLevelText.x + gameLevelText.displayWidth*0.65 + this.padding,
+        	gameLevelText.y,
+        	'leaves'
+        ).setOrigin(0.5).setScale(0.5,0);
+
+        let leftLeaves = this.add.sprite(
+        	gameLevelText.x - gameLevelText.displayWidth*0.65 - this.padding,
+        	gameLevelText.y,
+        	'leaves'
+        ).setOrigin(0.5).setFlipX(true).setScale(0.5,0);
+
+        let gameLevelGroup = [gameLevelContainer, gameLevelText, rightLeaves, leftLeaves];
+
+        gameLevelGroup.forEach(item => {
+        	item.setDepth(30);
+        })
+
+		this.tweens.add({
+            targets: gameLevelGroup,
+            scaleY: { value: 0.5, duration: 250, ease: 'Linear'},
+            delay: 1000,
+            onComplete: () => {
+            	setTimeout(() => {
+            		this.tweens.add({
+            			targets: gameLevelGroup,
+            			scaleY: { value: 0, duration: 250, ease: 'Linear'},
+            			onComplete: () => {
+            				gameLevelGroup.forEach(item => {
+            					item.destroy();
+            				})
+            			}
+            		})
+            	}, 3000)
+            }
+        });
 	}
 }
