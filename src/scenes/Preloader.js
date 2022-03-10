@@ -141,8 +141,9 @@ import ninja from '../images/spritesheets/ninja_spritesheet.png';
 import smoke from '../images/spritesheets/smoke_spritesheet.png';
 
 //Adventure
-import alpha_idle from '../images/spritesheets/alpha_idle.png';
-import alpha_run from '../images/spritesheets/alpha_run.png';
+import alpha_idle from '../images/spritesheets/Alpha/alpha_idle.png';
+import alpha_run from '../images/spritesheets/Alpha/alpha_run.png';
+import alpha_attack from '../images/spritesheets/Alpha/alpha_attack.png';
 import slime_spritesheet from '../images/spritesheets/slime_spritesheet.png';
 
 //Parallax BG
@@ -365,8 +366,9 @@ class LoadingScreen extends Phaser.Scene {
         this.load.spritesheet("ninja", ninja, { frameWidth: 297, frameHeight: 420 });
         this.load.spritesheet("smoke", smoke, { frameWidth: 500, frameHeight: 500 });
 
-        this.load.spritesheet("alpha_idle", alpha_idle, { frameWidth: 335, frameHeight: 250 });
-        this.load.spritesheet("alpha_run", alpha_run, { frameWidth: 335, frameHeight: 250 });
+        this.load.spritesheet("alpha_idle", alpha_idle, { frameWidth: 336, frameHeight: 250 });
+        this.load.spritesheet("alpha_run", alpha_run, { frameWidth: 336, frameHeight: 250 });
+        this.load.spritesheet("alpha_attack", alpha_attack, { frameWidth: 336, frameHeight: 250 });
         this.load.spritesheet("slime_spritesheet", slime_spritesheet, { frameWidth: 267, frameHeight: 120 });
 
         //Explore

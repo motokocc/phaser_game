@@ -8,8 +8,8 @@ class Adventure extends GameScene {
     create(){
         this.anims.create({
             key: "alpha_idle_state",
-            frameRate: 20,
-            frames: this.anims.generateFrameNumbers("alpha_idle", { start: 0, end: 19 }),
+            frameRate: 10,
+            frames: this.anims.generateFrameNumbers("alpha_idle", { start: 0, end: 9 }),
             repeat: -1
         });
 
@@ -17,8 +17,15 @@ class Adventure extends GameScene {
             key: "alpha_run_state",
             frameRate: 24,
             frames: this.anims.generateFrameNumbers("alpha_run", { start: 0, end: 21, frames:[
-                14,15,16,17,18,19,20,21,0,1,2,3,4,5,6,7,8,9,10,11,12,13
+                15,16,17,18,19,20,21,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14
             ] }),
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: "alpha_attack_state",
+            frameRate: 20,
+            frames: this.anims.generateFrameNumbers("alpha_attack", { start: 0, end: 19 }),
             repeat: -1
         });
 
@@ -52,7 +59,7 @@ class Adventure extends GameScene {
 
         this.charAnimation = new CharacterAnimation(this);
         this.add.existing(this.charAnimation);
-        this.Alpha_char = this.physics.add.sprite(0, this.game.config.height*0.875, "alpha_idle").setOrigin(1).setDepth(10).setName('Alpha');
+        this.Alpha_char = this.physics.add.sprite(0, this.game.config.height*0.85, "alpha_idle").setOrigin(1).setDepth(10).setName('Alpha');
         this.Alpha_char.play("alpha_run_state");
         this.Alpha_char.body.setSize(this.Alpha_char.width*0.6, this.Alpha_char.height/2,true);
 
@@ -79,6 +86,7 @@ class Adventure extends GameScene {
         this.charactersToPlay.forEach(character => {
             this[`${character}_vfx`].x = this[`${character}_char`].x;
             this[`${character}_levelUp`].x = this[`${character}_char`].x - this[`${character}_char`].width*0.35;
+            this[`${character}_char`].anims.timeScale = this.speedMultiplier == 2? 1.5 : this.speedMultiplier;
         });
 
         if(this.game_state == 'on'){
@@ -88,7 +96,6 @@ class Adventure extends GameScene {
             else{
                 if(this.char_state == 'running'){
                     this.Alpha_char.setVelocityX(0);
-                    this.Alpha_char.anims.timeScale = this.speedMultiplier == 2? 1.5 : this.speedMultiplier;
                     this.forest_layer_0.tilePositionX += 4 * this.speedMultiplier;
                     this.forest_layer_1.tilePositionX += 5 * this.speedMultiplier;
                     this.forest_layer_2.tilePositionX += 6 * this.speedMultiplier;
@@ -132,6 +139,7 @@ class Adventure extends GameScene {
                         let enemyData = this.charAnimation.charactersAvailable.filter(char => char.name == enemyName)[0];
 
                         if(enemy.x - this.Alpha_char.x <= enemyData.distance){
+                            this.Alpha_char.play('alpha_attack_state', true);
                             enemy.setVelocityX(0);
                             enemy.anims.timeScale = this.speedMultiplier == 2? 1.5 : this.speedMultiplier;
 

@@ -375,7 +375,7 @@ export default class GameScene extends Phaser.Scene{
 
 						let enemyName = `${enemyRandomlySelected.name}_${this.totalEnemyCount}`;
 
-						this[enemyName] = this.physics.add.sprite(this.gameW*2, this.gameH*0.875, enemyRunAnim.spritesheet)
+						this[enemyName] = this.physics.add.sprite(this.gameW*2, this.gameH*0.85, enemyRunAnim.spritesheet)
 							.setOrigin(0, 1)
 							.setDepth(10)
 							.setName(enemyName)
@@ -387,7 +387,7 @@ export default class GameScene extends Phaser.Scene{
 						this[enemyName].body.setSize(this[enemyName].width/2, this[enemyName].height/2, true);
 						setTimeout(() => {
 							this[enemyName].setVelocityX(-enemyRandomlySelected.speed * this.speedMultiplier);
-						}, i* (Math.ceil(Math.random()*1500) + 500))
+						}, i* (Math.ceil(Math.random()*500) + 250))
 
 						//Enemy HP bar
 						this[`${this[enemyName].name}_hp`] = new Slider(this, {
@@ -479,13 +479,14 @@ export default class GameScene extends Phaser.Scene{
 
 	        enemy.on('animationstop', () => {
 	        	enemy.body.setEnable();
+
 	        	this.time.addEvent({
 	        		delay: 250,
 	        		repeat: 0,
 	        		callback: () => {
 	        			this.tweens.add({
 				            targets: enemy,
-				            alpha: { value: 0, duration: 800, ease: 'Power1'},
+				            alpha: { value: 0, duration: 400, ease: 'Power1'},
 				            onComplete: () => {
 					            enemy.destroy();
 				            }
