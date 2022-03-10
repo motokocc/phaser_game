@@ -218,6 +218,7 @@ import complete_chest_glow from '../images/gameplay_ui/complete_popup/complete_c
 //Skill Spritesheets
 import heal_spritesheet from '../images/spritesheets/skills/heal_spritesheet.png';
 import levelup_spritesheet from '../images/spritesheets/skills/levelup_spritesheet.png';
+import fireslash_spritesheet from '../images/spritesheets/skills/fireslash_spritesheet.png';
 
 class LoadingScreen extends Phaser.Scene {
 
@@ -333,6 +334,7 @@ class LoadingScreen extends Phaser.Scene {
         //Skills Spritesheet
         this.load.spritesheet('heal_spritesheet', heal_spritesheet, { frameWidth: 300, frameHeight: 300 });
         this.load.spritesheet('levelup_spritesheet', levelup_spritesheet, { frameWidth: 150, frameHeight: 141 });
+        this.load.spritesheet('fireslash_spritesheet', fireslash_spritesheet, { frameWidth: 140, frameHeight: 140 });
 
         //Items
         this.load.image('Iron pickaxe', iron_pickaxe);

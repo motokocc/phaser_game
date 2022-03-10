@@ -75,6 +75,15 @@ class Adventure extends GameScene {
                 this[`${character}_char`].y - this[`${character}_char`].height/3,
                 'levelup_spritesheet'
             ).setOrigin(0.5,1).setAlpha(0).setDepth(10);
+
+             this[`${character}_slash`] = this.physics.add.sprite(
+                this[`${character}_char`].x,
+                this[`${character}_char`].y,
+                'fireslash_spritesheet'
+            ).setOrigin(1).setAlpha(0).setDepth(15).setScale(1.5).setName(`${character}_slash`);
+
+             this[`${character}_slash`].body.setEnable(false);
+
         })
 
         this.enemyCount = 0;
@@ -86,6 +95,9 @@ class Adventure extends GameScene {
         this.charactersToPlay.forEach(character => {
             this[`${character}_vfx`].x = this[`${character}_char`].x;
             this[`${character}_levelUp`].x = this[`${character}_char`].x - this[`${character}_char`].width*0.35;
+            this[`${character}_slash`].x = this[`${character}_char`].x + 110;
+
+            this[`${character}_slash`].anims.timeScale = this.speedMultiplier == 2? 1.5 : this.speedMultiplier;
             this[`${character}_char`].anims.timeScale = this.speedMultiplier == 2? 1.5 : this.speedMultiplier;
         });
 
@@ -127,6 +139,7 @@ class Adventure extends GameScene {
                     if(this.enemyCount <= this.enemies.getLength() && !this.endCount){
                         this.enemies.children.each(enemy => {
                             this[`${enemy.name}_isFigthing`] = true;
+                            this.slashing = true;
                             this.enemyCount++;
                             if(this.enemyCount == this.enemies.getLength()) this.endCount = true;
                         })
@@ -135,21 +148,37 @@ class Adventure extends GameScene {
                     this.enemies.children.each(enemy => {
                         this[`${enemy.name}_hp`].x = enemy.x + enemy.width*0.4;
 
+
                         let enemyName = enemy.name.split("_").slice(0,1)[0];
                         let enemyData = this.charAnimation.charactersAvailable.filter(char => char.name == enemyName)[0];
 
                         if(enemy.x - this.Alpha_char.x <= enemyData.distance){
-                            this.Alpha_char.play('alpha_attack_state', true);
                             enemy.setVelocityX(0);
                             enemy.anims.timeScale = this.speedMultiplier == 2? 1.5 : this.speedMultiplier;
 
                             if(this[`${enemy.name}_isFigthing`]){
                                 this[`${enemy.name}_isFigthing`]  = false;
+
                                 let enemyAttackAnim = this.charAnimation.generateAnimation(enemyName, "attack", 6);
                                 enemy.play(enemyAttackAnim.animation, true);
                                 setTimeout(() => {
                                     enemy.body.setSize(enemy.width*2, enemy.height/2, true);
                                 }, 1000)
+                            }
+
+
+                            if(this.slashing){
+                                this.slashing = false;
+                                this.physics.add.overlap(this.Alpha_slash, this.enemies,this.hitEnemy, null, this);
+                                this.Alpha_char.play('alpha_attack_state', true);
+
+                                this.Alpha_char.on('animationupdate', (currentAnim, currentFrame, sprite) => {
+                                    if(currentAnim.key == "alpha_attack_state" && currentFrame.index == 10){
+                                        this.Alpha_slash.body.setEnable(true);
+                                        this.Alpha_slash.setAlpha(1);
+                                        this.Alpha_slash.play("fireslash_vfx");
+                                    }
+                                })  
                             }
 
                             //Auto mode
@@ -179,6 +208,11 @@ class Adventure extends GameScene {
                     if(this.enemies.getLength() <= 0){
                         this.char_state = 'running';
                         this.Alpha_char.play('alpha_run_state', true);
+
+                        this.Alpha_slash.stop();
+                        this.Alpha_slash.setAlpha(0);
+                        this.Alpha_slash.body.setEnable(false);
+
                         this.enemyCount = 0; 
                         this.endCount = false;   
                     } 
