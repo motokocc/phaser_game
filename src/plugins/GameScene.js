@@ -72,7 +72,7 @@ export default class GameScene extends Phaser.Scene{
 		this.generateCharacterStats(this.charactersToPlay);
 		this.generateItemSlots();
 		this.generateSkillSlots(this.charactersToPlay, 9);
-		this.spawnEnemy(4, 8000, this.charactersToPlay);
+		this.spawnEnemy(4, 7000, this.charactersToPlay);
 	}
 
 	generateUpperRightUI(scene, bgMusic){
@@ -393,7 +393,7 @@ export default class GameScene extends Phaser.Scene{
 
 						this.enemies.add(this[enemyName]);
 						this[enemyName].play(enemyRunAnim.animation, true);
-						this[enemyName].body.setSize(this[enemyName].width/2, this[enemyName].height/2, true);
+						this[enemyName].body.setSize(this[enemyName].width/3, this[enemyName].height/2, true);
 						setTimeout(() => {
 							this[enemyName].setVelocityX(-enemyRandomlySelected.speed * this.speedMultiplier);
 						}, i* (Math.ceil(Math.random()*500) + 250))
@@ -470,7 +470,6 @@ export default class GameScene extends Phaser.Scene{
 
         if(this[`${enemy.name}_currentHp`] <= 0){
         	//Add player xp when enemy is dead
-        	console.log('nani?')
         	enemy.body.setEnable(false);
 			this[`${characterName}_currentXp`] = this[`${characterName}_currentXp`] + xp;
 
@@ -514,7 +513,7 @@ export default class GameScene extends Phaser.Scene{
 	        		callback: () => {
 	        			this.tweens.add({
 				            targets: enemy,
-				            alpha: { value: 0, duration: 400, ease: 'Power1'},
+				            alpha: { value: 0, duration: 125, ease: 'Power1'},
 				            onComplete: () => {
 					            enemy.destroy();
 				            }

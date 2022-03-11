@@ -32,6 +32,7 @@ class Adventure extends GameScene {
         //Audio
         let battle_bgm = this.sound.add('battle_loop', {loop: true, volume: getSoundSettings('default')});        
         let intro_bgm = this.sound.add('battle_intro', { volume: getSoundSettings('default') });
+        this.slashSfx = this.sound.add("Alpha_slash", { volume: 0.5 * getSoundSettings("default")});
 
         setTimeout(() => {
             intro_bgm.play();
@@ -72,7 +73,7 @@ class Adventure extends GameScene {
 
             this[`${character}_levelUp`] = this.add.sprite(
                 this[`${character}_char`].x,
-                this[`${character}_char`].y - this[`${character}_char`].height/3,
+                this[`${character}_char`].y - this[`${character}_char`].height/2,
                 'levelup_spritesheet'
             ).setOrigin(0.5,1).setAlpha(0).setDepth(10);
 
@@ -80,9 +81,10 @@ class Adventure extends GameScene {
                 this[`${character}_char`].x,
                 this[`${character}_char`].y,
                 'fireslash_spritesheet'
-            ).setOrigin(1).setAlpha(0).setDepth(15).setScale(1.5).setName(`${character}_slash`);
+            ).setOrigin(1).setAlpha(0).setDepth(15).setName(`${character}_slash`);
 
              this[`${character}_slash`].body.setEnable(false);
+             this[`${character}_slash`].body.setSize(this[`${character}_slash`].width*0.5, this[`${character}_slash`].height);
 
         })
 
@@ -135,9 +137,6 @@ class Adventure extends GameScene {
                     }
                 }
                 else if(this.char_state == 'fighting'){
-                    
-                    this.Alpha_char.body.setSize(this.Alpha_char.width*0.6, this.Alpha_char.height/2,true);
-
                     if(this.enemyCount <= this.enemies.getLength() && !this.endCount){
                         this.enemies.children.each(enemy => {
                             this[`${enemy.name}_isFigthing`] = true;
@@ -167,7 +166,8 @@ class Adventure extends GameScene {
                                 enemy.on('animationupdate', (currentAnim, currentFrame, sprite) => {
                                     if(currentAnim.key == enemyAttackAnim.animation && currentFrame.index == 5 && sprite.name == enemy.name){
                                         this[`${enemy.name}_slash`].x = enemy.x;
-                                        this[`${enemy.name}_slash`].body.setEnable(true);
+
+                                        this[`${enemy.name}_currentHp`] > 0 && this[`${enemy.name}_slash`].body.setEnable(true);                                        
                                     }
                                 })
                             }
@@ -179,10 +179,15 @@ class Adventure extends GameScene {
                                 this.Alpha_char.play('alpha_attack_state', true);
 
                                 this.Alpha_char.on('animationupdate', (currentAnim, currentFrame, sprite) => {
-                                    if(currentAnim.key == "alpha_attack_state" && currentFrame.index == 10){
-                                        this.Alpha_slash.body.setEnable(true);
-                                        this.Alpha_slash.setAlpha(1);
-                                        this.Alpha_slash.play("fireslash_vfx");
+                                    if(currentAnim.key == "alpha_attack_state"){
+                                        if(currentFrame.index == 10){
+                                            this.Alpha_slash.setAlpha(1);
+                                            this.Alpha_slash.play("fireslash_vfx");
+                                            this.slashSfx.play();
+                                        }
+                                        if(currentFrame.index == 12){
+                                            this.Alpha_slash.body.setEnable(true);
+                                        }
                                     }
                                 })  
                             }

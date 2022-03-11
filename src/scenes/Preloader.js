@@ -22,6 +22,7 @@ import levelUpSfx from '../audio/levelup.wav';
 import completeSfx from '../audio/complete.wav';
 import loseSfx from '../audio/lose_sfx.wav';
 import healSfx from '../audio/skills/heal.wav';
+import Alpha_slash from '../audio/slashes/Alpha_slash.mp3';
 
 import elf from '../images/elf-0.png';
 import scroll from '../images/UI/scroll.png';
@@ -334,7 +335,7 @@ class LoadingScreen extends Phaser.Scene {
         //Skills Spritesheet
         this.load.spritesheet('heal_spritesheet', heal_spritesheet, { frameWidth: 300, frameHeight: 300 });
         this.load.spritesheet('levelup_spritesheet', levelup_spritesheet, { frameWidth: 150, frameHeight: 141 });
-        this.load.spritesheet('fireslash_spritesheet', fireslash_spritesheet, { frameWidth: 140, frameHeight: 140 });
+        this.load.spritesheet('fireslash_spritesheet', fireslash_spritesheet, { frameWidth: 210, frameHeight: 210 });
 
         //Items
         this.load.image('Iron pickaxe', iron_pickaxe);
@@ -452,6 +453,7 @@ class LoadingScreen extends Phaser.Scene {
         this.load.audio('completeSfx', [completeSfx]);
         this.load.audio('loseSfx', [loseSfx]);
         this.load.audio('healSfx', [healSfx]);
+        this.load.audio('Alpha_slash', [Alpha_slash]);
 
         this.progressBar = this.add.graphics();
         this.progressBox = this.add.graphics();
