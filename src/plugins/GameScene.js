@@ -53,8 +53,11 @@ export default class GameScene extends Phaser.Scene{
 		this.isAuto = true;
 		this.bgm = [];
 		this.charactersToPlay = [];
+
 		this.enemies = this.physics.add.group();
+		this.enemyAttacks = this.physics.add.group();
 		this.totalEnemyCount = 0;
+
 		this.charAnimation = new CharacterAnimation(this);
 		this.add.existing(this.charAnimation);
 		this.isFighting = true;
@@ -415,8 +418,18 @@ export default class GameScene extends Phaser.Scene{
 						this[`${enemyName}_currentHp`] = enemyRandomlySelected.stats.health;
 						this[`${enemyName}_maxHealth`] = enemyRandomlySelected.stats.health;
 
+						//Enemy attack collider
+						this[`${this[enemyName].name}_slash`] = this.physics.add.sprite(
+							this[enemyName].x,
+							this[enemyName].y,
+							'skill_slot'
+						).setAlpha(0).setOrigin(1).setData(enemyRandomlySelected);
+
+						this[`${this[enemyName].name}_slash`].body.setEnable(false);
+						this.enemyAttacks.add(this[`${this[enemyName].name}_slash`]);
+
 						charactersToPlay.forEach(character => {
-							this.physics.add.overlap(this[`${character}_char`], this.enemies,this.encounterEnemy, null, this);			
+							this.physics.add.overlap(this[`${character}_char`], this.enemyAttacks, this.hitPlayer, null, this);			
 						})
 					}	
 				}
@@ -424,11 +437,11 @@ export default class GameScene extends Phaser.Scene{
 		})
 	}
 
-	encounterEnemy(char, enemy){
-        enemy.body.setEnable(false);
+	hitPlayer(char, enemySlash){
+        enemySlash.body.setEnable(false);
 
-        let { stats } = enemy.data.values;
-        let { attack, speed } = stats;
+        let { stats } = enemySlash.data.values;
+        let { attack } = stats;
 
         //Character
 		this[`${char.name}_currentHp`] = this[`${char.name}_currentHp`] - attack;
@@ -441,17 +454,12 @@ export default class GameScene extends Phaser.Scene{
 
 		this[`${char.name}_hpBar`].value = this[`${char.name}_currentHp`]/this[`${char.name}_maxHp`];
         this[`${char.name}_hpText`].setText(`${this[`${char.name}_currentHp`]}/${this[`${char.name}_maxHp`]}`);
-
-
-		setTimeout(() => {
-			enemy.body.setEnable();
-		}, (speed*1000)/this.speedMultiplier);
 	}
 
-	hitEnemy(slash, enemy){
-		slash.body.setEnable(false);
+	hitEnemy(playerSlash, enemy){
+		playerSlash.body.setEnable(false);
 
-		let characterName = slash.name.split("_").slice(0,1)[0];
+		let characterName = playerSlash.name.split("_").slice(0,1)[0];
 
 		let { name, animation, xp } = enemy.data.values;
 
@@ -462,6 +470,8 @@ export default class GameScene extends Phaser.Scene{
 
         if(this[`${enemy.name}_currentHp`] <= 0){
         	//Add player xp when enemy is dead
+        	console.log('nani?')
+        	enemy.body.setEnable(false);
 			this[`${characterName}_currentXp`] = this[`${characterName}_currentXp`] + xp;
 
 			//Level up
@@ -488,7 +498,6 @@ export default class GameScene extends Phaser.Scene{
 			this[`${characterName}_xpBar`].value = this[`${characterName}_currentXp`] / this[`${characterName}_levelupXp`];
 
 			//Play dead animation and put a little delay before destroying to prevent error
-        	enemy.body.setSize(enemy.width/2, enemy.height/2);
             let enemyDeadAnim = this.charAnimation.generateAnimation(name, "dead", 6, 0);
             enemy.play(enemyDeadAnim.animation, true);
 
@@ -496,10 +505,9 @@ export default class GameScene extends Phaser.Scene{
             let frame = currentAnim.getFrameAt(animation.dead.end - animation.dead.start);
             enemy.stopOnFrame(frame);
             this[`${enemy.name}_hp`].destroy();
+            this[`${enemy.name}_slash`].destroy();
 
 	        enemy.on('animationstop', () => {
-	        	enemy.body.setEnable();
-
 	        	this.time.addEvent({
 	        		delay: 250,
 	        		repeat: 0,

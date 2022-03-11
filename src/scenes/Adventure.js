@@ -61,7 +61,7 @@ class Adventure extends GameScene {
         this.add.existing(this.charAnimation);
         this.Alpha_char = this.physics.add.sprite(0, this.game.config.height*0.85, "alpha_idle").setOrigin(1).setDepth(10).setName('Alpha');
         this.Alpha_char.play("alpha_run_state");
-        this.Alpha_char.body.setSize(this.Alpha_char.width*0.6, this.Alpha_char.height/2,true);
+        this.Alpha_char.body.setSize(this.Alpha_char.width*0.6, this.Alpha_char.height,true);
 
         this.charactersToPlay.forEach(character => {
             this[`${character}_vfx`] = this.add.sprite(
@@ -92,6 +92,7 @@ class Adventure extends GameScene {
 
 
     update(){
+        // Colliders and VFX to follow player
         this.charactersToPlay.forEach(character => {
             this[`${character}_vfx`].x = this[`${character}_char`].x;
             this[`${character}_levelUp`].x = this[`${character}_char`].x - this[`${character}_char`].width*0.35;
@@ -100,6 +101,7 @@ class Adventure extends GameScene {
             this[`${character}_slash`].anims.timeScale = this.speedMultiplier == 2? 1.5 : this.speedMultiplier;
             this[`${character}_char`].anims.timeScale = this.speedMultiplier == 2? 1.5 : this.speedMultiplier;
         });
+        //End of Colliders and VFX
 
         if(this.game_state == 'on'){
             if(this.Alpha_char.x <= this.game.config.width*0.6){
@@ -161,9 +163,13 @@ class Adventure extends GameScene {
 
                                 let enemyAttackAnim = this.charAnimation.generateAnimation(enemyName, "attack", 6);
                                 enemy.play(enemyAttackAnim.animation, true);
-                                setTimeout(() => {
-                                    enemy.body.setSize(enemy.width*2, enemy.height/2, true);
-                                }, 1000)
+
+                                enemy.on('animationupdate', (currentAnim, currentFrame, sprite) => {
+                                    if(currentAnim.key == enemyAttackAnim.animation && currentFrame.index == 5 && sprite.name == enemy.name){
+                                        this[`${enemy.name}_slash`].x = enemy.x;
+                                        this[`${enemy.name}_slash`].body.setEnable(true);
+                                    }
+                                })
                             }
 
 
